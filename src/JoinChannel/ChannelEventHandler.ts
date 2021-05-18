@@ -1,6 +1,7 @@
 import CoreApiClient from "../CoreApiClient"
 import MessageBuilder from "../MessageBuilder"
 import SlackApiClient from "../SlackApiClient"
+import SlackUserIdentity from "../SlackUserIdentity";
 import JoinChannelEvent from "./JoinChannelEvent";
 
 export default class ChannelEventHandler {
@@ -16,12 +17,12 @@ export default class ChannelEventHandler {
     }
 
     onChannelJoin(newUserPayload: JoinChannelEvent) {
-        const slackIdentity = this.slackApiClient.getIdentity(newUserPayload.user);
+        const slackIdentity : SlackUserIdentity = this.slackApiClient.getIdentity(newUserPayload.user);
 
-        const message = this.coreApiClient.isNewUser(slackIdentity.user)
-            ? this.messageBuilder.buildGreeting(slackIdentity.user.name)
-            : this.messageBuilder.buildWelcomeBack(slackIdentity.user.name);
+        const message = this.coreApiClient.isNewUser(slackIdentity)
+            ? this.messageBuilder.buildGreeting(slackIdentity.name)
+            : this.messageBuilder.buildWelcomeBack(slackIdentity.name);
 
-        this.slackApiClient.sendDm(slackIdentity.user.id, message);
+        this.slackApiClient.sendDm(slackIdentity.id, message);
     }
 }

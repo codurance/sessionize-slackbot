@@ -29,16 +29,10 @@ describe("Slack Service should", () => {
         // THEN they receive a personalized welcome message
 
         // Arrange
-        const slackIdentity: SlackIdentity = {
-            ok: true,
-            user: {
-                name: "Joe Bloggs",
-                id: "U0G9QF9C6",
-                email: "joe.bloggs@codurance.com"
-            } as SlackUserIdentity,
-            team: {
-                id: "T0G9PQBBK"
-            } as SlackTeamIdentity
+        const slackIdentity: SlackUserIdentity = {
+            name: "Joe Bloggs",
+            id: "U0G9QF9C6",
+            email: "joe.bloggs@codurance.com"
         };
 
         const newUserPayload: JoinChannelEvent = {
@@ -52,7 +46,7 @@ describe("Slack Service should", () => {
 
         const mockedCoreApiClient: CoreApiClient = mock(CoreApiClient);
         const coreApiClient: CoreApiClient = instance(mockedCoreApiClient);
-        when(mockedCoreApiClient.isNewUser(slackIdentity.user)).thenReturn(isNewUser);
+        when(mockedCoreApiClient.isNewUser(slackIdentity)).thenReturn(isNewUser);
 
         const mockedSlackApiClient: SlackApiClient = mock(SlackApiClient);
         const slackApiClient: SlackApiClient = instance(mockedSlackApiClient);
@@ -67,7 +61,7 @@ describe("Slack Service should", () => {
         eventListenerController.joinPool(newUserPayload);
 
         // Assert
-        verify(mockedCoreApiClient.isNewUser(slackIdentity.user)).once();
-        verify(mockedSlackApiClient.sendDm(slackIdentity.user.id, expectedMessage)).once();
+        verify(mockedCoreApiClient.isNewUser(slackIdentity)).once();
+        verify(mockedSlackApiClient.sendDm(slackIdentity.id, expectedMessage)).once();
     });
 });

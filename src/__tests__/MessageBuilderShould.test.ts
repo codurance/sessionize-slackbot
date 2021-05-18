@@ -7,7 +7,7 @@ describe("MessageBuilder", () => {
         const messageBuilder = new MessageBuilder();
         const expectedMessage = "Hi Joe Bloggs, welcome to Sessionize!";
 
-        const generatedMessage = messageBuilder.buildGreeting(name, true);
+        const generatedMessage = messageBuilder.buildGreeting(name);
         expect(generatedMessage).toBe(expectedMessage);
     });
 });

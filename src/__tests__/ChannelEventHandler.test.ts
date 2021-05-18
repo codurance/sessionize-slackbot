@@ -9,11 +9,13 @@ import CoreApiClient from "../CoreApiClient"
 import MessageBuilder from "../MessageBuilder"
 import ChannelEventHandler from "../JoinChannel/ChannelEventHandler"
 import SlackApiClient from "../SlackApiClient"
+import SlackUserIdentity from "../SlackUserIdentity"
+import JoinChannelEvent from "../JoinChannel/JoinChannelEvent"
 
-describe("PoolHandler", () => {
-    test("should make request to core to see if user joining pool is new", () => {
+describe("ChannelEventHandler", () => {
+    test("should make request to core to see if user joining channel is new", () => {
 
-        const newUserPayload = {
+        const newUserPayload : JoinChannelEvent = {
             "type": "member_joined_channel",
             "user": "U0G9QF9C6",
             "channel": "C0698JE0H",
@@ -22,16 +24,10 @@ describe("PoolHandler", () => {
             "inviter": "U123456789"
         };
 
-        const userIdentity = {
-            "ok": true,
-            "user": {
-                "name": "Joe Bloggs",
-                "id": "U0G9QF9C6",
-                "email": "joe.bloggs@codurance.com"
-            },
-            "team": {
-                "id": "T0G9PQBBK"
-            }
+        const userIdentity : SlackUserIdentity = {
+            name: "Joe Bloggs",
+            id: "U0G9QF9C6",
+            email: "joe.bloggs@codurance.com"
         };
 
         const mockedCoreApiClient: CoreApiClient = mock(CoreApiClient);
@@ -45,11 +41,11 @@ describe("PoolHandler", () => {
         const messageBuilder: MessageBuilder = instance(mockedMessageBuilder);
         when(mockedMessageBuilder.buildGreeting(anyString())).thenReturn("This is a message");
 
-        const poolHandler = new ChannelEventHandler(coreApiClient, slackApiClient, messageBuilder);
+        const channelEventHandler = new ChannelEventHandler(coreApiClient, slackApiClient, messageBuilder);
 
-        poolHandler.onChannelJoin(newUserPayload);
+        channelEventHandler.onChannelJoin(newUserPayload);
 
         verify(mockedCoreApiClient.isNewUser(userIdentity)).once();
-        verify(mockedSlackApiClient.sendDm(userIdentity["user"]["id"], messageBuilder.buildGreeting(anyString())));
+        verify(mockedSlackApiClient.sendDm(userIdentity.id, messageBuilder.buildGreeting(anyString())));
     });
 });
