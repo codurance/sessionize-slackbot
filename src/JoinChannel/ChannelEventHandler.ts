@@ -16,12 +16,12 @@ export default class ChannelEventHandler {
     }
 
     onChannelJoin(newUserPayload: JoinChannelEvent) {
-        const userIdentity = this.slackApiClient.getIdentity(newUserPayload.user);
+        const slackIdentity = this.slackApiClient.getIdentity(newUserPayload.user);
 
-        const message = this.coreApiClient.isNewUser(userIdentity)
-            ? this.messageBuilder.buildGreeting(userIdentity.user.name)
-            : this.messageBuilder.buildWelcomeBack(userIdentity.user.name);
+        const message = this.coreApiClient.isNewUser(slackIdentity.user)
+            ? this.messageBuilder.buildGreeting(slackIdentity.user.name)
+            : this.messageBuilder.buildWelcomeBack(slackIdentity.user.name);
 
-        this.slackApiClient.sendDm(userIdentity.user.id, message);
+        this.slackApiClient.sendDm(slackIdentity.user.id, message);
     }
 }

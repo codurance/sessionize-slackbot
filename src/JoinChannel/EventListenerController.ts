@@ -2,13 +2,13 @@ import ChannelEventHandler from "./ChannelEventHandler";
 import JoinChannelEvent from "./JoinChannelEvent";
 
 export default class EventListenerController {
-    poolHandler: ChannelEventHandler;
+    channelEventHandler: ChannelEventHandler;
 
-    constructor(poolHandler: ChannelEventHandler) {
-        this.poolHandler = poolHandler;
+    constructor(channelEventHandler: ChannelEventHandler) {
+        this.channelEventHandler = channelEventHandler;
     }
 
     joinPool(newUserPayload: JoinChannelEvent) {
-        this.poolHandler.onChannelJoin(newUserPayload)
+        this.channelEventHandler.onChannelJoin(newUserPayload)
     }
 }

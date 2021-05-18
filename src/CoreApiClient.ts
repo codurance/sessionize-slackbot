@@ -1,6 +1,7 @@
+import SlackUserIdentity from "./SlackUserIdentity";
+
 export default class CoreApiClient {
-    // TODO: Change `any` to its `IdentityResponse` class
-    isNewUser(identityResponse: any): boolean {
+    isNewUser(slackUserIdentity: SlackUserIdentity): boolean {
         throw new Error("Method not implemented.");
     }
 }
