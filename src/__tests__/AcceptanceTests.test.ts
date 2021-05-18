@@ -9,9 +9,9 @@ import {
 import CoreApiClient from '../CoreApiClient';
 import SlackApiClient from '../SlackApiClient';
 import MessageBuilder from '../MessageBuilder';
-import PoolHandler from '../PoolHandler';
-import EventListenerController from '../EventListenerController';
-import JoinChannelEvent from '../JoinChannelEvent';
+import ChannelEventHandler from '../JoinChannel/ChannelEventHandler';
+import EventListenerController from '../JoinChannel/EventListenerController';
+import JoinChannelEvent from '../JoinChannel/JoinChannelEvent';
 
 describe("Slack Service should", () => {
 
@@ -57,7 +57,7 @@ describe("Slack Service should", () => {
         when(mockedSlackApiClient.sendDm(newUserPayload["user"], anyString())).thenReturn(identityResponse);
 
         const messageBuilder = new MessageBuilder();
-        const poolHandler = new PoolHandler(coreApiClient, slackApiClient, messageBuilder);
+        const poolHandler = new ChannelEventHandler(coreApiClient, slackApiClient, messageBuilder);
         const eventListenerController = new EventListenerController(poolHandler);
 
         // Act

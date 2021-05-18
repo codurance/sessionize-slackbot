@@ -7,7 +7,7 @@ import {
 } from "ts-mockito"
 import CoreApiClient from "../CoreApiClient"
 import MessageBuilder from "../MessageBuilder"
-import PoolHandler from "../PoolHandler"
+import ChannelEventHandler from "../JoinChannel/ChannelEventHandler"
 import SlackApiClient from "../SlackApiClient"
 
 describe("PoolHandler", () => {
@@ -45,9 +45,9 @@ describe("PoolHandler", () => {
         const messageBuilder: MessageBuilder = instance(mockedMessageBuilder);
         when(mockedMessageBuilder.buildGreeting(anyString())).thenReturn("This is a message");
 
-        const poolHandler = new PoolHandler(coreApiClient, slackApiClient, messageBuilder);
+        const poolHandler = new ChannelEventHandler(coreApiClient, slackApiClient, messageBuilder);
 
-        poolHandler.onPoolJoin(newUserPayload);
+        poolHandler.onChannelJoin(newUserPayload);
 
         verify(mockedCoreApiClient.isNewUser(userIdentity)).once();
         verify(mockedSlackApiClient.sendDm(userIdentity["user"]["id"], messageBuilder.buildGreeting(anyString())));

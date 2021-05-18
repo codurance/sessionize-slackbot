@@ -1,11 +1,11 @@
 import {instance, mock, verify} from "ts-mockito"
-import EventListenerController from "../EventListenerController"
-import PoolHandler from "../PoolHandler"
+import EventListenerController from "../JoinChannel/EventListenerController"
+import ChannelEventHandler from "../JoinChannel/ChannelEventHandler"
 
 describe("EventListenerController", () => {
     test("should call the pool handler when a user joins the channel", () => {
-        const mockedPoolHandler: PoolHandler = mock(PoolHandler);
-        const poolHandler: PoolHandler = instance(mockedPoolHandler);
+        const mockedPoolHandler: ChannelEventHandler = mock(ChannelEventHandler);
+        const poolHandler: ChannelEventHandler = instance(mockedPoolHandler);
 
         const newUserPayload = {
             "ok": true,
@@ -23,6 +23,6 @@ describe("EventListenerController", () => {
 
         eventListenerController.joinPool(newUserPayload);
 
-        verify(mockedPoolHandler.onPoolJoin(newUserPayload)).once();
+        verify(mockedPoolHandler.onChannelJoin(newUserPayload)).once();
     });
 });
