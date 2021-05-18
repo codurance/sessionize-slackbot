@@ -6,11 +6,12 @@ import {
     when,
 } from "ts-mockito"
 
-import CoreApiClient from '../CoreApiClient'
-import SlackApiClient from '../SlackApiClient'
-import MessageBuilder from '../MessageBuilder'
-import PoolHandler from '../PoolHandler'
-import EventListenerController from '../EventListenerController'
+import CoreApiClient from '../CoreApiClient';
+import SlackApiClient from '../SlackApiClient';
+import MessageBuilder from '../MessageBuilder';
+import PoolHandler from '../PoolHandler';
+import EventListenerController from '../EventListenerController';
+import JoinChannelEvent from '../JoinChannelEvent';
 
 describe("Slack Service should", () => {
 
@@ -38,13 +39,13 @@ describe("Slack Service should", () => {
         };
 
         const newUserPayload = {
-            "type": "member_joined_channel",
-            "user": "U0G9QF9C6",
-            "channel": "C0698JE0H",
-            "channel_type": "C",
-            "team": "T024BE7LD",
-            "inviter": "U123456789"
-        };
+            type: "member_joined_channel",
+            user: "U0G9QF9C6",
+            channel: "C0698JE0H",
+            channel_type: "C",
+            team: "T024BE7LD",
+            inviter: "U123456789"
+        } as JoinChannelEvent;
 
         const mockedCoreApiClient: CoreApiClient = mock(CoreApiClient);
         const coreApiClient: CoreApiClient = instance(mockedCoreApiClient);

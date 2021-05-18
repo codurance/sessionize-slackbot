@@ -1,4 +1,5 @@
 import PoolHandler from "./PoolHandler";
+import JoinChannelEvent from "./JoinChannelEvent";
 
 export default class EventListenerController {
     poolHandler: PoolHandler;
@@ -7,8 +8,7 @@ export default class EventListenerController {
         this.poolHandler = poolHandler;
     }
 
-    // TODO: Change `any` to its `ChannelJoinResponse` class
-    joinPool(newUserPayload: any) {
+    joinPool(newUserPayload: JoinChannelEvent) {
         this.poolHandler.onPoolJoin(newUserPayload)
     }
 }
