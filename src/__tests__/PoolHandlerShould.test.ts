@@ -51,5 +51,5 @@ describe("PoolHandler", () => {
 
         verify(mockedCoreApiClient.isNewUser(userIdentity)).once();
         verify(mockedSlackApiClient.sendDm(userIdentity["user"]["id"], messageBuilder.buildGreeting(anyString())));
-    })
-})
+    });
+});

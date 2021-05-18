@@ -10,5 +10,5 @@ describe("MessageBuilder", () => {
         const generatedMessage = messageBuilder.buildGreeting(name);
 
         expect(generatedMessage).toBe(expectedMessage);
-    })
-})
+    });
+});

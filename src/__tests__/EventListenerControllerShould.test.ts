@@ -24,5 +24,5 @@ describe("EventListenerController", () => {
         eventListenerController.joinPool(newUserPayload);
 
         verify(mockedPoolHandler.onPoolJoin(newUserPayload)).once();
-    })
-})
+    });
+});

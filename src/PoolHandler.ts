@@ -18,9 +18,10 @@ export default class PoolHandler {
     onPoolJoin(newUserPayload: any) {
         const userIdentity = this.slackApiClient.getIdentity(newUserPayload["user"]);
 
-        if(this.coreApiClient.isNewUser(userIdentity)) {
-            const message = this.messageBuilder.buildGreeting(userIdentity["user"]["name"]);
-            this.slackApiClient.sendDm(userIdentity["user"]["id"], message);
-        } 
+        const message = this.coreApiClient.isNewUser(userIdentity)
+            ? this.messageBuilder.buildGreeting(userIdentity["user"]["name"])
+            : this.messageBuilder.buildWelcomeBack(userIdentity["user"]["name"]);
+
+        this.slackApiClient.sendDm(userIdentity["user"]["id"], message);
     }
 }
