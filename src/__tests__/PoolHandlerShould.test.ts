@@ -20,37 +20,36 @@ describe("PoolHandler", () => {
             "channel_type": "C",
             "team": "T024BE7LD",
             "inviter": "U123456789"
-        }
+        };
 
         const userIdentity = {
             "ok": true,
             "user": {
-                "name": "Sonny Whether",
+                "name": "Joe Bloggs",
                 "id": "U0G9QF9C6",
-                "email": "bobby@example.com"
+                "email": "joe.bloggs@codurance.com"
             },
             "team": {
                 "id": "T0G9PQBBK"
             }
-        }
+        };
 
-        let mockedCoreApiClient:CoreApiClient = mock(CoreApiClient)
-        let coreApiClient:CoreApiClient = instance(mockedCoreApiClient)
+        const mockedCoreApiClient: CoreApiClient = mock(CoreApiClient);
+        const coreApiClient: CoreApiClient = instance(mockedCoreApiClient);
 
-        let mockedSlackApiClient:SlackApiClient = mock(SlackApiClient)
-        let slackApiClient:SlackApiClient = instance(mockedSlackApiClient)
+        const mockedSlackApiClient: SlackApiClient = mock(SlackApiClient);
+        const slackApiClient: SlackApiClient = instance(mockedSlackApiClient);
+        when(mockedSlackApiClient.getIdentity(anyString())).thenReturn(userIdentity);
 
-        let mockedMessageBuilder:MessageBuilder = mock(MessageBuilder)
-        let messageBuilder:MessageBuilder = instance(mockedMessageBuilder)
+        const mockedMessageBuilder: MessageBuilder = mock(MessageBuilder);
+        const messageBuilder: MessageBuilder = instance(mockedMessageBuilder);
+        when(mockedMessageBuilder.buildGreeting(anyString())).thenReturn("This is a message");
 
-        let poolHandler = new PoolHandler(coreApiClient, slackApiClient, messageBuilder)
+        const poolHandler = new PoolHandler(coreApiClient, slackApiClient, messageBuilder);
 
-        when(mockedMessageBuilder.buildGreeting(anyString())).thenReturn("This is a message")
-        when(mockedSlackApiClient.getIdentity(anyString())).thenReturn(userIdentity)
+        poolHandler.onPoolJoin(newUserPayload);
 
-        poolHandler.onPoolJoin(newUserPayload)
-
-        verify(mockedCoreApiClient.isNewUser(userIdentity)).once()
-        verify(mockedSlackApiClient.sendDm(userIdentity["user"]["id"], messageBuilder.buildGreeting(anyString())))
+        verify(mockedCoreApiClient.isNewUser(userIdentity)).once();
+        verify(mockedSlackApiClient.sendDm(userIdentity["user"]["id"], messageBuilder.buildGreeting(anyString())));
     })
 })

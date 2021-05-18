@@ -15,22 +15,22 @@ import EventListenerController from '../EventListenerController'
 describe("Slack Service should", () => {
     test("send a welcome message to new users", () => {
 
-        // GIVEN: A new user 
-        // WHEN: The user enters the channel
-        // THEN: Send their details to the Sessionize core
-        // AND: Send welcome message to user
+        // GIVEN Sessionize is installed
+        // WHEN a user joins the Sessionize slack channel
+        // THEN they receive a personalized welcome message
 
+        // Arrange
         const identityResponse = {
             "ok": true,
             "user": {
-                "name": "Sonny Whether",
+                "name": "Joe Bloggs",
                 "id": "U0G9QF9C6",
-                "email": "bobby@example.com"
+                "email": "joe.bloggs@codurance.com"
             },
             "team": {
                 "id": "T0G9PQBBK"
             }
-        }
+        };
 
         const newUserPayload = {
             "type": "member_joined_channel",
@@ -39,31 +39,28 @@ describe("Slack Service should", () => {
             "channel_type": "C",
             "team": "T024BE7LD",
             "inviter": "U123456789"
-        }
+        };
 
-        const expectedMessage = "Hi Sonny Whether, welcome to Sessionize!"
+        const expectedMessage = "Hi Joe Bloggs, welcome to Sessionize!";
 
-        let mockedCoreApiClient:CoreApiClient = mock(CoreApiClient)
-        let coreApiClient:CoreApiClient = instance(mockedCoreApiClient)
+        const mockedCoreApiClient: CoreApiClient = mock(CoreApiClient);
+        const coreApiClient: CoreApiClient = instance(mockedCoreApiClient);
+        when(mockedCoreApiClient.isNewUser(identityResponse)).thenReturn(true);
 
-        when(mockedCoreApiClient.isNewUser(identityResponse)).thenReturn(true)
+        const mockedSlackApiClient: SlackApiClient = mock(SlackApiClient);
+        const slackApiClient: SlackApiClient = instance(mockedSlackApiClient);
+        when(mockedSlackApiClient.getIdentity(newUserPayload["user"])).thenReturn(identityResponse);
+        when(mockedSlackApiClient.sendDm(newUserPayload["user"], anyString())).thenReturn(identityResponse);
 
-        let mockedSlackApiClient:SlackApiClient = mock(SlackApiClient)
-        let slackApiClient:SlackApiClient = instance(mockedSlackApiClient)
+        const messageBuilder = new MessageBuilder();
+        const poolHandler = new PoolHandler(coreApiClient, slackApiClient, messageBuilder);
+        const eventListenerController = new EventListenerController(poolHandler);
 
-        when(mockedSlackApiClient.getIdentity(newUserPayload["user"])).thenReturn(identityResponse)
-        when(mockedSlackApiClient.sendDm(newUserPayload["user"], anyString())).thenReturn(identityResponse)
+        // Act
+        eventListenerController.joinPool(newUserPayload);
 
-        let messageBuilder = new MessageBuilder()
-
-        let poolHandler = new PoolHandler(coreApiClient, slackApiClient, messageBuilder)
-        let eventListenerController = new EventListenerController(poolHandler)
-
-        // Endpoint is hit from Slack
-        eventListenerController.joinPool(newUserPayload)
-
-        verify(mockedCoreApiClient.isNewUser(identityResponse)).once()
-        verify(mockedSlackApiClient.sendDm(identityResponse["user"]["id"], expectedMessage)).once()
-
+        // Assert
+        verify(mockedCoreApiClient.isNewUser(identityResponse)).once();
+        verify(mockedSlackApiClient.sendDm(identityResponse["user"]["id"], expectedMessage)).once();
     })
 })

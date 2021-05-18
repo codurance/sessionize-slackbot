@@ -1,8 +1,8 @@
 export default class SlackApiClient {
-    sendDm(arg0: string, arg1: any): any {
+    sendDm(slackId: string, message: any): any {
         throw new Error("Method not implemented.");
     }
-    getIdentity(arg0: string): any {
+    getIdentity(slackId: string): any {
         throw new Error("Method not implemented.");
     }
 }

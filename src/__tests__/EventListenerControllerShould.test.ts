@@ -4,8 +4,8 @@ import PoolHandler from "../PoolHandler"
 
 describe("EventListenerController", () => {
     test("should call the pool handler when a user joins the channel", () => {
-        let mockedPoolHander:PoolHandler = mock(PoolHandler)
-        let poolHandler:PoolHandler = instance(mockedPoolHander)
+        const mockedPoolHandler: PoolHandler = mock(PoolHandler);
+        const poolHandler: PoolHandler = instance(mockedPoolHandler);
 
         const newUserPayload = {
             "ok": true,
@@ -17,12 +17,12 @@ describe("EventListenerController", () => {
             "team": {
                 "id": "T0G9PQBBK"
             }
-        }
+        };
 
-        let eventListenerController : EventListenerController = new EventListenerController(poolHandler)
+        const eventListenerController: EventListenerController = new EventListenerController(poolHandler);
 
-        eventListenerController.joinPool(newUserPayload)
+        eventListenerController.joinPool(newUserPayload);
 
-        verify(mockedPoolHander.onPoolJoin(newUserPayload)).once()
+        verify(mockedPoolHandler.onPoolJoin(newUserPayload)).once();
     })
 })
