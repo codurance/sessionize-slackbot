@@ -11,6 +11,16 @@ const app = new App({
     signingSecret: process.env.SLACK_SIGNING_SECRET
 });
 
+app.event('member_joined_channel', async ({ event, client }) => {
+    try {
+      // Call chat.postMessage with the built-in client
+      console.log(event);
+    }
+    catch (error) {
+      console.error(error);
+    }
+  });
+
 (async () => {
     await app.start(80);
     console.log("Bolt running");
