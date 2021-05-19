@@ -9,4 +9,15 @@ describe("AuthenticationController", () => {
         const parsedToken = auth.parseToken(sendAuth);
         expect(parsedToken).toBe(ourToken);
     });
+
+    test("should throw error if tokens do not match", () => {
+        const sentToken = "NOT_OUR_TOKEN";
+        const ourToken = "OUR_TOKEN";
+        
+        const auth = new Auth();
+
+        expect(() => {
+            auth.compareTokens(ourToken, sentToken)
+        }).toThrow("Invalid token");
+    })
 });
