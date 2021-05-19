@@ -16,8 +16,8 @@ export default class ChannelEventHandler {
         this.messageBuilder = messageBuilder
     }
 
-    async onChannelJoin(newUserPayload: MemberJoinedChannelEvent){
-        const slackIdentity: SlackUserIdentity = await this.slackApiClient.getIdentity(newUserPayload.user);
+    async onChannelJoin(event: MemberJoinedChannelEvent){
+        const slackIdentity: SlackUserIdentity = await this.slackApiClient.getIdentity(event.user);
 
         return this.coreApiClient.isNewUser(slackIdentity)
             ? this.messageBuilder.buildGreeting(slackIdentity.name)

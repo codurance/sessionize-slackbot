@@ -1,7 +1,6 @@
 import {
     instance,
     mock,
-    verify,
     when,
 } from "ts-mockito"
 
@@ -53,8 +52,6 @@ describe("Slack Service should", () => {
         const message = await channelEventHandler.onChannelJoin(event);
 
         // Assert
-        verify(mockedCoreApiClient.isNewUser(slackIdentity)).once();
-        verify(mockedSlackApiClient.getIdentity(event.user)).once();
         expect(message).toBe(expectedMessage);
     });
 });
