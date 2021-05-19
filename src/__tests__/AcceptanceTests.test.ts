@@ -1,7 +1,4 @@
 import {
-    anyOfClass,
-    anyString,
-    anything,
     instance,
     mock,
     verify,
@@ -12,10 +9,6 @@ import CoreApiClient from '../CoreApiClient';
 import SlackApiClient from '../SlackApiClient';
 import MessageBuilder from '../MessageBuilder';
 import ChannelEventHandler from '../JoinChannel/ChannelEventHandler';
-import EventListenerController from '../JoinChannel/EventListenerController';
-import JoinChannelEvent from '../JoinChannel/JoinChannelEvent';
-import SlackIdentity from "../SlackIdentity";
-import SlackTeamIdentity from "../SlackTeamIdentity";
 import SlackUserIdentity from "../SlackUserIdentity";
 import { MemberJoinedChannelEvent } from "@slack/bolt";
 
@@ -25,8 +18,7 @@ describe("Slack Service should", () => {
         isNewUser | expectedMessage
         ${true}   | ${'Hi Joe Bloggs, welcome to Sessionize!'} 
         ${false}  | ${'Hi Joe Bloggs, welcome back to Sessionize!'}
-    `("send a personalised message when a user joins the channel", ({ isNewUser, expectedMessage }) => {
-
+    `("send a personalised message when a user joins the channel", async ({ isNewUser, expectedMessage }) => {
         // GIVEN Sessionize is installed
         // WHEN a user joins the Sessionize slack channel
         // THEN they receive a personalized welcome message
@@ -47,5 +39,22 @@ describe("Slack Service should", () => {
             inviter: "U123456789"
         };
 
+        const mockedCoreApiClient = mock(CoreApiClient);
+        when(mockedCoreApiClient.isNewUser(slackIdentity)).thenReturn(isNewUser);
+        const coreApiClient = instance(mockedCoreApiClient);
+        
+        const mockedSlackApiClient = mock(SlackApiClient);
+        when(mockedSlackApiClient.getIdentity(event.user)).thenResolve(slackIdentity);
+        const slackApiClient = instance(mockedSlackApiClient);
+        
+        const channelEventHandler = new ChannelEventHandler(coreApiClient, slackApiClient, new MessageBuilder());
+        
+        // Act
+        const message = await channelEventHandler.onChannelJoin(event);
+
+        // Assert
+        verify(mockedCoreApiClient.isNewUser(slackIdentity)).once();
+        verify(slackApiClient.getIdentity(event.user)).once();
+        expect(message).toBe(expectedMessage);
     });
 });
