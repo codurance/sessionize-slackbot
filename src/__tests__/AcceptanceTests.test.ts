@@ -26,6 +26,7 @@ describe("Slack Service should", () => {
         ${true}   | ${'Hi Joe Bloggs, welcome to Sessionize!'} 
         ${false}  | ${'Hi Joe Bloggs, welcome back to Sessionize!'}
     `("send a personalised message when a user joins the channel", ({ isNewUser, expectedMessage }) => {
+
         // GIVEN Sessionize is installed
         // WHEN a user joins the Sessionize slack channel
         // THEN they receive a personalized welcome message

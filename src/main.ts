@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { App } from '@slack/bolt';
+import { App, ExpressReceiver } from '@slack/bolt';
 import MessageBuilder from './MessageBuilder';
 import ChannelEventHandler from './JoinChannel/ChannelEventHandler';
 import CoreApiClient from './CoreApiClient';
@@ -10,9 +10,13 @@ dotenv.config()
 const messageBuilder = new MessageBuilder();
 const channelEventHandler = new ChannelEventHandler(new CoreApiClient(), new SlackApiClient(), messageBuilder);
 
+const receiver = new ExpressReceiver({
+    signingSecret: process.env.SLACK_SIGNING_SECRET!
+});
+
 const app = new App({
     token: process.env.SLACK_BOT_TOKEN,
-    signingSecret: process.env.SLACK_SIGNING_SECRET
+    receiver
 });
 
 app.event('member_joined_channel', async ({ event, client }) => {
@@ -28,6 +32,10 @@ app.event('member_joined_channel', async ({ event, client }) => {
       console.error(error);
     }
   });
+
+receiver.router.get('/example', (req, res) => {
+  res.send("Hello World!");
+});
 
 (async () => {
     await app.start(80);
