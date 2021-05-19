@@ -1,15 +1,19 @@
 import {
+    anyString,
+    anything,
     instance,
     mock,
+    verify,
     when,
 } from "ts-mockito"
 
 import CoreApiClient from '../CoreApiClient';
 import SlackApiClient from '../SlackApiClient';
 import MessageBuilder from '../MessageBuilder';
-import ChannelEventHandler from '../JoinChannel/ChannelEventHandler';
+import ChannelEventHandler from '../EventHandlers/ChannelEventHandler';
 import SlackUserIdentity from "../SlackUserIdentity";
 import { MemberJoinedChannelEvent } from "@slack/bolt";
+import { ChatPostMessageResponse } from "@slack/web-api";
 
 describe("Slack Service should", () => {
 
@@ -39,19 +43,19 @@ describe("Slack Service should", () => {
         };
 
         const mockedCoreApiClient = mock(CoreApiClient);
-        when(mockedCoreApiClient.isNewUser(slackIdentity)).thenReturn(isNewUser);
+        when(mockedCoreApiClient.isNewUser(anything())).thenReturn(isNewUser);
         const coreApiClient = instance(mockedCoreApiClient);
-        
-        const mockedSlackApiClient = mock(SlackApiClient);
-        when(mockedSlackApiClient.getIdentity(event.user)).thenResolve(slackIdentity);
-        const slackApiClient = instance(mockedSlackApiClient);
-        
-        const channelEventHandler = new ChannelEventHandler(coreApiClient, slackApiClient, new MessageBuilder());
-        
-        // Act
-        const message = await channelEventHandler.onChannelJoin(event);
 
-        // Assert
-        expect(message).toBe(expectedMessage);
+        const mockedSlackApiClient = mock(SlackApiClient);
+        when(mockedSlackApiClient.getIdentity(anyString())).thenResolve(slackIdentity);
+        const slackApiClient = instance(mockedSlackApiClient);
+
+        const messageBuilder = new MessageBuilder();
+
+        const channelEventHandler = new ChannelEventHandler(coreApiClient, slackApiClient, messageBuilder);
+
+        await channelEventHandler.onChannelJoin(event);
+
+        verify(mockedSlackApiClient.sendDm(event.user, expectedMessage)).called();
     });
 });

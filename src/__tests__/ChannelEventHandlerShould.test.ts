@@ -8,7 +8,7 @@ import {
 } from "ts-mockito"
 import CoreApiClient from "../CoreApiClient"
 import MessageBuilder from "../MessageBuilder"
-import ChannelEventHandler from "../JoinChannel/ChannelEventHandler"
+import ChannelEventHandler from "../EventHandlers/ChannelEventHandler"
 import SlackApiClient from "../SlackApiClient"
 import SlackUserIdentity from "../SlackUserIdentity"
 import { MemberJoinedChannelEvent } from "@slack/bolt"

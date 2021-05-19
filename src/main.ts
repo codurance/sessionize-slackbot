@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import { App, ExpressReceiver } from '@slack/bolt';
 import MessageBuilder from './MessageBuilder';
-import ChannelEventHandler from './JoinChannel/ChannelEventHandler';
+import ChannelEventHandler from './EventHandlers/ChannelEventHandler';
 import CoreApiClient from './CoreApiClient';
 import SlackApiClient from './SlackApiClient';
 
@@ -19,19 +19,9 @@ const app = new App({
     receiver
 });
 
-app.event('member_joined_channel', async ({ event, client }) => {
-    try {
-      // Call chat.postMessage with the built-in client
-      let message = await channelEventHandler.onChannelJoin(event);
-      const responseResult = await client.chat.postMessage({
-          channel: event.user,
-          text: message
-      });
-    }
-    catch (error) {
-      console.error(error);
-    }
-  });
+app.event('member_joined_channel', async ({ event }) => {
+    channelEventHandler.onChannelJoin(event);
+});
 
 receiver.router.get('/example', (req, res) => {
   res.send("Hello World!");
