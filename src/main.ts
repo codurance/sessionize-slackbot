@@ -4,11 +4,17 @@ import MessageBuilder from './MessageBuilder';
 import ChannelEventHandler from './EventHandlers/ChannelEventHandler';
 import CoreApiClient from './CoreApiClient';
 import SlackApiClient from './SlackApiClient';
+import ApiEventHandler from './EventHandlers/ApiEventHandler';
+import bodyParser from 'body-parser';
 
 dotenv.config()
 
+const coreApiClient = new CoreApiClient();
+const slackApiClient = new SlackApiClient();
 const messageBuilder = new MessageBuilder();
-const channelEventHandler = new ChannelEventHandler(new CoreApiClient(), new SlackApiClient(), messageBuilder);
+
+const channelEventHandler = new ChannelEventHandler(coreApiClient, slackApiClient, messageBuilder);
+const apiEventHandler = new ApiEventHandler(coreApiClient, slackApiClient, messageBuilder)
 
 const receiver = new ExpressReceiver({
     signingSecret: process.env.SLACK_SIGNING_SECRET!
@@ -23,8 +29,10 @@ app.event('member_joined_channel', async ({ event }) => {
     channelEventHandler.onChannelJoin(event);
 });
 
-receiver.router.get('/example', (req, res) => {
-  res.send("Hello World!");
+receiver.router.use(bodyParser.json());
+
+receiver.router.post('/direct-message', (req, res) => {
+  apiEventHandler.onDirectMessage(req, res);
 });
 
 (async () => {

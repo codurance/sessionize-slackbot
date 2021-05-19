@@ -1,7 +1,7 @@
 import CoreApiClient from "../CoreApiClient";
 import MessageBuilder from "../MessageBuilder";
 import SlackApiClient from "../SlackApiClient";
-import { Request } from "express";
+import { Request, Response } from "express";
 import { ChatPostMessageResponse } from "@slack/web-api";
 
 export default class ApiEventHandler {
@@ -16,13 +16,16 @@ export default class ApiEventHandler {
         this.messageBuilder = messageBuilder;
     }
 
-    async onDirectMessage(request: Request){
+    async onDirectMessage(request: Request, response: Response){
         try {
             const slackId : string = request.body.slackId;
             const message : string = request.body.message;
 
             let slackResponse : ChatPostMessageResponse
                 = await this.slackApiClient.sendDm(slackId, message);
+
+            response.send("Success");
+            
         }catch(err){
             console.error(err);
         }
