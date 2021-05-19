@@ -1,5 +1,5 @@
+import { MemberJoinedChannelEvent } from "@slack/bolt";
 import ChannelEventHandler from "./ChannelEventHandler";
-import JoinChannelEvent from "./JoinChannelEvent";
 
 export default class EventListenerController {
     channelEventHandler: ChannelEventHandler;
@@ -8,7 +8,7 @@ export default class EventListenerController {
         this.channelEventHandler = channelEventHandler;
     }
 
-    joinPool(newUserPayload: JoinChannelEvent) {
+    joinPool(newUserPayload: MemberJoinedChannelEvent) {
         this.channelEventHandler.onChannelJoin(newUserPayload)
     }
 }

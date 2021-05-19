@@ -18,7 +18,7 @@ const app = new App({
 app.event('member_joined_channel', async ({ event, client }) => {
     try {
       // Call chat.postMessage with the built-in client
-      let message = await channelEventHandler.onSlackJoin(event);
+      let message = await channelEventHandler.onChannelJoin(event);
       const responseResult = await client.chat.postMessage({
           channel: event.user,
           text: message
@@ -31,5 +31,5 @@ app.event('member_joined_channel', async ({ event, client }) => {
 
 (async () => {
     await app.start(80);
-    console.log("Bolt running");
+    console.log("Sessionize SlackBot running");
 })();
