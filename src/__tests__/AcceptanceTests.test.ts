@@ -1,7 +1,6 @@
 import {
     instance,
     mock,
-    verify,
     when,
 } from "ts-mockito"
 
