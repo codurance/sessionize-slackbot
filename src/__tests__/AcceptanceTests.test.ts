@@ -54,7 +54,7 @@ describe("Slack Service should", () => {
 
         // Assert
         verify(mockedCoreApiClient.isNewUser(slackIdentity)).once();
-        verify(slackApiClient.getIdentity(event.user)).once();
+        verify(mockedSlackApiClient.getIdentity(event.user)).once();
         expect(message).toBe(expectedMessage);
     });
 });
