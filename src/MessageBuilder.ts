@@ -1,10 +1,10 @@
 import { ActionsBlock, KnownBlock, SectionBlock } from '@slack/web-api';
-import MatchNotificationContent from './Interfaces/MatchNotificationContent';
+import MatchNotification from './Interfaces/MatchNotification';
 import * as templates from './MessageTemplates/Templates';
 import { formatISODate } from './Utils/Formatters';
 
 export default class MessageBuilder {
-    buildMatchNotification(matchDetails : MatchNotificationContent, matchName: string) : KnownBlock[] {
+    buildMatchNotification(matchDetails : MatchNotification) : KnownBlock[] {
 
         matchDetails.dateTime = formatISODate(matchDetails.dateTime);
         
@@ -13,7 +13,7 @@ export default class MessageBuilder {
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": `You have a new match:\n <@${matchName}>`
+                "text": `You have a new match:\n <@${matchDetails.name}>`
             }
         };
 

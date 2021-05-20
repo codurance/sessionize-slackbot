@@ -1,6 +1,6 @@
 import { KnownBlock } from "@slack/web-api";
 import MessageBuilder from "../MessageBuilder";
-import MatchNotificationContent from "../Interfaces/MatchNotificationContent";
+import MatchNotification from "../Interfaces/MatchNotification";
 
 describe("MessageBuilder", () => {
     test("should return a simple markdown message", () => {
@@ -15,13 +15,12 @@ describe("MessageBuilder", () => {
 
     test("should return a match notification message", () => {
         
-        const matchDetails: MatchNotificationContent = {
+        const matchDetails: MatchNotification = {
             slackId: "ABC123",
+            name: "Joe Bloggs",
             language: "Java",
             dateTime: "2021-12-01T17:00:00.000Z"
         }
-
-        const matchName: string = "Joe Bloggs";
 
         const expectedMatchNotification : KnownBlock[] = [
             {
@@ -76,7 +75,7 @@ describe("MessageBuilder", () => {
 
         const messageBuilder = new MessageBuilder();
 
-        const matchNotification = messageBuilder.buildMatchNotification(matchDetails, matchName);
+        const matchNotification = messageBuilder.buildMatchNotification(matchDetails);
 
         expect(matchNotification).toStrictEqual(expectedMatchNotification);
 

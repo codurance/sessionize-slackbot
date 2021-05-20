@@ -1,12 +1,9 @@
-import { anyString, anything, instance, mock, verify, when } from "ts-mockito"
+import { instance, mock, verify } from "ts-mockito"
 import { Request, Response } from 'express';
 import SlackApiClient from "../SlackApiClient";
 import MessageBuilder from "../MessageBuilder";
 import CoreApiClient from "../CoreApiClient";
 import ApiEventHandler from "../EventHandlers/ApiEventHandler";
-import { ChatPostMessageResponse, KnownBlock } from "@slack/web-api";
-import MatchNotificationContent from "../Interfaces/MatchNotificationContent";
-import SlackUserIdentity from "../SlackUserIdentity";
 
 describe("ApiEventHandler", () => {
 
@@ -47,6 +44,10 @@ describe("ApiEventHandler", () => {
         }
         apiEventHandler.onDirectMessage(testRequest as Request, testResponse as Response);
         verify(mockedSlackApiClient.sendDm(expectedSlackId, expectedMessage));
+    });
+
+    test("should take a request body from core and return an object with MatchNotification", () => {
+
     });
 
 

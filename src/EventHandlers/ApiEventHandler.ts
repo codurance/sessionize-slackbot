@@ -3,8 +3,6 @@ import MessageBuilder from "../MessageBuilder";
 import SlackApiClient from "../SlackApiClient";
 import { Request, Response } from "express";
 import { ChatPostMessageResponse, KnownBlock } from "@slack/web-api";
-import MatchNotificationContent from "../Interfaces/MatchNotificationContent";
-import SlackUserIdentity from "../SlackUserIdentity";
 
 export default class ApiEventHandler {
 
