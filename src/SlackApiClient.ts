@@ -1,5 +1,5 @@
 import SlackUserIdentity from "./SlackUserIdentity";
-import { ChatPostMessageResponse, UsersProfileGetResponse, WebClient } from '@slack/web-api';
+import { ChatPostMessageResponse, KnownBlock, UsersProfileGetResponse, WebClient } from '@slack/web-api';
 
 import dotenv from 'dotenv';
 dotenv.config();
@@ -25,5 +25,13 @@ export default class SlackApiClient {
             id: slackId,
             email: userIdentity.profile?.email
         } as SlackUserIdentity;
+    }
+
+    async sendMatchNotification(slackId: string, message: KnownBlock[]){
+        return this.web.chat.postMessage({
+            channel: slackId,
+            text: "You have a new match!",
+            blocks: message
+        });
     }
 }

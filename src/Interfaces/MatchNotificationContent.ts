@@ -1,5 +1,5 @@
 export default interface MatchNotificationContent {
-    name: string,
+    slackId: string,
     language: string,
     dateTime: string
 }

@@ -16,10 +16,12 @@ describe("MessageBuilder", () => {
     test("should return a match notification message", () => {
         
         const matchDetails: MatchNotificationContent = {
-            name: "Joe Bloggs",
+            slackId: "ABC123",
             language: "Java",
-            dateTime: "2021-12-01T17:00:00.000Z";
+            dateTime: "2021-12-01T17:00:00.000Z"
         }
+
+        const matchName: string = "Joe Bloggs";
 
         const expectedMatchNotification : KnownBlock[] = [
             {
@@ -74,7 +76,7 @@ describe("MessageBuilder", () => {
 
         const messageBuilder = new MessageBuilder();
 
-        const matchNotification = messageBuilder.buildMatchNotification(matchDetails);
+        const matchNotification = messageBuilder.buildMatchNotification(matchDetails, matchName);
 
         expect(matchNotification).toStrictEqual(expectedMatchNotification);
 
