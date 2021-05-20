@@ -1,5 +1,5 @@
 import { instance, mock, verify } from "ts-mockito"
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import SlackApiClient from "../SlackApiClient";
 import MessageBuilder from "../MessageBuilder";
 import CoreApiClient from "../CoreApiClient";
@@ -28,7 +28,10 @@ describe("ApiEventHandler", () => {
                 message: expectedMessage
             }
         }
-        apiEventHandler.onDirectMessage(testRequest as Request);
+        const testResponse : Partial<Response> = {
+            send: jest.fn()
+        }
+        apiEventHandler.onDirectMessage(testRequest as Request, testResponse as Response);
         verify(mockedSlackApiClient.sendDm(expectedSlackId, expectedMessage));
     });
 });
