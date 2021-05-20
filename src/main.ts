@@ -5,7 +5,7 @@ import ChannelEventHandler from './EventHandlers/ChannelEventHandler';
 import CoreApiClient from './CoreApiClient';
 import SlackApiClient from './SlackApiClient';
 import ApiEventHandler from './EventHandlers/ApiEventHandler';
-import bodyParser from 'body-parser';
+import express from 'express';
 
 dotenv.config()
 
@@ -26,10 +26,11 @@ const app = new App({
 });
 
 app.event('member_joined_channel', async ({ event }) => {
+    console.log(event);
     channelEventHandler.onChannelJoin(event);
 });
 
-receiver.router.use(bodyParser.json());
+receiver.router.use(express.json());
 
 receiver.router.post('/direct-message', (req, res) => {
   apiEventHandler.onDirectMessage(req, res);
