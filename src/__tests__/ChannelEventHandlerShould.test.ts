@@ -32,7 +32,7 @@ describe("ChannelEventHandler", () => {
         };
 
         let mockedCoreApiClient: CoreApiClient = mock(CoreApiClient);
-        when(mockedCoreApiClient.isNewUser(userIdentity)).thenReturn(true);
+        when(mockedCoreApiClient.isNewUser(userIdentity)).thenResolve(true);
         let coreApiClient: CoreApiClient = instance(mockedCoreApiClient);
 
         let mockedSlackApiClient: SlackApiClient = mock(SlackApiClient);

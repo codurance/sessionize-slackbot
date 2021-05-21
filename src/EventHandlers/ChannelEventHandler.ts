@@ -23,7 +23,7 @@ export default class ChannelEventHandler {
             const slackIdentity: SlackUserIdentity =
                 await this.slackApiClient.getIdentity(event.user);
 
-            let message : string = this.coreApiClient.isNewUser(slackIdentity)
+            let message: string = await this.coreApiClient.isNewUser(slackIdentity)
                 ? this.messageBuilder.buildGreeting(slackIdentity.name)
                 : this.messageBuilder.buildWelcomeBack(slackIdentity.name);
 
