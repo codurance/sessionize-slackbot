@@ -5,11 +5,14 @@ dotenv.config()
 
 export default class CoreApiClient {
     async isNewUser(slackUserIdentity: SlackUserIdentity): Promise<boolean> {
+        console.table(slackUserIdentity);
         const response = await this.post("https://sessionizertest.azurewebsites.net/isNewUser", {
             body: slackUserIdentity
         })
-
-        return response.json();
+        console.table(response);
+        const json = response.json();
+        console.table(json);
+        return json;
         // throw new Error("Method not implemented.");
     }
 

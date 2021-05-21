@@ -27,7 +27,7 @@ const app = new App({
 
 app.event('member_joined_channel', async ({ event }) => {
     console.log(event);
-    channelEventHandler.onChannelJoin(event);
+    await channelEventHandler.onChannelJoin(event);
 });
 
 receiver.router.use(express.json());
