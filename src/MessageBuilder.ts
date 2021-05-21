@@ -1,15 +1,15 @@
 import { ActionsBlock, KnownBlock, SectionBlock } from '@slack/web-api';
-import MatchNotification from './Interfaces/IMatchNotification';
+import MatchNotificationContent from './MatchNotificationContent';
 import * as templates from './MessageTemplates/Templates';
 import UserName from './UserName';
 import { formatISODate } from './Utils/Formatters';
 
 export default class MessageBuilder {
-    buildMatchNotification(matchDetails : MatchNotification) : KnownBlock[] {
+    buildMatchNotification(matchNotificationContent : MatchNotificationContent) : KnownBlock[] {
 
-        const formattedDateTime = formatISODate(matchDetails.body.dateTime);
+        const formattedDateTime = formatISODate(matchNotificationContent.dateTime);
 
-        const matchNames = this.matchNamesAsString(matchDetails.body.matchNames);
+        const matchNames = this.matchNamesAsString(matchNotificationContent.matchNames);
         
         const headerSection : SectionBlock = {
 
@@ -25,7 +25,7 @@ export default class MessageBuilder {
             "fields": [
                 {
                     "type": "mrkdwn",
-                    "text": `*Language:*\n${matchDetails.body.language.value}`
+                    "text": `*Language:*\n${matchNotificationContent.language.value}`
                 },
                 {
                     "type": "mrkdwn",
