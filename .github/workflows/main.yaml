@@ -37,8 +37,8 @@ jobs:
         username: ${{ secrets.REGISTRY_USERNAME }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
     - run: |
-        docker build --target production -t sessionizeslackbot.azurecr.io/sessionizeslackbot:1.0.0 .
-        docker push sessionizeslackbot.azurecr.io/sessionizeslackbot:1.0.0
+        docker build --target production -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/sessionizeslackbot:1.0.0 .
+        docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/sessionizeslackbot:1.0.0
     - name: 'Deploy to Azure Container Instances'
       uses: 'azure/aci-deploy@v1'
       with:
