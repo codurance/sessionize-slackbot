@@ -1,19 +1,22 @@
 import { ActionsBlock, KnownBlock, SectionBlock } from '@slack/web-api';
-import MatchNotification from './Interfaces/MatchNotification';
+import MatchNotification from './Interfaces/IMatchNotification';
 import * as templates from './MessageTemplates/Templates';
+import UserName from './UserName';
 import { formatISODate } from './Utils/Formatters';
 
 export default class MessageBuilder {
     buildMatchNotification(matchDetails : MatchNotification) : KnownBlock[] {
 
         const formattedDateTime = formatISODate(matchDetails.body.dateTime);
+
+        const matchNames = this.matchNamesAsString(matchDetails.body.matchNames);
         
         const headerSection : SectionBlock = {
 
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": `You have a new match:\n <@${matchDetails.body.name.value}>`
+                "text": `You have a new match:\n ${matchNames}`
             }
         };
 
@@ -65,6 +68,18 @@ export default class MessageBuilder {
             matchDetailsSection,
             actions
         ];
+    }
+
+    matchNamesAsString(matchNames : UserName[]) : string {
+
+        let matchNameString : string = "";
+
+        matchNames.map(name => {
+            matchNameString += `<@${name.value}> `;
+        });
+
+        return matchNameString.trimEnd();
+
     }
 
     buildGreeting(name: string) : string {

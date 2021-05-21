@@ -3,6 +3,7 @@ import MessageBuilder from "../MessageBuilder";
 import SlackApiClient from "../SlackApiClient";
 import { Request, Response } from "express";
 import { ChatPostMessageResponse, KnownBlock } from "@slack/web-api";
+import MatchNotification from "../MatchNotification";
 
 export default class ApiEventHandler {
 
@@ -28,6 +29,27 @@ export default class ApiEventHandler {
             
         }catch(err){
             console.error(err);
+        }
+    }
+
+    async onMatchNotification(request: Request, response: Response){
+        try {
+            const matchNotifications : MatchNotification[] = MatchNotification.fromRequestBody(request.body);
+
+            let responses : ChatPostMessageResponse[] = [];
+
+            console.debug(matchNotifications);
+
+            matchNotifications.map(async (matchNotification) => {
+                responses.push(await this.slackApiClient.sendMatchNotification(matchNotification));
+            });
+
+            response.send(responses);
+
+        }catch (err) {
+
+            response.send("Invalid request");
+
         }
     }
 

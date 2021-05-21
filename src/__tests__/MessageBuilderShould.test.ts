@@ -1,7 +1,7 @@
 import { KnownBlock } from "@slack/web-api";
 import MessageBuilder from "../MessageBuilder";
-import MatchNotification from "../Interfaces/MatchNotification";
-import MatchNotificationContent from "../Interfaces/MatchNotificationContent";
+import IMatchNotification from "../Interfaces/IMatchNotification";
+import IMatchNotificationContent from "../Interfaces/IMatchNotificationContent";
 import SlackId from "../SlackId";
 import UserName from "../UserName";
 import Language from "../Language";
@@ -20,13 +20,13 @@ describe("MessageBuilder", () => {
 
     test("should return a match notification message", () => {
 
-        const matchNotificationBody: MatchNotificationContent = {
-            name: new UserName("Joe Bloggs"),
+        const matchNotificationBody: IMatchNotificationContent = {
+            matchNames: [new UserName("Joe Bloggs")],
             language: new Language("Java"),
             dateTime: new DateTime("2021-12-01T17:00:00.000Z")
         };
         
-        const matchDetails: MatchNotification = {
+        const matchDetails: IMatchNotification = {
             slackId: new SlackId("ABC123"),
             body: matchNotificationBody
         }
@@ -89,4 +89,23 @@ describe("MessageBuilder", () => {
         expect(matchNotification).toStrictEqual(expectedMatchNotification);
 
     });
+
+    test("should turn an array of UserNames into a string", () => {
+
+        const userNameArray : UserName[] = [
+            new UserName("Sophie Biber"),
+            new UserName("Andras Dako"),
+            new UserName("George Harris"),
+            new UserName("Cameron Raw"),
+            new UserName("Mark Gray")
+        ];
+
+        const messageBuilder = new MessageBuilder();
+
+        const returnedString : string = messageBuilder.matchNamesAsString(userNameArray);
+
+        const expectedString : string = "<@Sophie Biber> <@Andras Dako> <@George Harris> <@Cameron Raw> <@Mark Gray>";
+
+        expect(returnedString).toBe(expectedString);
+    })
 });

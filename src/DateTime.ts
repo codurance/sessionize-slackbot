@@ -1,9 +1,9 @@
 export default class DateTime {
-    private _dateTime : string;
+    private dateTime : string;
     constructor(dateTime : string){
-        this._dateTime = dateTime;
+        this.dateTime = dateTime;
     }
     get value(){
-        return this._dateTime;
+        return this.dateTime;
     }
 }

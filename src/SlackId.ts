@@ -1,9 +1,9 @@
 export default class SlackId {
-    private _slackId : string;
+    private slackId : string;
     constructor(slackId : string){
-        this._slackId = slackId;
+        this.slackId = slackId;
     }
     get value(){
-        return this._slackId;
+        return this.slackId;
     }
 }

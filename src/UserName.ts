@@ -1,9 +1,15 @@
+import IUserIdentifier from "./Interfaces/IUserIdentifiers";
+
 export default class UserName {
-    private _userName : string;
+    private userName : string;
     constructor(userName : string){
-        this._userName = userName;
+        this.userName = userName;
     }
     get value(){
-        return this._userName;
+        return this.userName;
+    }
+
+    static fromUserIdentifier(identifier: IUserIdentifier){
+        return identifier.name;
     }
 }

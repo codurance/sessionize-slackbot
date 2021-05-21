@@ -1,9 +1,18 @@
-import { instance, mock, verify } from "ts-mockito"
+import { deepEqual, instance, mock, verify } from "ts-mockito"
 import { Request, Response } from 'express';
 import SlackApiClient from "../SlackApiClient";
 import MessageBuilder from "../MessageBuilder";
 import CoreApiClient from "../CoreApiClient";
 import ApiEventHandler from "../EventHandlers/ApiEventHandler";
+import ExpectedMatchNotificationRequest from "../Interfaces/IMatchNotificationRequest";
+import IMatchNotificationRequest from "../Interfaces/IMatchNotificationRequest";
+import MatchNotification from "../MatchNotification";
+import SlackId from "../SlackId";
+import MatchNotificationContent from "../MatchNotificationContent";
+import UserName from "../UserName";
+import Language from "../Language";
+import DateTime from "../DateTime";
+import IUserIdentifierRequest from "../Interfaces/IUserIdentifierRequest";
 
 describe("ApiEventHandler", () => {
 
@@ -28,7 +37,7 @@ describe("ApiEventHandler", () => {
         apiEventHandler = new ApiEventHandler(coreApiClient, slackApiClient, messageBuilder);
     })
 
-    test("should send the simple direct message as requested in the call's request", () => {
+    test("should send the simple direct message as requested in a call's request", () => {
 
         const expectedMessage = "Hello World!";
 
@@ -46,8 +55,46 @@ describe("ApiEventHandler", () => {
         verify(mockedSlackApiClient.sendDm(expectedSlackId, expectedMessage));
     });
 
-    test("should take a request body from core and return an object with MatchNotification", () => {
+    test("should send match notifications as requested in a call's request", async () => {
 
+        const expectedRequestBody : IMatchNotificationRequest = {
+            "language": "Java",
+            "dateTime": "2021-12-01T17:00:00.000Z",
+            "users": [
+                {
+                    "slackId": "ABC123",
+                    "name": "Cameron Raw"
+                } as IUserIdentifierRequest,
+                {
+                    "slackId": "ABC321",
+                    "name": "Dave Grohl"
+                } as IUserIdentifierRequest,
+            ]
+        };
+
+        const testRequest : Partial<Request> = {
+            body: expectedRequestBody
+        };
+
+        const testResponse : Partial<Response> = {
+            send: jest.fn()
+        }
+
+        const matchNotification1 : MatchNotification = new MatchNotification(
+            new SlackId("ABC123"),
+            new MatchNotificationContent([new UserName("Dave Grohl")],
+            new Language("Java"), new DateTime("2021-12-01T17:00:00.000Z"))
+        )
+
+        const matchNotification2 : MatchNotification = new MatchNotification(
+            new SlackId("ABC321"),
+            new MatchNotificationContent([new UserName("Cameron Raw")], 
+                new Language("Java"), new DateTime("2021-12-01T17:00:00.000Z"))
+        );
+
+        await apiEventHandler.onMatchNotification(testRequest as Request, testResponse as Response);
+        verify(mockedSlackApiClient.sendMatchNotification(deepEqual(matchNotification1))).once();
+        verify(mockedSlackApiClient.sendMatchNotification(deepEqual(matchNotification2))).once();
     });
 
 

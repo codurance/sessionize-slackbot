@@ -1,9 +1,9 @@
 export default class Language {
-    private _language : string;
+    private language : string;
     constructor(language : string){
-        this._language = language;
+        this.language = language;
     }
     get value(){
-        return this._language;
+        return this.language;
     }
 }
