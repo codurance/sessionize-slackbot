@@ -42,7 +42,7 @@ jobs:
     - name: 'Deploy to Azure Container Instances'
       uses: 'azure/aci-deploy@v1'
       with:
-        resource-group: sessionize-slack-bot
+        resource-group: Sessionize-test
         dns-name-label: sessionizeslackbot
         image: sessionizeslackbot.azurecr.io/sessionizeslackbot:1.0.0
         registry-login-server: sessionizetest.azurecr.io
