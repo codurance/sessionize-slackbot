@@ -1,6 +1,11 @@
 import { KnownBlock } from "@slack/web-api";
 import MessageBuilder from "../MessageBuilder";
 import MatchNotification from "../Interfaces/MatchNotification";
+import MatchNotificationContent from "../Interfaces/MatchNotificationContent";
+import SlackId from "../SlackId";
+import UserName from "../UserName";
+import Language from "../Language";
+import DateTime from "../DateTime";
 
 describe("MessageBuilder", () => {
     test("should return a simple markdown message", () => {
@@ -14,12 +19,16 @@ describe("MessageBuilder", () => {
     });
 
     test("should return a match notification message", () => {
+
+        const matchNotificationBody: MatchNotificationContent = {
+            name: new UserName("Joe Bloggs"),
+            language: new Language("Java"),
+            dateTime: new DateTime("2021-12-01T17:00:00.000Z")
+        };
         
         const matchDetails: MatchNotification = {
-            slackId: "ABC123",
-            name: "Joe Bloggs",
-            language: "Java",
-            dateTime: "2021-12-01T17:00:00.000Z"
+            slackId: new SlackId("ABC123"),
+            body: matchNotificationBody
         }
 
         const expectedMatchNotification : KnownBlock[] = [

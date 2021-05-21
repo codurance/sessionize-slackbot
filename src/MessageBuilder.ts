@@ -6,14 +6,14 @@ import { formatISODate } from './Utils/Formatters';
 export default class MessageBuilder {
     buildMatchNotification(matchDetails : MatchNotification) : KnownBlock[] {
 
-        matchDetails.dateTime = formatISODate(matchDetails.dateTime);
+        const formattedDateTime = formatISODate(matchDetails.body.dateTime);
         
         const headerSection : SectionBlock = {
 
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": `You have a new match:\n <@${matchDetails.name}>`
+                "text": `You have a new match:\n <@${matchDetails.body.name.value}>`
             }
         };
 
@@ -22,11 +22,11 @@ export default class MessageBuilder {
             "fields": [
                 {
                     "type": "mrkdwn",
-                    "text": `*Language:*\n${matchDetails.language}`
+                    "text": `*Language:*\n${matchDetails.body.language.value}`
                 },
                 {
                     "type": "mrkdwn",
-                    "text": `*When:*\n${matchDetails.dateTime}`
+                    "text": `*When:*\n${formattedDateTime}`
                 }
             ]
         };

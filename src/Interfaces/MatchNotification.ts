@@ -1,6 +1,7 @@
+import SlackId from "../SlackId";
+import MatchNotificationContent from "./MatchNotificationContent";
+
 export default interface MatchNotification {
-    slackId: string,
-    name: string,
-    language: string,
-    dateTime: string
+    slackId: SlackId,
+    body: MatchNotificationContent
 }
