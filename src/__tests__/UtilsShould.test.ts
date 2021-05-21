@@ -1,4 +1,4 @@
-import { formatISODate, formatISODateWithOffset } from "../Utils/Formatters";
+import { formatISODate } from "../Utils/Formatters";
 
 describe("Utils", () => {
     test("should convert ISO 8601 dates to user friendly strings", () => {
@@ -9,4 +9,4 @@ describe("Utils", () => {
         const returnedDate = formatISODate(isoDate);
         expect(returnedDate).toBe(expectedDate);
     });
-})
+});
