@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { App, ExpressReceiver } from '@slack/bolt';
+import { App, ExpressReceiver } from '@slack/bolt';
 import MessageBuilder from './MessageBuilder';
 import ChannelEventHandler from './EventHandlers/ChannelEventHandler';
 import CoreApiClient from './CoreApiClient';
