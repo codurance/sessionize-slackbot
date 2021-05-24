@@ -5,7 +5,7 @@ import UserName from './UserName';
 import { formatISODate } from './Utils/Formatters';
 
 export default class MessageBuilder {
-    buildMatchNotification(matchNotificationContent : MatchNotificationContent) : KnownBlock[] {
+    static buildMatchNotification(matchNotificationContent : MatchNotificationContent) : KnownBlock[] {
 
         const formattedDateTime = formatISODate(matchNotificationContent.dateTime);
 
@@ -70,7 +70,7 @@ export default class MessageBuilder {
         ];
     }
 
-    matchNamesAsString(matchNames : UserName[]) : string {
+    static matchNamesAsString(matchNames : UserName[]) : string {
 
         let matchNameString : string = "";
 
@@ -88,5 +88,13 @@ export default class MessageBuilder {
 
     buildWelcomeBack(name: string) : string {
         return templates.welcomeBack(name);
+    }
+
+    buildFarewell(name: string) : string {
+        return templates.farewell(name);
+    }
+    
+    errorOccurred(name: string) : string {
+        return templates.error(name);
     }
 }

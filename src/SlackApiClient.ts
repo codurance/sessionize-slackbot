@@ -3,14 +3,15 @@ import { ChatPostMessageResponse, KnownBlock, UsersProfileGetResponse, WebClien
 
 import dotenv from 'dotenv';
 import IMatchNotification from "./Interfaces/IMatchNotification";
+import MessageBuilder from "./MessageBuilder";
 dotenv.config();
 
 export default class SlackApiClient {
 
     private web : WebClient = new WebClient(process.env.SLACK_BOT_TOKEN);
 
-    sendDm(slackId: string, message: string): Promise<ChatPostMessageResponse> {
-        return this.web.chat.postMessage({
+    async sendDm(slackId: string, message: string): Promise<ChatPostMessageResponse> {
+        return await this.web.chat.postMessage({
             channel: slackId,
             text: message
         });
@@ -29,7 +30,11 @@ export default class SlackApiClient {
     }
 
     async sendMatchNotification(matchNotification : IMatchNotification) : Promise<ChatPostMessageResponse> {
-        throw new Error("Not implemented");
+        return await this.web.chat.postMessage({
+            channel: matchNotification.slackId.value,
+            text: "You have a new match!",
+            blocks: MessageBuilder.buildMatchNotification(matchNotification.body)
+        });
     }
 
 }

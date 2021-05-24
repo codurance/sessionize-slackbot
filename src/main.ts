@@ -30,11 +30,21 @@ app.event('member_joined_channel', async ({ event }) => {
     channelEventHandler.onChannelJoin(event);
 });
 
+app.event('member_left_channel', async ({ event }) => {
+    console.log(event);
+    channelEventHandler.onChannelLeave(event);
+});
+
 receiver.router.use(express.json());
 
 receiver.router.post('/direct-message', (req, res) => {
   apiEventHandler.onDirectMessage(req, res);
 });
+
+receiver.router.post('/match-notification', (req, res) => {
+    apiEventHandler.onMatchNotification(req, res);
+});
+
 
 (async () => {
     await app.start(80);

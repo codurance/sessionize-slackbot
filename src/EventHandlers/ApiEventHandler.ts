@@ -34,11 +34,10 @@ export default class ApiEventHandler {
 
     async onMatchNotification(request: Request, response: Response){
         try {
+        
             const matchNotifications : MatchNotification[] = MatchNotification.fromRequestBody(request.body);
 
             let responses : ChatPostMessageResponse[] = [];
-
-            console.debug(matchNotifications);
 
             matchNotifications.map(async (matchNotification) => {
                 responses.push(await this.slackApiClient.sendMatchNotification(matchNotification));

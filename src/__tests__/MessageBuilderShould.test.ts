@@ -77,9 +77,7 @@ describe("MessageBuilder", () => {
             }
         ];
 
-        const messageBuilder = new MessageBuilder();
-
-        const matchNotification = messageBuilder.buildMatchNotification(matchNotificationBody);
+        const matchNotification = MessageBuilder.buildMatchNotification(matchNotificationBody);
 
         expect(matchNotification).toStrictEqual(expectedMatchNotification);
 
@@ -95,9 +93,7 @@ describe("MessageBuilder", () => {
             new UserName("Mark Gray")
         ];
 
-        const messageBuilder = new MessageBuilder();
-
-        const returnedString : string = messageBuilder.matchNamesAsString(userNameArray);
+        const returnedString : string = MessageBuilder.matchNamesAsString(userNameArray);
 
         const expectedString : string = "<@Sophie Biber> <@Andras Dako> <@George Harris> <@Cameron Raw> <@Mark Gray>";
 
