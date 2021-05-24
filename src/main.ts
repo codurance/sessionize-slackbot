@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { App, ExpressReceiver } from '@slack/bolt';
+import { App, ExpressReceiver } from '@slack/bolt';
 import MessageBuilder from './MessageBuilder';
 import ChannelEventHandler from './EventHandlers/ChannelEventHandler';
 import CoreApiClient from './CoreApiClient';
@@ -27,7 +27,7 @@ const app = new App({
 
 app.event('member_joined_channel', async ({ event }) => {
     console.log(event);
-    channelEventHandler.onChannelJoin(event);
+    await channelEventHandler.onChannelJoin(event);
 });
 
 app.event('member_left_channel', async ({ event }) => {

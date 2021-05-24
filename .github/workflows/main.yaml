@@ -33,19 +33,19 @@ jobs:
     
     - uses: azure/docker-login@v1
       with:
-        login-server: sessionizeslackbot.azurecr.io
+        login-server: sessionizetest.azurecr.io
         username: ${{ secrets.REGISTRY_USERNAME }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
     - run: |
-        docker build --target production -t sessionizeslackbot.azurecr.io/sessionizeslackbot:1.0.0 .
-        docker push sessionizeslackbot.azurecr.io/sessionizeslackbot:1.0.0
+        docker build --target production -t sessionizetest.azurecr.io/sessionizeslackbot:1.0.0 .
+        docker push sessionizetest.azurecr.io/sessionizeslackbot:1.0.0
     - name: 'Deploy to Azure Container Instances'
       uses: 'azure/aci-deploy@v1'
       with:
-        resource-group: sessionize-slack-bot
-        dns-name-label: sessionizeslackbot
-        image: sessionizeslackbot.azurecr.io/sessionizeslackbot:1.0.0
-        registry-login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+        resource-group: Sessionize-test
+        dns-name-label: sessionizetest
+        image: sessionizetest.azurecr.io/sessionizeslackbot:1.0.0
+        registry-login-server: sessionizetest.azurecr.io
         registry-username: ${{ secrets.REGISTRY_USERNAME }}
         registry-password: ${{ secrets.REGISTRY_PASSWORD }}
         name: sessionizeslackbot

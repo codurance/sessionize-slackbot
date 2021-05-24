@@ -1,5 +1,6 @@
 import SlackUserIdentity from "./SlackUserIdentity";
 import dotenv from 'dotenv';
+import axios from "axios";
 
 dotenv.config()
 
@@ -7,11 +8,11 @@ export default class CoreApiClient {
 
     async isNewUser(slackUserIdentity: SlackUserIdentity): Promise<boolean> {
 
-        const response = await this.post(process.env.CORE_API + "/slack/auth", {
+        const response = await axios.post(process.env.CORE_API + "/slack/auth", {
             body: slackUserIdentity
         });
 
-        return response.json();
+        return response.data();
         // 201 new user
         // 204 existing user
     }
@@ -23,24 +24,10 @@ export default class CoreApiClient {
         if(process.env.MOCK_CORE){
             return true;
         }
-        const response = await this.post(process.env.CORE_API + `/slack/optout?email=${slackUserIdentity.email}`, {
+        const response = await axios.post(process.env.CORE_API + `/slack/optout?email=${slackUserIdentity.email}`, {
             body: slackUserIdentity
         });
 
-        return response.json();
-    }
-
-    private post = async (url: string, options : any) => {
-        return await fetch(url, {
-            method: 'POST',
-            mode: 'cors',
-            cache: 'no-cache',
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            referrerPolicy: 'no-referrer',
-            body: JSON.stringify(options.body)
-        })
+        return response.data();
     }
 }
