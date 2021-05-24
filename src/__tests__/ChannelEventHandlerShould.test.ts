@@ -26,7 +26,8 @@ describe("ChannelEventHandler", () => {
         };
 
         const userIdentity: SlackUserIdentity = {
-            name: "Joe Bloggs",
+            firstName: "Joe",
+            lastName: "Bloggs",
             id: "U0G9QF9C6",
             email: "joe.bloggs@codurance.com"
         };

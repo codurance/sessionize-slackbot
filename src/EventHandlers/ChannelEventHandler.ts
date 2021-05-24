@@ -24,8 +24,8 @@ export default class ChannelEventHandler {
                 await this.slackApiClient.getIdentity(event.user);
 
             let message: string = await this.coreApiClient.isNewUser(slackIdentity)
-                ? this.messageBuilder.buildGreeting(slackIdentity.name)
-                : this.messageBuilder.buildWelcomeBack(slackIdentity.name);
+                ? this.messageBuilder.buildGreeting(slackIdentity.firstName + " " + slackIdentity.lastName)
+                : this.messageBuilder.buildWelcomeBack(slackIdentity.firstName + " " + slackIdentity.lastName);
 
             let slackResponse : ChatPostMessageResponse 
                 = await this.slackApiClient.sendDm(event.user, message);
@@ -45,8 +45,8 @@ export default class ChannelEventHandler {
                 console.log(slackIdentity);
 
             let message: string = await this.coreApiClient.deactivateUser(slackIdentity)
-                ? this.messageBuilder.buildFarewell(slackIdentity.name)
-                : this.messageBuilder.errorOccurred(slackIdentity.name);
+                ? this.messageBuilder.buildFarewell(slackIdentity.firstName)
+                : this.messageBuilder.errorOccurred(slackIdentity.firstName);
 
                 console.log(message);
 

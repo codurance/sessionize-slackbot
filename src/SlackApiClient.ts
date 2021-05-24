@@ -23,9 +23,10 @@ export default class SlackApiClient {
         });
 
         return {
-            name: userIdentity.profile?.real_name,
             id: slackId,
-            email: userIdentity.profile?.email
+            email: userIdentity.profile?.email,
+            firstName: userIdentity.profile?.first_name,
+            lastName: userIdentity.profile?.last_name
         } as SlackUserIdentity;
     }
 

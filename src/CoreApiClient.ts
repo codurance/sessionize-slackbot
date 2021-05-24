@@ -8,9 +8,7 @@ export default class CoreApiClient {
 
     async isNewUser(slackUserIdentity: SlackUserIdentity): Promise<boolean> {
 
-        const response = await axios.post(process.env.CORE_API + "/slack/auth", {
-            body: slackUserIdentity
-        });
+        const response = await axios.post(process.env.CORE_API + "/slack/auth", slackUserIdentity);
 
         return response.data();
         // 201 new user

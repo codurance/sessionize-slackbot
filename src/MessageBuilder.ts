@@ -1,4 +1,4 @@
-import { ActionsBlock, KnownBlock, SectionBlock } from '@slack/web-api';
+import { ActionsBlock, Button, KnownBlock, SectionBlock } from '@slack/web-api';
 import MatchNotificationContent from './MatchNotificationContent';
 import * as templates from './MessageTemplates/Templates';
 import UserName from './UserName';
@@ -46,10 +46,10 @@ export default class MessageBuilder {
                     },
                     "action_id": "approve_session",
                     "style": "primary",
-                    "value": "session_confirmed"
-                },
+                    "value": "session_confirmed",
+                    
+                } as Button,
                 {
-
                     "type": "button",
                     "text" : {
                         "type": "plain_text",

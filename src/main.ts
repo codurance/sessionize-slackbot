@@ -36,6 +36,7 @@ app.event('member_left_channel', async ({ event }) => {
 });
 
 receiver.router.use(express.json());
+receiver.router.use(express.urlencoded({ extended: true }));
 
 receiver.router.post('/direct-message', (req, res) => {
   apiEventHandler.onDirectMessage(req, res);
@@ -43,6 +44,10 @@ receiver.router.post('/direct-message', (req, res) => {
 
 receiver.router.post('/match-notification', (req, res) => {
     apiEventHandler.onMatchNotification(req, res);
+});
+
+receiver.router.post('/slack/interactive-endpoint', (req, res) => {
+    console.log(req.body);
 });
 
 
