@@ -22,11 +22,13 @@ export default class SlackApiClient {
             user: slackId
         });
 
+        let splitNames = userIdentity.profile?.real_name?.split(" ");
+
         return {
-            id: slackId,
+            slackId: slackId,
             email: userIdentity.profile?.email,
-            firstName: userIdentity.profile?.first_name,
-            lastName: userIdentity.profile?.last_name
+            firstName: splitNames![0],
+            lastName: splitNames![1]
         } as SlackUserIdentity;
     }
 

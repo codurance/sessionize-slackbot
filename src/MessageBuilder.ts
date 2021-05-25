@@ -12,7 +12,6 @@ export default class MessageBuilder {
         const matchNames = this.matchNamesAsString(matchNotificationContent.matchNames);
         
         const headerSection : SectionBlock = {
-
             "type": "section",
             "text": {
                 "type": "mrkdwn",

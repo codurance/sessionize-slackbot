@@ -47,7 +47,11 @@ receiver.router.post('/match-notification', (req, res) => {
 });
 
 receiver.router.post('/slack/interactive-endpoint', (req, res) => {
-    console.log(req.body);
+    if(req.body.payload){
+        console.log(JSON.parse(req.body.payload));
+    }else{
+        console.log(req.body);
+    }
 });
 
 

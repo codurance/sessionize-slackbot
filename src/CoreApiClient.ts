@@ -22,9 +22,7 @@ export default class CoreApiClient {
         if(process.env.MOCK_CORE){
             return true;
         }
-        const response = await axios.post(process.env.CORE_API + `/slack/optout?email=${slackUserIdentity.email}`, {
-            body: slackUserIdentity
-        });
+        const response = await axios.put(process.env.CORE_API + `/slack/optout?email=${slackUserIdentity.email}`);
 
         return response.data();
     }

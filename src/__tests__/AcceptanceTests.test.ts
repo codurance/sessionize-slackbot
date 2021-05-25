@@ -30,7 +30,7 @@ describe("Slack Service should", () => {
         const slackIdentity: SlackUserIdentity = {
             firstName: "Joe",
             lastName: "Bloggs",
-            id: "U0G9QF9C6",
+            slackId: "U0G9QF9C6",
             email: "joe.bloggs@codurance.com"
         };
 

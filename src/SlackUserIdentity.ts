@@ -1,5 +1,5 @@
 export default interface SlackUserIdentity {
-    id: string;
+    slackId: string;
     email: string;
     firstName: string;
     lastName: string;
