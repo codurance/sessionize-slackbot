@@ -15,7 +15,7 @@ export default class UserIdentifier implements IUserIdentifier {
     static fromRequest(request: IUserIdentifierRequest){
         return new UserIdentifier(
             new SlackId(request.slackId),
-            new UserName(request.name)
+            new UserName(request.firstName + " " + request.lastName)
         );
     }
 

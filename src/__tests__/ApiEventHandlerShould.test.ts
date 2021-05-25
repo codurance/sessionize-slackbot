@@ -63,11 +63,13 @@ describe("ApiEventHandler", () => {
             "users": [
                 {
                     "slackId": "ABC123",
-                    "name": "Cameron Raw"
+                    "firstName": "Cameron",
+                    "lastName": "Raw"
                 } as IUserIdentifierRequest,
                 {
                     "slackId": "ABC321",
-                    "name": "Dave Grohl"
+                    "firstName": "Dave",
+                    "lastName": "Grohl"
                 } as IUserIdentifierRequest,
             ]
         };

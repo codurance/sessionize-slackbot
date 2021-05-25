@@ -34,9 +34,6 @@ export default class SlackApiClient {
 
     async sendMatchNotification(matchNotification : IMatchNotification) : Promise<ChatPostMessageResponse> {
 
-        console.log("sendMatchNotification fired");
-        console.log(matchNotification);
-
         let response = await this.web.chat.postMessage({
             channel: matchNotification.slackId.value,
             text: "You have a new match!",
