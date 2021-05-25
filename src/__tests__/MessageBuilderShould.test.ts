@@ -23,7 +23,7 @@ describe("MessageBuilder", () => {
         const messageBuilder : MessageBuilder = new MessageBuilder();
 
         const matchNotificationBody: IMatchNotificationContent = {
-            matchNames: [new UserName("Joe Bloggs")],
+            matchIds: [new SlackId("12345")],
             language: new Language("Java"),
             dateTime: new DateTime("2021-12-01T17:00:00.000Z")
         };
@@ -33,7 +33,7 @@ describe("MessageBuilder", () => {
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "You have a new match:\n <@Joe Bloggs>"
+                    "text": "You have a new match:\n <@12345>"
                 }
             },
             {
@@ -89,17 +89,17 @@ describe("MessageBuilder", () => {
 
         const messageBuilder : MessageBuilder = new MessageBuilder();
 
-        const userNameArray : UserName[] = [
-            new UserName("Sophie Biber"),
-            new UserName("Andras Dako"),
-            new UserName("George Harris"),
-            new UserName("Cameron Raw"),
-            new UserName("Mark Gray")
+        const userNameArray : SlackId[] = [
+            new SlackId("12345"),
+            new SlackId("54321"),
+            new SlackId("9878"),
+            new SlackId("510101"),
+            new SlackId("19389")
         ];
 
-        const returnedString : string = messageBuilder.matchNamesAsString(userNameArray);
+        const returnedString : string = messageBuilder.matchIdsAsString(userNameArray);
 
-        const expectedString : string = "<@Sophie Biber> <@Andras Dako> <@George Harris> <@Cameron Raw> <@Mark Gray>";
+        const expectedString : string = "<@12345> <@54321> <@9878> <@510101> <@19389>";
 
         expect(returnedString).toBe(expectedString);
     })

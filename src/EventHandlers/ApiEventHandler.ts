@@ -10,6 +10,7 @@ import MatchDetails from "../MatchDetails";
 import UserName from "../UserName";
 import { arrayOfAllOtherUserIdentifiers } from "../Utils/ArrayUtils";
 import UserIdentifier from "../UserIdentifier";
+import SlackId from "../SlackId";
 
 export default class ApiEventHandler {
 
@@ -55,13 +56,13 @@ export default class ApiEventHandler {
 
                 let allOtherUsers : UserIdentifier[] = arrayOfAllOtherUserIdentifiers(matchDetails.users, user);
 
-                let allOtherUserNames : UserName[] = [];
+                let allOtherSlackIds : SlackId[] = [];
 
                 allOtherUsers.map(user => {
-                    allOtherUserNames.push(user.name);
+                    allOtherSlackIds.push(user.slackId);
                 });
 
-                let matchNotificationContent : MatchNotificationContent = new MatchNotificationContent(allOtherUserNames, matchDetails.language, matchDetails.dateTime);
+                let matchNotificationContent : MatchNotificationContent = new MatchNotificationContent(allOtherSlackIds, matchDetails.language, matchDetails.dateTime);
 
                 let matchNotificationBody : KnownBlock[] = this.messageBuilder.buildMatchNotification(matchNotificationContent);
 

@@ -1,6 +1,7 @@
 import { ActionsBlock, Button, KnownBlock, SectionBlock } from '@slack/web-api';
 import MatchNotificationContent from './MatchNotificationContent';
 import * as templates from './MessageTemplates/Templates';
+import SlackId from './SlackId';
 import UserName from './UserName';
 import { formatISODate } from './Utils/Formatters';
 
@@ -10,7 +11,7 @@ export default class MessageBuilder {
 
         const formattedDateTime = formatISODate(matchNotificationContent.dateTime);
 
-        const matchNames = this.matchNamesAsString(matchNotificationContent.matchNames);
+        const matchNames = this.matchIdsAsString(matchNotificationContent.matchIds);
         
         const headerSection : SectionBlock = {
             "type": "section",
@@ -70,12 +71,12 @@ export default class MessageBuilder {
         ];
     }
 
-    matchNamesAsString(matchNames : UserName[]) : string {
+    matchIdsAsString(matchNames : SlackId[]) : string {
 
         let matchNameString : string = "";
 
-        matchNames.map(name => {
-            matchNameString += `<@${name.value}> `;
+        matchNames.map(id => {
+            matchNameString += `<@${id.value}> `;
         });
 
         return matchNameString.trimEnd();

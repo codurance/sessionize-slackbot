@@ -1,5 +1,5 @@
 import SlackUserIdentity from "./SlackUserIdentity";
-import { ChatPostMessageResponse, KnownBlock, UsersProfileGetResponse, WebClient } from '@slack/web-api';
+import { ChatPostMessageResponse, ConversationsListArguments, ConversationsMembersArguments, ConversationsMembersResponse, KnownBlock, UsersProfileGetResponse, WebClient } from '@slack/web-api';
 
 import dotenv from 'dotenv';
 import IMatchNotification from "./Interfaces/IMatchNotification";
@@ -42,6 +42,14 @@ export default class SlackApiClient {
 
         return response;
 
+    }
+
+    async getConversationList(){
+        return await this.web.conversations.list();
+    }
+
+    async getConversationMembers(channelId : string){
+        return await this.web.conversations.members({channel: channelId} as ConversationsMembersArguments);
     }
 
 }

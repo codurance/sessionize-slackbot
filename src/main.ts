@@ -6,6 +6,8 @@ import CoreApiClient from './CoreApiClient';
 import SlackApiClient from './SlackApiClient';
 import ApiEventHandler from './EventHandlers/ApiEventHandler';
 import express from 'express';
+import { ConversationsListResponse, ConversationsMembersArguments, ConversationsMembersResponse } from '@slack/web-api';
+import { Channel } from '@slack/web-api/dist/response/AdminUsergroupsListChannelsResponse';
 
 dotenv.config()
 
@@ -14,7 +16,8 @@ const slackApiClient = new SlackApiClient();
 const messageBuilder = new MessageBuilder();
 
 const channelEventHandler = new ChannelEventHandler(coreApiClient, slackApiClient, messageBuilder);
-const apiEventHandler = new ApiEventHandler(coreApiClient, slackApiClient, messageBuilder)
+const apiEventHandler = new ApiEventHandler(coreApiClient, slackApiClient, messageBuilder);
+
 
 const receiver = new ExpressReceiver({
     signingSecret: process.env.SLACK_SIGNING_SECRET!
@@ -59,4 +62,23 @@ receiver.router.post('/slack/interactive-endpoint', (req, res) => {
 (async () => {
     await app.start(80);
     console.log("Sessionize SlackBot running");
+
+/*     let conversations : ConversationsListResponse = await slackApiClient.getConversationList();
+
+    let botChannelId : string | undefined;
+
+    conversations.channels?.map((channel : Channel)=> {
+        if(channel.is_member){
+            botChannelId = channel.id;
+        }
+    });
+
+    if(botChannelId){
+        let members : ConversationsMembersResponse = await slackApiClient.getConversationMembers(botChannelId);
+        members.members?.map(async member => {
+            let nameFromId = await slackApiClient.getIdentity(member);
+            console.log(nameFromId);
+        });
+    } */
+
 })();

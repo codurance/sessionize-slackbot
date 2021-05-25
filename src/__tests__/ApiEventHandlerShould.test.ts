@@ -82,14 +82,14 @@ describe("ApiEventHandler", () => {
             send: jest.fn()
         }
 
-        const matchNotificationContent1 : MatchNotificationContent = new MatchNotificationContent([new UserName("Dave Grohl")],
+        const matchNotificationContent1 : MatchNotificationContent = new MatchNotificationContent([new SlackId("ABC321")],
         new Language("Java"), new DateTime("2021-12-01T17:00:00.000Z"));
 
         const matchNotification1 : MatchNotification = new MatchNotification(
             new SlackId("ABC123"),
             messageBuilder.buildMatchNotification(matchNotificationContent1)
         )
-        const matchNotificationContent2 : MatchNotificationContent = new MatchNotificationContent([new UserName("Cameron Raw")], 
+        const matchNotificationContent2 : MatchNotificationContent = new MatchNotificationContent([new SlackId("ABC123")], 
                 new Language("Java"), new DateTime("2021-12-01T17:00:00.000Z"));
 
         const matchNotification2 : MatchNotification = new MatchNotification(
