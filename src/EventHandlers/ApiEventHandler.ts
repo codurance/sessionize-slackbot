@@ -4,6 +4,12 @@ import SlackApiClient from "../SlackApiClient";
 import { Request, Response } from "express";
 import { ChatPostMessageResponse, KnownBlock } from "@slack/web-api";
 import MatchNotification from "../MatchNotification";
+import IMatchNotificationRequest from "../Interfaces/IMatchNotificationRequest";
+import MatchNotificationContent from "../MatchNotificationContent";
+import MatchDetails from "../MatchDetails";
+import UserName from "../UserName";
+import { arrayOfAllOtherUserIdentifiers } from "../Utils/ArrayUtils";
+import UserIdentifier from "../UserIdentifier";
 
 export default class ApiEventHandler {
 
@@ -34,16 +40,43 @@ export default class ApiEventHandler {
 
     async onMatchNotification(request: Request, response: Response){
         try {
-        
-            const matchNotifications : MatchNotification[] = MatchNotification.fromRequestBody(request.body);
+
+            // Create MatchNotificationContent objects from request
+            // Create MatchNotification objects from the above + users' slackIds
+
+            const matchNotificationRequest : IMatchNotificationRequest = request.body;
+            const matchDetails : MatchDetails = MatchDetails.fromRequest(matchNotificationRequest);
+
+            let matchNotifications : MatchNotification[] = [];
 
             let responses : ChatPostMessageResponse[] = [];
 
-            matchNotifications.map(async (matchNotification) => {
-                responses.push(await this.slackApiClient.sendMatchNotification(matchNotification));
+            matchDetails.users.map(user => {
+
+                let allOtherUsers : UserIdentifier[] = arrayOfAllOtherUserIdentifiers(matchDetails.users, user);
+
+                let allOtherUserNames : UserName[] = [];
+
+                allOtherUsers.map(user => {
+                    allOtherUserNames.push(user.name);
+                });
+
+                let matchNotificationContent : MatchNotificationContent = new MatchNotificationContent(allOtherUserNames, matchDetails.language, matchDetails.dateTime);
+
+                let matchNotificationBody : KnownBlock[] = this.messageBuilder.buildMatchNotification(matchNotificationContent);
+
+                let matchNotification : MatchNotification = new MatchNotification(user.slackId, matchNotificationBody);
+
+                matchNotifications.push(matchNotification);
             });
 
-            response.send(responses);
+            matchNotifications.map(async matchNotification => {
+                let response = await this.slackApiClient.sendMatchNotification(matchNotification);
+                responses.push(response);
+            });
+
+            return responses;
+
 
         }catch (err) {
 

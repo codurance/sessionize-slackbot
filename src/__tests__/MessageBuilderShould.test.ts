@@ -20,6 +20,8 @@ describe("MessageBuilder", () => {
 
     test("should return a match notification message", () => {
 
+        const messageBuilder : MessageBuilder = new MessageBuilder();
+
         const matchNotificationBody: IMatchNotificationContent = {
             matchNames: [new UserName("Joe Bloggs")],
             language: new Language("Java"),
@@ -77,13 +79,15 @@ describe("MessageBuilder", () => {
             }
         ];
 
-        const matchNotification = MessageBuilder.buildMatchNotification(matchNotificationBody);
+        const matchNotification = messageBuilder.buildMatchNotification(matchNotificationBody);
 
         expect(matchNotification).toStrictEqual(expectedMatchNotification);
 
     });
 
     test("should turn an array of UserNames into a string", () => {
+
+        const messageBuilder : MessageBuilder = new MessageBuilder();
 
         const userNameArray : UserName[] = [
             new UserName("Sophie Biber"),
@@ -93,7 +97,7 @@ describe("MessageBuilder", () => {
             new UserName("Mark Gray")
         ];
 
-        const returnedString : string = MessageBuilder.matchNamesAsString(userNameArray);
+        const returnedString : string = messageBuilder.matchNamesAsString(userNameArray);
 
         const expectedString : string = "<@Sophie Biber> <@Andras Dako> <@George Harris> <@Cameron Raw> <@Mark Gray>";
 

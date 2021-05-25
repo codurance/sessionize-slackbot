@@ -1,4 +1,4 @@
-import { deepEqual, instance, mock, verify } from "ts-mockito"
+import { anything, deepEqual, instance, match, mock, verify } from "ts-mockito"
 import { Request, Response } from 'express';
 import SlackApiClient from "../SlackApiClient";
 import MessageBuilder from "../MessageBuilder";
@@ -80,19 +80,25 @@ describe("ApiEventHandler", () => {
             send: jest.fn()
         }
 
+        const matchNotificationContent1 : MatchNotificationContent = new MatchNotificationContent([new UserName("Dave Grohl")],
+        new Language("Java"), new DateTime("2021-12-01T17:00:00.000Z"));
+
         const matchNotification1 : MatchNotification = new MatchNotification(
             new SlackId("ABC123"),
-            new MatchNotificationContent([new UserName("Dave Grohl")],
-            new Language("Java"), new DateTime("2021-12-01T17:00:00.000Z"))
+            messageBuilder.buildMatchNotification(matchNotificationContent1)
         )
+        const matchNotificationContent2 : MatchNotificationContent = new MatchNotificationContent([new UserName("Cameron Raw")], 
+                new Language("Java"), new DateTime("2021-12-01T17:00:00.000Z"));
 
         const matchNotification2 : MatchNotification = new MatchNotification(
             new SlackId("ABC321"),
-            new MatchNotificationContent([new UserName("Cameron Raw")], 
-                new Language("Java"), new DateTime("2021-12-01T17:00:00.000Z"))
+            messageBuilder.buildMatchNotification(matchNotificationContent2)
         );
 
         await apiEventHandler.onMatchNotification(testRequest as Request, testResponse as Response);
+
+        verify(mockedSlackApiClient.sendMatchNotification(anything())).twice();
+
         verify(mockedSlackApiClient.sendMatchNotification(deepEqual(matchNotification1))).once();
         verify(mockedSlackApiClient.sendMatchNotification(deepEqual(matchNotification2))).once();
     });

@@ -5,7 +5,8 @@ import UserName from './UserName';
 import { formatISODate } from './Utils/Formatters';
 
 export default class MessageBuilder {
-    static buildMatchNotification(matchNotificationContent : MatchNotificationContent) : KnownBlock[] {
+
+    buildMatchNotification(matchNotificationContent : MatchNotificationContent) : KnownBlock[] {
 
         const formattedDateTime = formatISODate(matchNotificationContent.dateTime);
 
@@ -69,7 +70,7 @@ export default class MessageBuilder {
         ];
     }
 
-    static matchNamesAsString(matchNames : UserName[]) : string {
+    matchNamesAsString(matchNames : UserName[]) : string {
 
         let matchNameString : string = "";
 
