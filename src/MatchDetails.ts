@@ -15,7 +15,7 @@ export default class MatchDetails implements IMatchDetails {
         this.users = users;
     }
 
-    static fromRequest(request : IMatchNotificationRequest){
+    static fromRequest(request: IMatchNotificationRequest){
 
         return new MatchDetails(
             new Language(request.language.value, request.language.displayName),

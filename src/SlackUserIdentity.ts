@@ -1,5 +1,7 @@
+import SlackId from "./SlackId";
+
 export default interface SlackUserIdentity {
-    slackId: string;
+    slackId: SlackId;
     email: string;
     firstName: string;
     lastName: string;
