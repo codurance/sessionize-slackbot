@@ -41,7 +41,6 @@ export default class SlackApiClient {
         });
 
         return response;
-
     }
 
     async getConversationList(){

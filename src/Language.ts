@@ -2,11 +2,11 @@ import ILanguage from "./Interfaces/ILanguage";
 
 export default class Language implements ILanguage {
 
-    readonly language : string;
+    readonly value : string;
     readonly displayName : string;
 
     constructor(language : string, displayName : string){
-        this.language = language;
+        this.value = language;
         this.displayName = displayName;
     }
 }

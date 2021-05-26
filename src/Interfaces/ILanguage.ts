@@ -1,4 +1,4 @@
 export default interface ILanguage {
-    language: string;
+    value: string;
     displayName: string;
 };
