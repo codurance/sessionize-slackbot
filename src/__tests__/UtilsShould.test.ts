@@ -32,4 +32,5 @@ describe("Utils", () => {
 
         expect(returnedArray).toStrictEqual(expectedArray);
     });
+
 });
