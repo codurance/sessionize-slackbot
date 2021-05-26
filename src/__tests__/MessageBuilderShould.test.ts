@@ -1,9 +1,7 @@
 import { KnownBlock } from "@slack/web-api";
 import MessageBuilder from "../MessageBuilder";
-import IMatchNotification from "../Interfaces/IMatchNotification";
 import IMatchNotificationContent from "../Interfaces/IMatchNotificationContent";
 import SlackId from "../SlackId";
-import UserName from "../UserName";
 import Language from "../Language";
 import DateTime from "../DateTime";
 
@@ -24,7 +22,7 @@ describe("MessageBuilder", () => {
 
         const matchNotificationBody: IMatchNotificationContent = {
             matchIds: [new SlackId("12345")],
-            language: new Language("Java"),
+            language: new Language("java", "Java"),
             dateTime: new DateTime("2021-12-01T17:00:00.000Z")
         };
 
@@ -85,22 +83,5 @@ describe("MessageBuilder", () => {
 
     });
 
-    test("should turn an array of UserNames into a string", () => {
 
-        const messageBuilder : MessageBuilder = new MessageBuilder();
-
-        const userNameArray : SlackId[] = [
-            new SlackId("12345"),
-            new SlackId("54321"),
-            new SlackId("9878"),
-            new SlackId("510101"),
-            new SlackId("19389")
-        ];
-
-        const returnedString : string = messageBuilder.matchIdsAsString(userNameArray);
-
-        const expectedString : string = "<@12345> <@54321> <@9878> <@510101> <@19389>";
-
-        expect(returnedString).toBe(expectedString);
-    })
 });

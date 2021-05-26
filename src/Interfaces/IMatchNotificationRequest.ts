@@ -1,8 +1,10 @@
+import Language from "../Language";
+import ILanguage from "./ILanguage";
 import IUserIdentifierRequest from "./IUserIdentifierRequest";
 import IUserIdentifier from "./IUserIdentifiers";
 
 export default interface IMatchNotificationRequest {
-    "language": string,
-    "dateTime": string,
-    "users": IUserIdentifierRequest[],
+    language: ILanguage,
+    dateTime: string,
+    users: IUserIdentifierRequest[],
 }

@@ -102,6 +102,7 @@ describe("ChannelEventHandler", () => {
             ]
           }
 
+          // TODO: Finish this test
         //channelEventHandler.interactiveMessageResponse(mockedPayload);
 
     });

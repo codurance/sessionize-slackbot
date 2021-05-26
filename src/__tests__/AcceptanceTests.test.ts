@@ -13,7 +13,6 @@ import MessageBuilder from '../MessageBuilder';
 import ChannelEventHandler from '../EventHandlers/ChannelEventHandler';
 import SlackUserIdentity from "../SlackUserIdentity";
 import { MemberJoinedChannelEvent } from "@slack/bolt";
-import { ChatPostMessageResponse } from "@slack/web-api";
 
 describe("Slack Service should", () => {
 

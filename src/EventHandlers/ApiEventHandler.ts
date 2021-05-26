@@ -11,6 +11,7 @@ import UserName from "../UserName";
 import { arrayOfAllOtherUserIdentifiers } from "../Utils/ArrayUtils";
 import UserIdentifier from "../UserIdentifier";
 import SlackId from "../SlackId";
+import PreferencesRequest from "../PreferencesRequest";
 
 export default class ApiEventHandler {
 
@@ -42,9 +43,6 @@ export default class ApiEventHandler {
     async onMatchNotification(request: Request, response: Response){
         try {
 
-            // Create MatchNotificationContent objects from request
-            // Create MatchNotification objects from the above + users' slackIds
-
             const matchNotificationRequest : IMatchNotificationRequest = request.body;
             const matchDetails : MatchDetails = MatchDetails.fromRequest(matchNotificationRequest);
 
@@ -72,12 +70,12 @@ export default class ApiEventHandler {
             });
 
             matchNotifications.map(async matchNotification => {
+                console.log(JSON.stringify(matchNotification));
                 let response = await this.slackApiClient.sendMatchNotification(matchNotification);
                 responses.push(response);
             });
 
             return responses;
-
 
         }catch (err) {
 
@@ -85,5 +83,15 @@ export default class ApiEventHandler {
 
         }
     }
+
+   /*  async onPreferencesRequest(request: Request, response: Response){
+
+        try {
+            const preferencesRequest = await PreferencesRequest.fromRequest(request);           
+        }catch(err){
+
+        }
+
+    } */
 
 }

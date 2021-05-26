@@ -1,9 +1,12 @@
-export default class Language {
-    private language : string;
-    constructor(language : string){
+import ILanguage from "./Interfaces/ILanguage";
+
+export default class Language implements ILanguage {
+
+    readonly language : string;
+    readonly displayName : string;
+
+    constructor(language : string, displayName : string){
         this.language = language;
-    }
-    get value(){
-        return this.language;
+        this.displayName = displayName;
     }
 }
