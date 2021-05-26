@@ -1,9 +1,9 @@
 import DateTime from "../DateTime";
 import Language from "../Language";
-import IUserIdentifier from "./IUserIdentifiers";
+import SlackId from "../SlackId";
 
 export default interface IMatchDetails {
     language: Language,
     dateTime: DateTime,
-    users: IUserIdentifier[]
+    users: SlackId[]
 }

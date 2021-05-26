@@ -5,7 +5,7 @@ import ChannelEventHandler from "../EventHandlers/ChannelEventHandler"
 import SlackApiClient from "../SlackApiClient"
 import SlackUserIdentity from "../SlackUserIdentity"
 import { MemberJoinedChannelEvent } from "@slack/bolt"
-import { Request, Response } from 'express';
+import SlackId from "../SlackId";
 
 describe("ChannelEventHandler", () => {
     test("should make request to core to see if user joining channel is new", async () => {
@@ -22,7 +22,7 @@ describe("ChannelEventHandler", () => {
         const userIdentity: SlackUserIdentity = {
             firstName: "Joe",
             lastName: "Bloggs",
-            slackId: "U0G9QF9C6",
+            slackId: new SlackId("U0G9QF9C6"),
             email: "joe.bloggs@codurance.com"
         };
 

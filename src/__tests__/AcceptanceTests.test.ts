@@ -13,6 +13,7 @@ import MessageBuilder from '../MessageBuilder';
 import ChannelEventHandler from '../EventHandlers/ChannelEventHandler';
 import SlackUserIdentity from "../SlackUserIdentity";
 import { MemberJoinedChannelEvent } from "@slack/bolt";
+import SlackId from "../SlackId";
 
 describe("Slack Service should", () => {
 
@@ -25,14 +26,6 @@ describe("Slack Service should", () => {
         // WHEN a user joins the Sessionize slack channel
         // THEN they receive a personalized welcome message
 
-        // Arrange
-        const slackIdentity: SlackUserIdentity = {
-            firstName: "Joe",
-            lastName: "Bloggs",
-            slackId: "U0G9QF9C6",
-            email: "joe.bloggs@codurance.com"
-        };
-
         const event: MemberJoinedChannelEvent = {
             type: "member_joined_channel",
             user: "U0G9QF9C6",
@@ -42,17 +35,23 @@ describe("Slack Service should", () => {
             inviter: "U123456789"
         };
 
+        const slackIdentity: SlackUserIdentity = {
+            firstName: "Joe",
+            lastName: "Bloggs",
+            slackId: new SlackId("U0G9QF9C6"),
+            email: "joe.bloggs@codurance.com"
+        };
+
         const mockedCoreApiClient = mock(CoreApiClient);
         when(mockedCoreApiClient.isNewUser(anything())).thenReturn(isNewUser);
-        const coreApiClient = instance(mockedCoreApiClient);
 
         const mockedSlackApiClient = mock(SlackApiClient);
         when(mockedSlackApiClient.getIdentity(anyString())).thenResolve(slackIdentity);
-        const slackApiClient = instance(mockedSlackApiClient);
 
-        const messageBuilder = new MessageBuilder();
-
-        const channelEventHandler = new ChannelEventHandler(coreApiClient, slackApiClient, messageBuilder);
+        const channelEventHandler = new ChannelEventHandler(
+            instance(mockedCoreApiClient),
+            instance(mockedSlackApiClient),
+            new MessageBuilder());
 
         await channelEventHandler.onChannelJoin(event);
 

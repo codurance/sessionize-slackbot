@@ -1,10 +1,8 @@
-import Language from "../Language";
 import ILanguage from "./ILanguage";
-import IUserIdentifierRequest from "./IUserIdentifierRequest";
-import IUserIdentifier from "./IUserIdentifiers";
+import SlackId from "../SlackId";
 
 export default interface IMatchNotificationRequest {
     language: ILanguage,
     dateTime: string,
-    users: IUserIdentifierRequest[],
+    users: SlackId[],
 }

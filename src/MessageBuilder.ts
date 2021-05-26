@@ -8,10 +8,7 @@ export default class MessageBuilder {
 
     buildMatchNotification(matchNotificationContent : MatchNotificationContent) : KnownBlock[] {
 
-        console.log(JSON.stringify(matchNotificationContent.language.displayName));
-
         const formattedDateTime = formatISODate(matchNotificationContent.dateTime);
-
         const matchNames = this.matchIdsAsString(matchNotificationContent.matchIds);
         
         const headerSection : SectionBlock = {
@@ -48,8 +45,7 @@ export default class MessageBuilder {
                     },
                     action_id: "approve_session",
                     style: "primary",
-                    value: "session_confirmed",
-                    
+                    value: "session_confirmed"
                 } as Button,
                 {
                     type: "button",
@@ -63,7 +59,7 @@ export default class MessageBuilder {
                     action_id: "deny_session"
                 }
             ]
-        }
+        };
 
         return [
             headerSection,
@@ -123,13 +119,13 @@ export default class MessageBuilder {
                     action_id: "deny_session"
                 }
             ]
-        }
+        };
 
         return [
             headerSection,
             matchDetailsSection,
             actions
-        ]
+        ];
     }
 
     matchIdsAsString(matchNames : SlackId[]) : string {

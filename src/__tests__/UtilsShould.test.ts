@@ -1,10 +1,7 @@
 import DateTime from "../DateTime";
-import IUserIdentifier from "../Interfaces/IUserIdentifiers";
-import MatchNotification from "../MatchNotification";
+import {formatISODate} from "../Utils/Formatters";
 import SlackId from "../SlackId";
-import UserName from "../UserName";
-import { arrayOfAllOtherUserIdentifiers } from "../Utils/ArrayUtils";
-import { formatISODate } from "../Utils/Formatters";
+import {deepFilterFor} from "../Utils/ArraysUtils";
 
 describe("Utils", () => {
     test("should convert ISO 8601 dates to user friendly strings", () => {
@@ -18,39 +15,22 @@ describe("Utils", () => {
 
     test("should take an array and a value, return the same array but without passed value", () => {
 
-        const originalArray: IUserIdentifier[] = [
-            {
-                slackId: new SlackId("slack1"),
-                name: new UserName("Name 1")
-            },
-            {
-                slackId: new SlackId("slack2"),
-                name: new UserName("Name 2")
-            },
-            {
-                slackId: new SlackId("slack3"),
-                name: new UserName("Name 3")
-            },
+        const originalArray: SlackId[] = [
+            new SlackId("slack1"),
+            new SlackId("slack2"),
+            new SlackId("slack3")
         ];
 
-        const objectToExclude : IUserIdentifier = {
-            slackId: new SlackId("slack2"),
-            name: new UserName("Name 2")
-        };
+        const objectToExclude: SlackId = new SlackId("slack2");
 
-        const expectedArray : IUserIdentifier[] = [
-            {
-                slackId: new SlackId("slack1"),
-                name: new UserName("Name 1")
-            },
-            {
-                slackId: new SlackId("slack3"),
-                name: new UserName("Name 3")
-            },
+        const expectedArray: SlackId[] = [
+            new SlackId("slack1"),
+            new SlackId("slack3")
         ];
 
-        const returnedArray = arrayOfAllOtherUserIdentifiers(originalArray, objectToExclude);
+        const returnedArray = deepFilterFor<SlackId>(objectToExclude, originalArray);
 
         expect(returnedArray).toStrictEqual(expectedArray);
     });
+
 });

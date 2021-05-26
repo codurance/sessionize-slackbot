@@ -1,17 +1,14 @@
 import CoreApiClient from "../CoreApiClient";
 import MessageBuilder from "../MessageBuilder";
 import SlackApiClient from "../SlackApiClient";
-import { Request, Response } from "express";
-import { ChatPostMessageResponse, KnownBlock } from "@slack/web-api";
+import {Request, Response} from "express";
+import {KnownBlock} from "@slack/web-api";
 import MatchNotification from "../MatchNotification";
 import IMatchNotificationRequest from "../Interfaces/IMatchNotificationRequest";
 import MatchNotificationContent from "../MatchNotificationContent";
 import MatchDetails from "../MatchDetails";
-import UserName from "../UserName";
-import { arrayOfAllOtherUserIdentifiers } from "../Utils/ArrayUtils";
-import UserIdentifier from "../UserIdentifier";
+import {deepFilterFor} from "../Utils/ArraysUtils";
 import SlackId from "../SlackId";
-import PreferencesRequest from "../PreferencesRequest";
 
 export default class ApiEventHandler {
 
@@ -19,79 +16,61 @@ export default class ApiEventHandler {
     slackApiClient: SlackApiClient;
     messageBuilder: MessageBuilder;
 
-    constructor(coreApiClient: CoreApiClient, slackApiClient: SlackApiClient, messageBuilder: MessageBuilder){
+    constructor(coreApiClient: CoreApiClient, slackApiClient: SlackApiClient, messageBuilder: MessageBuilder) {
         this.coreApiClient = coreApiClient;
         this.slackApiClient = slackApiClient;
         this.messageBuilder = messageBuilder;
     }
 
-    async onDirectMessage(request: Request, response: Response){
+    async onDirectMessage(request: Request, response: Response) {
         try {
-            const slackId : string = request.body.slackId;
-            const message : string = request.body.message;
-
-            let slackResponse : ChatPostMessageResponse
-                = await this.slackApiClient.sendDm(slackId, message);
+            const slackId: string = request.body.slackId;
+            const message: string = request.body.message;
+            await this.slackApiClient.sendDm(slackId, message);
 
             response.send("Success");
-            
-        }catch(err){
+        } catch (err) {
             console.error(err);
         }
     }
 
-    async onMatchNotification(request: Request, response: Response){
+    async onMatchNotification(request: Request, response: Response) {
         try {
 
-            const matchNotificationRequest : IMatchNotificationRequest = request.body;
-            const matchDetails : MatchDetails = MatchDetails.fromRequest(matchNotificationRequest);
+            const matchNotificationRequest: IMatchNotificationRequest = request.body;
+            const matchDetails: MatchDetails = MatchDetails.fromRequest(matchNotificationRequest);
 
-            let matchNotifications : MatchNotification[] = [];
+            const matchNotifications: MatchNotification[] = [];
 
-            let responses : ChatPostMessageResponse[] = [];
-
-            matchDetails.users.map(user => {
-
-                let allOtherUsers : UserIdentifier[] = arrayOfAllOtherUserIdentifiers(matchDetails.users, user);
-
-                let allOtherSlackIds : SlackId[] = [];
-
-                allOtherUsers.map(user => {
-                    allOtherSlackIds.push(user.slackId);
-                });
-
-                let matchNotificationContent : MatchNotificationContent = new MatchNotificationContent(allOtherSlackIds, matchDetails.language, matchDetails.dateTime);
-
-                let matchNotificationBody : KnownBlock[] = this.messageBuilder.buildMatchNotification(matchNotificationContent);
-
-                let matchNotification : MatchNotification = new MatchNotification(user.slackId, matchNotificationBody);
+            matchDetails.users.forEach(user => {
+                const allOtherSlackIds = deepFilterFor<SlackId>(user, matchDetails.users);
+                const matchNotificationContent: MatchNotificationContent = new MatchNotificationContent(
+                    allOtherSlackIds,
+                    matchDetails.language,
+                    matchDetails.dateTime);
+                const matchNotificationBody: KnownBlock[] = this.messageBuilder.buildMatchNotification(matchNotificationContent);
+                const matchNotification: MatchNotification = new MatchNotification(user, matchNotificationBody);
 
                 matchNotifications.push(matchNotification);
             });
 
-            matchNotifications.map(async matchNotification => {
-                console.log(JSON.stringify(matchNotification));
-                let response = await this.slackApiClient.sendMatchNotification(matchNotification);
-                responses.push(response);
-            });
+            return await Promise.all(
+                matchNotifications.map(match => this.slackApiClient.sendMatchNotification(match))
+            );
 
-            return responses;
-
-        }catch (err) {
-
+        } catch (err) {
             response.send("Invalid request");
-
         }
     }
 
-   /*  async onPreferencesRequest(request: Request, response: Response){
+    /*  async onPreferencesRequest(request: Request, response: Response){
 
-        try {
-            const preferencesRequest = await PreferencesRequest.fromRequest(request);           
-        }catch(err){
+         try {
+             const preferencesRequest = await PreferencesRequest.fromRequest(request);
+         }catch(err){
 
-        }
+         }
 
-    } */
+     } */
 
 }
