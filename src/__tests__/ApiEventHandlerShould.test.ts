@@ -1,4 +1,4 @@
-import { anything, deepEqual, instance, match, mock, verify } from "ts-mockito"
+import {anyOfClass, anything, deepEqual, instance, match, mock, verify} from "ts-mockito"
 import { Request, Response } from 'express';
 import SlackApiClient from "../SlackApiClient";
 import MessageBuilder from "../MessageBuilder";
@@ -23,7 +23,7 @@ describe("ApiEventHandler", () => {
         messageBuilder : MessageBuilder,
         apiEventHandler : ApiEventHandler;
 
-        const expectedSlackId = "ABC123";
+    const expectedSlackId = "ABC123";
 
     beforeEach(() => {
         mockedCoreApiClient = mock(CoreApiClient);
@@ -35,9 +35,9 @@ describe("ApiEventHandler", () => {
         messageBuilder = new MessageBuilder();
 
         apiEventHandler = new ApiEventHandler(coreApiClient, slackApiClient, messageBuilder);
-    })
+    });
 
-    test("should send the simple direct message as requested in a call's request", () => {
+    test("should send a simple direct message as requested in a call's request", async () => {
 
         const expectedMessage = "Hello World!";
 
@@ -51,16 +51,16 @@ describe("ApiEventHandler", () => {
         const testResponse : Partial<Response> = {
             send: jest.fn()
         }
-        apiEventHandler.onDirectMessage(testRequest as Request, testResponse as Response);
+        await apiEventHandler.onDirectMessage(testRequest as Request, testResponse as Response);
         verify(mockedSlackApiClient.sendDm(expectedSlackId, expectedMessage));
     });
 
     test("should send match notifications as requested in a call's request", async () => {
 
         const expectedRequestBody : IMatchNotificationRequest = {
-            "language": "Java",
-            "dateTime": "2021-12-01T17:00:00.000Z",
-            "users": [
+            language: "Java",
+            dateTime: "2021-12-01T17:00:00.000Z",
+            users: [
                 {
                     "slackId": "ABC123",
                     "firstName": "Cameron",
@@ -82,15 +82,19 @@ describe("ApiEventHandler", () => {
             send: jest.fn()
         }
 
-        const matchNotificationContent1 : MatchNotificationContent = new MatchNotificationContent([new SlackId("ABC321")],
-        new Language("Java"), new DateTime("2021-12-01T17:00:00.000Z"));
+        const matchNotificationContent1 : MatchNotificationContent = new MatchNotificationContent(
+            [new SlackId("ABC321")],
+            new Language("Java"),
+            new DateTime("2021-12-01T17:00:00.000Z"));
 
         const matchNotification1 : MatchNotification = new MatchNotification(
             new SlackId("ABC123"),
             messageBuilder.buildMatchNotification(matchNotificationContent1)
         )
-        const matchNotificationContent2 : MatchNotificationContent = new MatchNotificationContent([new SlackId("ABC123")], 
-                new Language("Java"), new DateTime("2021-12-01T17:00:00.000Z"));
+        const matchNotificationContent2 : MatchNotificationContent = new MatchNotificationContent(
+            [new SlackId("ABC123")],
+            new Language("Java"),
+            new DateTime("2021-12-01T17:00:00.000Z"));
 
         const matchNotification2 : MatchNotification = new MatchNotification(
             new SlackId("ABC321"),
@@ -99,11 +103,9 @@ describe("ApiEventHandler", () => {
 
         await apiEventHandler.onMatchNotification(testRequest as Request, testResponse as Response);
 
-        verify(mockedSlackApiClient.sendMatchNotification(anything())).twice();
+        verify(mockedSlackApiClient.sendMatchNotification(anyOfClass(MatchNotification))).twice();
 
         verify(mockedSlackApiClient.sendMatchNotification(deepEqual(matchNotification1))).once();
         verify(mockedSlackApiClient.sendMatchNotification(deepEqual(matchNotification2))).once();
     });
-
-
 });
