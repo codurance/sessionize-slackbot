@@ -2,12 +2,13 @@ import CoreApiClient from "../CoreApiClient";
 import MessageBuilder from "../MessageBuilder";
 import SlackApiClient from "../SlackApiClient";
 import {Request, Response} from "express";
-import {ChatPostMessageResponse, KnownBlock} from "@slack/web-api";
+import {KnownBlock} from "@slack/web-api";
 import MatchNotification from "../MatchNotification";
 import IMatchNotificationRequest from "../Interfaces/IMatchNotificationRequest";
 import MatchNotificationContent from "../MatchNotificationContent";
 import MatchDetails from "../MatchDetails";
-import {arrayOfAllOtherUserIdentifiers} from "../Utils/ArrayUtils";
+import {deepFilterFor} from "../Utils/ArraysUtils";
+import SlackId from "../SlackId";
 
 export default class ApiEventHandler {
 
@@ -25,12 +26,9 @@ export default class ApiEventHandler {
         try {
             const slackId: string = request.body.slackId;
             const message: string = request.body.message;
-
-            const slackResponse: ChatPostMessageResponse
-                = await this.slackApiClient.sendDm(slackId, message);
+            await this.slackApiClient.sendDm(slackId, message);
 
             response.send("Success");
-
         } catch (err) {
             console.error(err);
         }
@@ -45,7 +43,7 @@ export default class ApiEventHandler {
             const matchNotifications: MatchNotification[] = [];
 
             matchDetails.users.forEach(user => {
-                const allOtherSlackIds = arrayOfAllOtherUserIdentifiers(matchDetails.users, user);
+                const allOtherSlackIds = deepFilterFor<SlackId>(user, matchDetails.users);
                 const matchNotificationContent: MatchNotificationContent = new MatchNotificationContent(
                     allOtherSlackIds,
                     matchDetails.language,
@@ -56,12 +54,9 @@ export default class ApiEventHandler {
                 matchNotifications.push(matchNotification);
             });
 
-            const responses: ChatPostMessageResponse[] = await Promise.all(
+            return await Promise.all(
                 matchNotifications.map(match => this.slackApiClient.sendMatchNotification(match))
             );
-
-            console.log(responses);
-            return responses;
 
         } catch (err) {
             response.send("Invalid request");
