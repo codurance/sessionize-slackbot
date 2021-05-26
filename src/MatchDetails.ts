@@ -2,6 +2,7 @@ import DateTime from "./DateTime";
 import ILanguage from "./Interfaces/ILanguage";
 import IMatchDetails from "./Interfaces/IMatchDetails";
 import IMatchNotificationRequest from "./Interfaces/IMatchNotificationRequest";
+import Language from "./Language";
 import SlackId from "./SlackId";
 
 export default class MatchDetails implements IMatchDetails {
