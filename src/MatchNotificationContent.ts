@@ -11,12 +11,8 @@ export default class MatchNotificationContent implements IMatchNotificationConte
     readonly dateTime: DateTime;
 
     constructor(matchIds: SlackId[], language: Language, dateTime: DateTime){
-        console.log(language);
-        console.table(language);
         this.matchIds = matchIds;
         this.language = language;
-        console.log(this.language);
-        console.table(this.language);
         this.dateTime = dateTime;
     }
 }
