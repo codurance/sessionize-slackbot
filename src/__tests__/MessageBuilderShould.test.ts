@@ -28,50 +28,49 @@ describe("MessageBuilder", () => {
 
         const expectedMatchNotification : KnownBlock[] = [
             {
-                "type": "section",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": "You have a new match:\n <@12345>"
+                type: "section",
+                text: {
+                    type: "mrkdwn",
+                    text: "You have a new match:\n <@12345>"
                 }
             },
             {
-                "type": "section",
-                "fields": [
+                type: "section",
+                fields: [
                     {
-                        "type": "mrkdwn",
-                        "text": "*Language:*\nJava"
+                        type: "mrkdwn",
+                        text: "*Language:*\nJava"
                     },
                     {
-                        "type": "mrkdwn",
-                        "text": "*When:*\n01/12/2021 17:00"
+                        type: "mrkdwn",
+                        text: "*When:*\n01/12/2021 17:00"
                     }
                 ]
             },
             {
-                "type": "actions",
-                "elements" : [
+                type: "actions",
+                elements : [
                     {
-                        "type": "button",
-                        "text" : {
-                            "type": "plain_text",
-                            "text": "Approve",
-                            "emoji": true
+                        type: "button",
+                        text : {
+                            type: "plain_text",
+                            text: "Approve",
+                            emoji: true
                         },
-                        "action_id": "approve_session",
-                        "style": "primary",
-                        "value": "session_confirmed"
+                        action_id: "approve_session",
+                        style: "primary",
+                        value: "session_confirmed"
                     },
                     {
-    
-                        "type": "button",
-                        "text" : {
-                            "type": "plain_text",
-                            "text": "Deny",
-                            "emoji": true
+                        type: "button",
+                        text : {
+                            type: "plain_text",
+                            text: "Deny",
+                            emoji: true
                         },
-                        "style": "danger",
-                        "value": "session_denied",
-                        "action_id": "deny_session"
+                        style: "danger",
+                        value: "session_denied",
+                        action_id: "deny_session"
                     }
                 ]
             }
@@ -80,7 +79,6 @@ describe("MessageBuilder", () => {
         const matchNotification = messageBuilder.buildMatchNotification(matchNotificationBody);
 
         expect(matchNotification).toStrictEqual(expectedMatchNotification);
-
     });
 
 

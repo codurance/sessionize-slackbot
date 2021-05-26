@@ -1,11 +1,4 @@
-import {
-    anyString,
-    anything,
-    instance,
-    mock,
-    verify,
-    when
-} from "ts-mockito"
+import { instance, mock, verify, when } from "ts-mockito"
 import CoreApiClient from "../CoreApiClient"
 import MessageBuilder from "../MessageBuilder"
 import ChannelEventHandler from "../EventHandlers/ChannelEventHandler"
@@ -32,17 +25,15 @@ describe("ChannelEventHandler", () => {
             email: "joe.bloggs@codurance.com"
         };
 
-        let mockedCoreApiClient: CoreApiClient = mock(CoreApiClient);
+        const mockedCoreApiClient: CoreApiClient = mock(CoreApiClient);
         when(mockedCoreApiClient.isNewUser(userIdentity)).thenResolve(true);
-        let coreApiClient: CoreApiClient = instance(mockedCoreApiClient);
 
-        let mockedSlackApiClient: SlackApiClient = mock(SlackApiClient);
+        const mockedSlackApiClient: SlackApiClient = mock(SlackApiClient);
         when(mockedSlackApiClient.getIdentity(event.user)).thenResolve(userIdentity);
-        let slackApiClient: SlackApiClient = instance(mockedSlackApiClient);
 
-        const channelEventHandler = new ChannelEventHandler(coreApiClient, slackApiClient, new MessageBuilder());
+        const channelEventHandler = new ChannelEventHandler(instance(mockedCoreApiClient), instance(mockedSlackApiClient), new MessageBuilder());
 
-        let message = await channelEventHandler.onChannelJoin(event);
+        const message = await channelEventHandler.onChannelJoin(event);
 
         verify(mockedCoreApiClient.isNewUser(userIdentity)).once();
     });
