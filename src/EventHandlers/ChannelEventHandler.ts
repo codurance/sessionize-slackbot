@@ -1,9 +1,10 @@
 import {MemberJoinedChannelEvent, MemberLeftChannelEvent} from "@slack/bolt";
-import { ChatPostMessageResponse, WebClient } from "@slack/web-api";
+import {ChatPostMessageResponse, WebClient} from "@slack/web-api";
 import CoreApiClient from "../CoreApiClient"
 import MessageBuilder from "../MessageBuilder"
 import SlackApiClient from "../SlackApiClient"
 import SlackUserIdentity from "../SlackUserIdentity";
+import { Request, Response } from 'express';
 
 export default class ChannelEventHandler {
 
@@ -17,7 +18,7 @@ export default class ChannelEventHandler {
         this.messageBuilder = messageBuilder
     }
 
-    async onChannelJoin(event: MemberJoinedChannelEvent){
+    async onChannelJoin(event: MemberJoinedChannelEvent) {
 
         try {
             const slackIdentity: SlackUserIdentity =
@@ -27,7 +28,7 @@ export default class ChannelEventHandler {
                 ? this.messageBuilder.buildGreeting(slackIdentity.firstName + " " + slackIdentity.lastName)
                 : this.messageBuilder.buildWelcomeBack(slackIdentity.firstName + " " + slackIdentity.lastName);
 
-            let slackResponse : ChatPostMessageResponse 
+            let slackResponse: ChatPostMessageResponse
                 = await this.slackApiClient.sendDm(event.user, message);
 
         } catch (error) {
@@ -36,21 +37,21 @@ export default class ChannelEventHandler {
         }
     }
 
-    async onChannelLeave(event: MemberLeftChannelEvent){
+    async onChannelLeave(event: MemberLeftChannelEvent) {
 
         try {
             const slackIdentity: SlackUserIdentity =
                 await this.slackApiClient.getIdentity(event.user);
 
-                console.log(slackIdentity);
+            console.log(slackIdentity);
 
             let message: string = await this.coreApiClient.deactivateUser(slackIdentity)
                 ? this.messageBuilder.buildFarewell(slackIdentity.firstName)
                 : this.messageBuilder.errorOccurred(slackIdentity.firstName);
 
-                console.log(message);
+            console.log(message);
 
-            let slackResponse : ChatPostMessageResponse
+            let slackResponse: ChatPostMessageResponse
                 = await this.slackApiClient.sendDm(event.user, message);
 
         } catch (error) {
@@ -59,4 +60,13 @@ export default class ChannelEventHandler {
         }
 
     }
+
+    async interactiveMessageResponse(req: Request, res: Response){
+        try {
+
+        }catch(err){
+            console.log(err);
+        }
+    }
+
 }

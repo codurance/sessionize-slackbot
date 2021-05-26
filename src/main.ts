@@ -1,13 +1,11 @@
 import dotenv from 'dotenv';
-import { App, ExpressReceiver } from '@slack/bolt';
+import { App, BlockAction, ExpressReceiver } from '@slack/bolt';
 import MessageBuilder from './MessageBuilder';
 import ChannelEventHandler from './EventHandlers/ChannelEventHandler';
 import CoreApiClient from './CoreApiClient';
 import SlackApiClient from './SlackApiClient';
 import ApiEventHandler from './EventHandlers/ApiEventHandler';
 import express from 'express';
-import { ConversationsListResponse, ConversationsMembersArguments, ConversationsMembersResponse } from '@slack/web-api';
-import { Channel } from '@slack/web-api/dist/response/AdminUsergroupsListChannelsResponse';
 
 dotenv.config()
 
@@ -38,6 +36,12 @@ app.event('member_left_channel', async ({ event }) => {
     channelEventHandler.onChannelLeave(event);
 });
 
+app.action('approve_session', async ({ ack, say }) => {
+    console.log("A session was approved!");
+    await ack();
+    await say("Thanks! You have successfully accepted this match!");
+});
+
 receiver.router.use(express.json());
 receiver.router.use(express.urlencoded({ extended: true }));
 
@@ -50,11 +54,10 @@ receiver.router.post('/match-notification', (req, res) => {
 });
 
 receiver.router.post('/slack/interactive-endpoint', (req, res) => {
-    if(req.body.payload){
-        console.log(JSON.parse(req.body.payload));
-
-    }else{
-        console.log(req.body);
+    try {
+        const payload: BlockAction = JSON.parse(req.body.payload);
+    }catch(err){
+        console.log(err);
     }
 });
 

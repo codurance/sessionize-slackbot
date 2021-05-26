@@ -25,7 +25,7 @@ export default class MatchDetails implements IMatchDetails {
         });
 
         return new MatchDetails(
-            new Language(request.language),
+            new Language(request.language.language, request.language.displayName),
             new DateTime(request.dateTime),
             userIdentifiers
         );

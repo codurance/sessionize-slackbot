@@ -19,6 +19,9 @@ export default class CoreApiClient {
 
     async deactivateUser(slackUserIdentity: SlackUserIdentity): Promise<boolean> {
 
+
+        if (process.env.MOCK_CORE == "true") return true;
+
         const response = await axios.put(process.env.CORE_API + `/slack/optout?email=${slackUserIdentity.email}`);
 
         return response.data;
