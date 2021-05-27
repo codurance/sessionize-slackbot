@@ -104,7 +104,7 @@ describe("ApiEventHandler", () => {
                 type: "section",
                 text: {
                     type: "mrkdwn",
-                    text: `You have a new match:\n <@${partner.value}>`
+                    text: `You have a new match:\n <@${partner.slackId}>`
                 }
             },
             {

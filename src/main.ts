@@ -54,11 +54,7 @@ receiver.router.post('/match-notification', (req, res) => {
 });
 
 receiver.router.post('/slack/interactive-endpoint', (req, res) => {
-    try {
-        const payload: BlockAction = JSON.parse(req.body.payload);
-    }catch(err){
-        console.log(err);
-    }
+    channelEventHandler.interactiveMessageResponse(req, res);
 });
 
 

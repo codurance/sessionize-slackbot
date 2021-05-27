@@ -133,7 +133,7 @@ export default class MessageBuilder {
         let matchNameString : string = "";
 
         matchNames.map(id => {
-            matchNameString += `<@${id.value}> `;
+            matchNameString += `<@${id.slackId}> `;
         });
 
         return matchNameString.trimEnd();

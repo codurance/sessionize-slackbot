@@ -9,6 +9,7 @@ import {
 import IMatchNotification from "./Interfaces/IMatchNotification";
 import SlackId from "./SlackId";
 import SlackUserIdentity from "./SlackUserIdentity";
+import MatchNotification from './MatchNotification';
 
 dotenv.config();
 
@@ -38,10 +39,14 @@ export default class SlackApiClient {
         } as SlackUserIdentity;
     }
 
-    async sendMatchNotification(matchNotification: IMatchNotification): Promise<ChatPostMessageResponse> {
+    async sendMatchNotification(matchNotification: MatchNotification): Promise<ChatPostMessageResponse> {
+
+        console.log(JSON.stringify(matchNotification.slackId));
+        console.table(matchNotification.slackId);
+        console.log("Channel is " + matchNotification.slackId.slackId);
 
         return await this.web.chat.postMessage({
-            channel: matchNotification.slackId.value,
+            channel: matchNotification.slackId.slackId,
             text: "You have a new match!",
             blocks: matchNotification.body
         });
