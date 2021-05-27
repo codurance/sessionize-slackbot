@@ -45,13 +45,11 @@ describe("ChannelEventHandler", () => {
     });
     test("should make a request to user for language preferences", async () => {
 
-        const languagesResponseFromCore: ILanguagesResponse = {
-            languages: [
-                ["java", "Java"],
-                ["csharp", "C#"],
-                ["python", "Python"]
-            ]
-        };
+        const languagesResponseFromCore: Language[] = [
+                new Language("JAVA", "Java"),
+                new Language("CSHARP", "C#"),
+                new Language("PYTHON", "Python")
+            ];
 
         const mockedSlackApiClient: SlackApiClient = mock(SlackApiClient);
         const slackApiClient: SlackApiClient = instance(mockedSlackApiClient);
@@ -67,9 +65,9 @@ describe("ChannelEventHandler", () => {
 
         const channelEventHandler: ChannelEventHandler = new ChannelEventHandler(coreApiClient, slackApiClient, messageBuilder);
 
-        const languagesResponse: LanguagesResponse = LanguagesResponse.fromResponse(languagesResponseFromCore);
+        const languagesResponse: LanguagesResponse = new LanguagesResponse(languagesResponseFromCore);
 
-        const preferencesBody: KnownBlock[] = messageBuilder.buildPreferencesForm(languagesResponse.toLanguageList());
+        const preferencesBody: KnownBlock[] = messageBuilder.buildPreferencesForm(languagesResponse.languages);
 
         const preferencesForm: PreferencesForm = new PreferencesForm(user, preferencesBody);
 

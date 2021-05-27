@@ -9,6 +9,7 @@ import ILanguagesResponse from "../Interfaces/ILanguagesResponse";
 import LanguagesResponse from "../LanguagesResponse";
 import PreferencesForm from "../PreferencesForm";
 import SlackId from "../SlackId";
+import Language from "../Language";
 
 export default class ChannelEventHandler {
 
@@ -82,16 +83,14 @@ export default class ChannelEventHandler {
     }
 
     async sendLanguagePreferencesForm(user: SlackId): Promise<ChatPostMessageResponse> {
+
         try {
 
-            let latestLanguagesResponse: ILanguagesResponse =
+            let latestLanguagesResponse: Language[] =
                 await this.coreApiClient.getLanguageList();
 
 
-            const languagesResponse: LanguagesResponse = LanguagesResponse.fromResponse(latestLanguagesResponse);
-
-
-            const preferencesMessage: KnownBlock[] = this.messageBuilder.buildPreferencesForm(languagesResponse.toLanguageList());
+            const preferencesMessage: KnownBlock[] = this.messageBuilder.buildPreferencesForm(latestLanguagesResponse);
 
 
             const preferencesForm: PreferencesForm = new PreferencesForm(user, preferencesMessage);
@@ -99,8 +98,8 @@ export default class ChannelEventHandler {
 
             let response: ChatPostMessageResponse = await this.slackApiClient.sendPreferencesForm(preferencesForm);
 
-
             return response;
+
         }catch(err){
             throw new Error(err);
         }

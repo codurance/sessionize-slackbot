@@ -11,6 +11,9 @@ import {deepFilterFor} from "../Utils/ArraysUtils";
 import SlackId from "../SlackId";
 import IPreferencesRequest from "../Interfaces/IPreferencesRequest";
 import PreferencesForm from "../PreferencesForm";
+import ILanguagesResponse from "../Interfaces/ILanguagesResponse";
+import LanguagesResponse from "../LanguagesResponse";
+import Language from "../Language";
 
 export default class ApiEventHandler {
 
@@ -67,8 +70,11 @@ export default class ApiEventHandler {
 
     async onLanguagePreferences(request: Request, response: Response){
         try {
+            let latestLanguages: Language[] = await this.coreApiClient.getLanguageList();
+            console.log(latestLanguages);
             const preferencesRequest: IPreferencesRequest = request.body;
-            const preferencesMessage : KnownBlock[] = this.messageBuilder.buildPreferencesForm(preferencesRequest.languages);
+            const preferencesMessage : KnownBlock[] = this.messageBuilder.buildPreferencesForm(latestLanguages);
+            console.log(JSON.stringify(preferencesMessage));
             const slackId = new SlackId(preferencesRequest.slackId);
             const preferencesForm : PreferencesForm = new PreferencesForm(slackId, preferencesMessage);
             let response = this.slackApiClient.sendPreferencesForm(preferencesForm);

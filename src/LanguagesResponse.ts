@@ -4,18 +4,10 @@ import Language from "./Language";
 
 export default class LanguagesResponse implements ILanguageResponse {
 
-    languages: [string, string][]
+    languages: Language[]
     
-    constructor(languages: [string, string][]){
+    constructor(languages: Language[]){
         this.languages = languages;
-    }
-
-    toLanguageList(): Language[] {
-        let languageList: Language[] = [];
-        this.languages.map(language => {
-            languageList.push(new Language(language[0], language[1]));
-        });
-        return languageList;
     }
 
     static fromResponse(response: ILanguagesResponse){

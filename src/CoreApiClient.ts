@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import axios from "axios";
 import PreferencesPayload from "./PreferencesPayload";
 import ILanguageResponse from "./Interfaces/ILanguagesResponse";
+import Language from "./Language";
 
 dotenv.config()
 
@@ -36,7 +37,7 @@ export default class CoreApiClient {
 
     }
 
-    async getLanguageList() : Promise<ILanguageResponse> {
+    async getLanguageList() : Promise<Language[]> {
 
         try{
             const response = await axios.get(process.env.CORE_API + '/slack/languages');

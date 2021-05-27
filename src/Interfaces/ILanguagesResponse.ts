@@ -1,3 +1,5 @@
+import Language from "../Language";
+
 export default interface ILanguagesResponse {
-    languages: [string, string][]
+    languages: Language[]
 }
