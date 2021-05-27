@@ -1,4 +1,5 @@
-import { ActionsBlock, Button, KnownBlock, SectionBlock } from '@slack/web-api';
+import { ActionsBlock, Button, InputBlock, KnownBlock, Option, SectionBlock } from '@slack/web-api';
+import Language from './Language';
 import MatchNotificationContent from './MatchNotificationContent';
 import * as templates from './MessageTemplates/Templates';
 import SlackId from './SlackId';
@@ -68,7 +69,22 @@ export default class MessageBuilder {
         ];
     }
 
-    buildPreferencesForm() : KnownBlock[] {
+    buildPreferencesForm(languages: Language[]) : KnownBlock[] {
+
+        let optionsArray: Option[]  = [];
+
+        languages.map(language => {
+            optionsArray.push(
+                {
+                    "text": {
+                        "type": "plain_text",
+                        "text": language.displayName,
+                        "emoji": true
+                    },
+                    "value": language.value
+                }
+            );
+        });
 
         const headerSection : SectionBlock = {
             type: "section",
@@ -78,19 +94,24 @@ export default class MessageBuilder {
             }
         };
 
-        const matchDetailsSection : SectionBlock = {
-            type: "section",
-            fields: [
-                {
-                    type: "mrkdwn",
-                    text: `*Language:*`
-                },
-                {
-                    type: "mrkdwn",
-                    text: `*When:*`
-                }
-            ]
-        };
+        const languageSelectors : InputBlock = {
+			"type": "input",
+			"element": {
+				"type": "static_select",
+				"placeholder": {
+					"type": "plain_text",
+					"text": "Select an item",
+					"emoji": true
+				},
+				"options": optionsArray,
+				"action_id": "static_select-action"
+			},
+			"label": {
+				"type": "plain_text",
+				"text": "Label",
+				"emoji": true
+			}
+		};
 
         const actions : ActionsBlock = {
             type: "actions",
@@ -99,31 +120,20 @@ export default class MessageBuilder {
                     type: "button",
                     text : {
                         type: "plain_text",
-                        text: "Approve",
+                        text: "Confirm",
                         emoji: true
                     },
-                    action_id: "approve_session",
+                    action_id: "confirm_preferences",
                     style: "primary",
-                    value: "session_confirmed",
+                    value: "preferences_confirmed",
                     
-                } as Button,
-                {
-                    type: "button",
-                    text : {
-                        type: "plain_text",
-                        text: "Deny",
-                        emoji: true
-                    },
-                    style: "danger",
-                    value: "session_denied",
-                    action_id: "deny_session"
-                }
+                } as Button
             ]
         };
 
         return [
             headerSection,
-            matchDetailsSection,
+            languageSelectors,
             actions
         ];
     }
