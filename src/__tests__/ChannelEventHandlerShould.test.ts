@@ -1,11 +1,16 @@
-import { instance, mock, verify, when } from "ts-mockito"
+import { anyOfClass, anything, deepEqual, instance, mock, verify, when } from "ts-mockito"
 import CoreApiClient from "../CoreApiClient"
 import MessageBuilder from "../MessageBuilder"
 import ChannelEventHandler from "../EventHandlers/ChannelEventHandler"
 import SlackApiClient from "../SlackApiClient"
 import SlackUserIdentity from "../SlackUserIdentity"
-import { MemberJoinedChannelEvent } from "@slack/bolt"
+import { KnownBlock, MemberJoinedChannelEvent } from "@slack/bolt"
 import SlackId from "../SlackId";
+import Language from "../Language"
+import ILanguagesResponse from "../Interfaces/ILanguagesResponse"
+import PreferencesForm from "../PreferencesForm"
+import LanguagesResponse from "../LanguagesResponse"
+import {ChatPostMessageResponse} from "@slack/web-api"
 
 describe("ChannelEventHandler", () => {
     test("should make request to core to see if user joining channel is new", async () => {
@@ -37,5 +42,41 @@ describe("ChannelEventHandler", () => {
         const message = await channelEventHandler.onChannelJoin(event);
 
         verify(mockedCoreApiClient.isNewUser(userIdentity)).once();
+    });
+    test("should make a request to user for language preferences", async () => {
+
+        const languagesResponseFromCore: ILanguagesResponse = {
+            languages: [
+                ["java", "Java"],
+                ["csharp", "C#"],
+                ["python", "Python"]
+            ]
+        };
+
+        const mockedSlackApiClient: SlackApiClient = mock(SlackApiClient);
+        const slackApiClient: SlackApiClient = instance(mockedSlackApiClient);
+
+        const mockedCoreApiClient: CoreApiClient = mock(CoreApiClient);
+        const coreApiClient: CoreApiClient = instance(mockedCoreApiClient);
+
+        when(mockedCoreApiClient.getLanguageList()).thenResolve(languagesResponseFromCore);
+
+        const user: SlackId = new SlackId("ABC123");
+
+        const messageBuilder: MessageBuilder = new MessageBuilder();
+
+        const channelEventHandler: ChannelEventHandler = new ChannelEventHandler(coreApiClient, slackApiClient, messageBuilder);
+
+        const languagesResponse: LanguagesResponse = LanguagesResponse.fromResponse(languagesResponseFromCore);
+
+        const preferencesBody: KnownBlock[] = messageBuilder.buildPreferencesForm(languagesResponse.toLanguageList());
+
+        const preferencesForm: PreferencesForm = new PreferencesForm(user, preferencesBody);
+
+        await channelEventHandler.sendLanguagePreferencesForm(user);
+
+        verify(mockedSlackApiClient.sendPreferencesForm(anything())).once();
+        verify(mockedSlackApiClient.sendPreferencesForm(deepEqual(preferencesForm))).once();
+
     });
 });

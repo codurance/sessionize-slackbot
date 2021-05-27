@@ -53,6 +53,10 @@ receiver.router.post('/match-notification', (req, res) => {
     apiEventHandler.onMatchNotification(req, res);
 });
 
+receiver.router.post('/language-preferences', (req, res) => {
+    apiEventHandler.onLanguagePreferences(req, res);
+});
+
 receiver.router.post('/slack/interactive-endpoint', (req, res) => {
     channelEventHandler.interactiveMessageResponse(req, res);
 });

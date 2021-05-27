@@ -6,10 +6,11 @@ import {
     WebClient
 } from '@slack/web-api';
 
-import IMatchNotification from "./Interfaces/IMatchNotification";
 import SlackId from "./SlackId";
 import SlackUserIdentity from "./SlackUserIdentity";
 import MatchNotification from './MatchNotification';
+import PreferencesForm from './PreferencesForm';
+import LanguagesResponse from './LanguagesResponse';
 
 dotenv.config();
 
@@ -41,14 +42,19 @@ export default class SlackApiClient {
 
     async sendMatchNotification(matchNotification: MatchNotification): Promise<ChatPostMessageResponse> {
 
-        console.log(JSON.stringify(matchNotification.slackId));
-        console.table(matchNotification.slackId);
-        console.log("Channel is " + matchNotification.slackId.slackId);
-
         return await this.web.chat.postMessage({
             channel: matchNotification.slackId.slackId,
             text: "You have a new match!",
             blocks: matchNotification.body
+        });
+    }
+
+    async sendPreferencesForm(preferencesForm: PreferencesForm){
+
+        return await this.web.chat.postMessage({
+            channel: preferencesForm.user.slackId,
+            text: "Please select your preferences",
+            blocks: preferencesForm.body
         });
     }
 

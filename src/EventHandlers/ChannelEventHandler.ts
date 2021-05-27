@@ -1,10 +1,14 @@
 import {BlockAction, MemberJoinedChannelEvent, MemberLeftChannelEvent} from "@slack/bolt";
-import {ChatPostMessageResponse, WebClient} from "@slack/web-api";
+import {ChatPostMessageResponse, KnownBlock, WebClient} from "@slack/web-api";
 import CoreApiClient from "../CoreApiClient"
 import MessageBuilder from "../MessageBuilder"
 import SlackApiClient from "../SlackApiClient"
 import SlackUserIdentity from "../SlackUserIdentity";
 import { Request, Response } from 'express';
+import ILanguagesResponse from "../Interfaces/ILanguagesResponse";
+import LanguagesResponse from "../LanguagesResponse";
+import PreferencesForm from "../PreferencesForm";
+import SlackId from "../SlackId";
 
 export default class ChannelEventHandler {
 
@@ -33,7 +37,6 @@ export default class ChannelEventHandler {
 
         } catch (error) {
             // TODO: Handle user-friendly errors
-            console.error(error);
         }
     }
 
@@ -43,20 +46,17 @@ export default class ChannelEventHandler {
             const slackIdentity: SlackUserIdentity =
                 await this.slackApiClient.getIdentity(event.user);
 
-            console.log(slackIdentity);
 
             let message: string = await this.coreApiClient.deactivateUser(slackIdentity)
                 ? this.messageBuilder.buildFarewell(slackIdentity.firstName)
                 : this.messageBuilder.errorOccurred(slackIdentity.firstName);
 
-            console.log(message);
 
             let slackResponse: ChatPostMessageResponse
                 = await this.slackApiClient.sendDm(event.user, message);
 
         } catch (error) {
             // TODO: Handle user-friendly errors
-            console.error(error);
         }
 
     }
@@ -64,7 +64,6 @@ export default class ChannelEventHandler {
     async interactiveMessageResponse(req: Request, res: Response){
         try {
             const payload: BlockAction = JSON.parse(req.body.payload);
-            console.log(console.log(JSON.stringify(payload)));
             // Send to method depending on the kind of response
             switch(payload.actions[0].action_id){
                 case "approve_session":
@@ -75,7 +74,6 @@ export default class ChannelEventHandler {
                     throw new Error("Unknown response");
             }
         }catch(err){
-            console.log(err);
         }
     }
 
@@ -83,4 +81,29 @@ export default class ChannelEventHandler {
         // TODO: Prepare approve_session payload and send to core
     }
 
+    async sendLanguagePreferencesForm(user: SlackId): Promise<ChatPostMessageResponse> {
+        try {
+
+            let latestLanguagesResponse: ILanguagesResponse =
+                await this.coreApiClient.getLanguageList();
+
+
+            const languagesResponse: LanguagesResponse = LanguagesResponse.fromResponse(latestLanguagesResponse);
+
+
+            const preferencesMessage: KnownBlock[] = this.messageBuilder.buildPreferencesForm(languagesResponse.toLanguageList());
+
+
+            const preferencesForm: PreferencesForm = new PreferencesForm(user, preferencesMessage);
+
+
+            let response: ChatPostMessageResponse = await this.slackApiClient.sendPreferencesForm(preferencesForm);
+
+
+            return response;
+        }catch(err){
+            throw new Error(err);
+        }
+
+    }
 }

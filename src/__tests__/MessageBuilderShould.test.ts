@@ -4,12 +4,21 @@ import IMatchNotificationContent from "../Interfaces/IMatchNotificationContent";
 import SlackId from "../SlackId";
 import Language from "../Language";
 import DateTime from "../DateTime";
+import CoreApiClient from "../CoreApiClient";
+import {mock, instance, verify} from "ts-mockito";
+import SlackApiClient from "../SlackApiClient";
 
 describe("MessageBuilder", () => {
+
+        let messageBuilder: MessageBuilder;
+
+    beforeEach(() => {
+        messageBuilder = new MessageBuilder();
+    });
+
     test("should return a simple markdown message", () => {
 
         const name = "Joe Bloggs";
-        const messageBuilder = new MessageBuilder();
         const expectedMessage = "Hi Joe Bloggs, welcome to Sessionize!";
 
         const generatedMessage = messageBuilder.buildGreeting(name);
@@ -81,5 +90,8 @@ describe("MessageBuilder", () => {
         expect(matchNotification).toStrictEqual(expectedMatchNotification);
     });
 
+    test("should return a preferences message", () => {
+
+    });
 
 });

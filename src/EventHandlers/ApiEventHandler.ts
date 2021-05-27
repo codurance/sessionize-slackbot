@@ -9,6 +9,8 @@ import MatchNotificationContent from "../MatchNotificationContent";
 import MatchDetails from "../MatchDetails";
 import {deepFilterFor} from "../Utils/ArraysUtils";
 import SlackId from "../SlackId";
+import IPreferencesRequest from "../Interfaces/IPreferencesRequest";
+import PreferencesForm from "../PreferencesForm";
 
 export default class ApiEventHandler {
 
@@ -63,14 +65,16 @@ export default class ApiEventHandler {
         }
     }
 
-    /*  async onPreferencesRequest(request: Request, response: Response){
-
-         try {
-             const preferencesRequest = await PreferencesRequest.fromRequest(request);
-         }catch(err){
-
-         }
-
-     } */
+    async onLanguagePreferences(request: Request, response: Response){
+        try {
+            const preferencesRequest: IPreferencesRequest = request.body;
+            const preferencesMessage : KnownBlock[] = this.messageBuilder.buildPreferencesForm(preferencesRequest.languages);
+            const slackId = new SlackId(preferencesRequest.slackId);
+            const preferencesForm : PreferencesForm = new PreferencesForm(slackId, preferencesMessage);
+            let response = this.slackApiClient.sendPreferencesForm(preferencesForm);
+        }catch(err){
+            console.log(err);
+        }
+    }
 
 }

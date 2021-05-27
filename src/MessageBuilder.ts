@@ -1,4 +1,4 @@
-import { ActionsBlock, Button, InputBlock, KnownBlock, Option, SectionBlock } from '@slack/web-api';
+import { ActionsBlock, Button, InputBlock, KnownBlock, MultiStaticSelect, Option, SectionBlock } from '@slack/web-api';
 import Language from './Language';
 import MatchNotificationContent from './MatchNotificationContent';
 import * as templates from './MessageTemplates/Templates';
@@ -94,21 +94,31 @@ export default class MessageBuilder {
             }
         };
 
+        const multiSelect: MultiStaticSelect = {
+            type: "multi_static_select",
+            placeholder: {
+                type: "plain_text",
+                text: "Select a language",
+                emoji: true
+            },
+            option_groups: [
+                {
+                    label: {
+                        type: "plain_text",
+                        text: "Languages",
+                    },
+                    options: optionsArray
+                },
+            ],
+            max_selected_items: 3
+        }
+
         const languageSelectors : InputBlock = {
 			"type": "input",
-			"element": {
-				"type": "static_select",
-				"placeholder": {
-					"type": "plain_text",
-					"text": "Select an item",
-					"emoji": true
-				},
-				"options": optionsArray,
-				"action_id": "static_select-action"
-			},
+			"element": multiSelect,
 			"label": {
 				"type": "plain_text",
-				"text": "Label",
+				"text": "Languages",
 				"emoji": true
 			}
 		};
