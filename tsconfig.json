@@ -10,7 +10,7 @@
         "esModuleInterop": true,                        
         "skipLibCheck": true,                           
         "forceConsistentCasingInFileNames": true,
-        "typeRoots": ["./src/typings", "./node_modules/@types"],
+        "typeRoots": ["src/Typings", "./node_modules/@types"],
         "paths": {
             "*": ["./src/*"]
         }

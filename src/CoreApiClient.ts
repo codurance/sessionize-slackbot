@@ -2,7 +2,6 @@ import SlackUserIdentity from "./SlackUserIdentity";
 import dotenv from 'dotenv';
 import axios from "axios";
 import PreferencesPayload from "./PreferencesPayload";
-import ILanguageResponse from "./Interfaces/ILanguagesResponse";
 import Language from "./Language";
 
 dotenv.config()

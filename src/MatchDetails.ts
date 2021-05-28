@@ -1,9 +1,10 @@
 import DateTime from "./DateTime";
-import ILanguage from "./Interfaces/ILanguage";
-import IMatchDetails from "./Interfaces/IMatchDetails";
-import IMatchNotificationRequest from "./Interfaces/IMatchNotificationRequest";
 import Language from "./Language";
 import SlackId from "./SlackId";
+
+import type {ILanguage} from "Typings";
+import type {IMatchDetails} from "Typings";
+import type {IMatchNotificationRequest} from "Typings";
 
 export default class MatchDetails implements IMatchDetails {
     language: ILanguage;

@@ -1,8 +1,7 @@
-import ILanguagesResponse from "./Interfaces/ILanguagesResponse";
-import ILanguageResponse from "./Interfaces/ILanguagesResponse";
+import type {ILanguagesResponse} from "Typings"
 import Language from "./Language";
 
-export default class LanguagesResponse implements ILanguageResponse {
+export default class LanguagesResponse implements ILanguagesResponse {
 
     languages: Language[]
     

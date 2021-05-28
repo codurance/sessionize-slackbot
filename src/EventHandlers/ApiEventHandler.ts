@@ -4,17 +4,15 @@ import SlackApiClient from "../SlackApiClient";
 import {Request, Response} from "express";
 import {KnownBlock} from "@slack/web-api";
 import MatchNotification from "../MatchNotification";
-import IMatchNotificationRequest from "../Interfaces/IMatchNotificationRequest";
 import MatchNotificationContent from "../MatchNotificationContent";
 import MatchDetails from "../MatchDetails";
 import {deepFilterFor} from "../Utils/ArraysUtils";
 import SlackId from "../SlackId";
-import IPreferencesRequest from "../Interfaces/IPreferencesRequest";
 import PreferencesForm from "../PreferencesForm";
-import ILanguagesResponse from "../Interfaces/ILanguagesResponse";
-import LanguagesResponse from "../LanguagesResponse";
 import Language from "../Language";
 
+import type {IPreferencesRequest} from "Typings"
+import type {IMatchNotificationRequest} from "Typings";
 export default class ApiEventHandler {
 
     coreApiClient: CoreApiClient;

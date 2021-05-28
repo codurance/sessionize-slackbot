@@ -1,4 +1,4 @@
-import { anyOfClass, anything, deepEqual, instance, mock, verify, when } from "ts-mockito"
+import { anything, deepEqual, instance, mock, verify, when } from "ts-mockito"
 import CoreApiClient from "../CoreApiClient"
 import MessageBuilder from "../MessageBuilder"
 import ChannelEventHandler from "../EventHandlers/ChannelEventHandler"
@@ -7,10 +7,8 @@ import SlackUserIdentity from "../SlackUserIdentity"
 import { KnownBlock, MemberJoinedChannelEvent } from "@slack/bolt"
 import SlackId from "../SlackId";
 import Language from "../Language"
-import ILanguagesResponse from "../Interfaces/ILanguagesResponse"
 import PreferencesForm from "../PreferencesForm"
 import LanguagesResponse from "../LanguagesResponse"
-import {ChatPostMessageResponse} from "@slack/web-api"
 
 describe("ChannelEventHandler", () => {
     test("should make request to core to see if user joining channel is new", async () => {

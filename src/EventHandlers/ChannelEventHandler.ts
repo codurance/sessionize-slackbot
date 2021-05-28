@@ -5,8 +5,6 @@ import MessageBuilder from "../MessageBuilder"
 import SlackApiClient from "../SlackApiClient"
 import SlackUserIdentity from "../SlackUserIdentity";
 import { Request, Response } from 'express';
-import ILanguagesResponse from "../Interfaces/ILanguagesResponse";
-import LanguagesResponse from "../LanguagesResponse";
 import PreferencesForm from "../PreferencesForm";
 import SlackId from "../SlackId";
 import Language from "../Language";

@@ -50,7 +50,7 @@ import express from 'express';
     receiver.router.post('/match-notification', apiEventHandler.onMatchNotification);
     receiver.router.post('/language-preferences', apiEventHandler.onLanguagePreferences);
     receiver.router.post('/slack/interactive-endpoint', channelEventHandler.interactiveMessageResponse);
-        
+
     await app.start(80);
     console.log("Sessionize SlackBot running");
 

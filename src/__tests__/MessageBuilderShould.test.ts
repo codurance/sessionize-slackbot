@@ -1,12 +1,10 @@
 import { KnownBlock } from "@slack/web-api";
 import MessageBuilder from "../MessageBuilder";
-import IMatchNotificationContent from "../Interfaces/IMatchNotificationContent";
 import SlackId from "../SlackId";
 import Language from "../Language";
 import DateTime from "../DateTime";
-import CoreApiClient from "../CoreApiClient";
-import {mock, instance, verify} from "ts-mockito";
-import SlackApiClient from "../SlackApiClient";
+
+import type {IMatchNotificationContent} from "../Typings";
 
 describe("MessageBuilder", () => {
 
