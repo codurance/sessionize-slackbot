@@ -3,7 +3,7 @@ export default class DateTime {
     constructor(dateTime: string){
         this.dateTime = dateTime;
     }
-    get value(){
+    get value(): string {
         return this.dateTime;
     }
 }

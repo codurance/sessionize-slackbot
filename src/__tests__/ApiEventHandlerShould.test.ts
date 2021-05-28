@@ -1,5 +1,5 @@
-import {anyOfClass, deepEqual, instance, mock, verify} from "ts-mockito"
-import {Request, Response} from 'express';
+import {anyOfClass, deepEqual, instance, mock, verify} from "ts-mockito";
+import {Request, Response} from "express";
 import SlackApiClient from "../Repos/SlackApiClient";
 import MessageBuilder from "../MessageBuilder";
 import CoreApiClient from "../Repos/CoreApiClient";
@@ -42,11 +42,11 @@ describe("ApiEventHandler", () => {
                 slackId: expectedSlackId,
                 message: expectedMessage
             }
-        }
+        };
 
         const testResponse: Partial<Response> = {
             send: jest.fn()
-        }
+        };
         await apiEventHandler.onDirectMessage(testRequest as Request, testResponse as Response);
         verify(mockedSlackApiClient.sendDm(expectedSlackId, expectedMessage));
     });
@@ -65,7 +65,7 @@ describe("ApiEventHandler", () => {
 
         const returnedString: string = messageBuilder.matchIdsAsString(userNameArray);
 
-        const expectedString: string = "<@12345> <@54321> <@9878> <@510101> <@19389>";
+        const expectedString = "<@12345> <@54321> <@9878> <@510101> <@19389>";
 
         expect(returnedString).toBe(expectedString);
     });
@@ -86,8 +86,8 @@ describe("ApiEventHandler", () => {
             ]
         };
 
-        const mockRequest: Partial<Request> = {body: matchNotificationRequest}
-        const mockResponse: Partial<Response> = {send: jest.fn()}
+        const mockRequest: Partial<Request> = {body: matchNotificationRequest};
+        const mockResponse: Partial<Response> = {send: jest.fn()};
 
         const cameronExpectedMatchNotification: MatchNotification = generateMatchNotificationFor(cameron, dave);
         const daveExpectedMatchNotification: MatchNotification = generateMatchNotificationFor(dave, cameron);
@@ -97,7 +97,7 @@ describe("ApiEventHandler", () => {
         verify(mockedSlackApiClient.sendMatchNotification(anyOfClass(MatchNotification))).twice();
         verify(mockedSlackApiClient.sendMatchNotification(deepEqual(cameronExpectedMatchNotification))).once();
         verify(mockedSlackApiClient.sendMatchNotification(deepEqual(daveExpectedMatchNotification))).once();
-    })
+    });
 
     const generateMatchNotificationFor = (user: SlackId, partner: SlackId): MatchNotification => {
         const body: KnownBlock[] = [
@@ -113,11 +113,11 @@ describe("ApiEventHandler", () => {
                 fields: [
                     {
                         type: "mrkdwn",
-                        text: `*Language:*\nJava`
+                        text: "*Language:*\nJava"
                     },
                     {
                         type: "mrkdwn",
-                        text: `*When:*\n26/05/2021 19:30`
+                        text: "*When:*\n26/05/2021 19:30"
                     }
                 ]
             },
@@ -151,5 +151,5 @@ describe("ApiEventHandler", () => {
         ];
 
         return new MatchNotification(user, body);
-    }
+    };
 });

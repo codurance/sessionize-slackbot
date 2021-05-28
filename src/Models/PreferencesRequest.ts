@@ -11,8 +11,8 @@ export default class PreferencesRequest {
         this.languages = languages;       
     }
 
-    static async fromRequest(request : Request){
-        let body = await request.json();
+    static async fromRequest(request : Request): Promise<PreferencesRequest> {
+        const body = await request.json();
         return new PreferencesRequest(body.slackId, body.languages);
     }
 }

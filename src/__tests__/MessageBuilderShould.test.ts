@@ -8,7 +8,7 @@ import type {IMatchNotificationContent} from "../Typings";
 
 describe("MessageBuilder", () => {
 
-        let messageBuilder: MessageBuilder;
+    let messageBuilder: MessageBuilder;
 
     beforeEach(() => {
         messageBuilder = new MessageBuilder();
@@ -86,10 +86,6 @@ describe("MessageBuilder", () => {
         const matchNotification = messageBuilder.buildMatchNotification(matchNotificationBody);
 
         expect(matchNotification).toStrictEqual(expectedMatchNotification);
-    });
-
-    test("should return a preferences message", () => {
-
     });
 
 });

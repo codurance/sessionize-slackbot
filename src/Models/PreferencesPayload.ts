@@ -1,4 +1,4 @@
-import IPreferencesPayload from "./Interfaces/IPreferencesPayload";
+import type {IPreferencesPayload} from "Typings";
 
 export default class PreferencesPayload implements IPreferencesPayload {
 

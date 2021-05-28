@@ -11,8 +11,8 @@
     "compile": "tsc && node ./build/main.js",
     "dev": "./node_modules/nodemon/bin/nodemon.js -e ts --exec \"npm run compile\"",
     "start": "node ./build/main.js",
-    "lint": "eslint . --ext ts --ext js",
-    "lint:fix": "eslint . --fix --ext ts --ext js"
+    "lint": "eslint . --ext ts",
+    "lint:fix": "eslint . --fix --ext ts"
   },
   "author": "",
   "license": "MIT",

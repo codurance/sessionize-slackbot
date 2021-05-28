@@ -1,14 +1,14 @@
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 import {
     ChatPostMessageResponse,
     ConversationsMembersArguments,
     UsersProfileGetResponse,
     WebClient
-} from '@slack/web-api';
+} from "@slack/web-api";
 
 import SlackId from "../Models/SlackId";
-import MatchNotification from '../Models/MatchNotification';
-import PreferencesForm from '../Models/PreferencesForm';
+import MatchNotification from "../Models/MatchNotification";
+import PreferencesForm from "../Models/PreferencesForm";
 
 import type {ISlackUserIdentity} from "Typings";
 
@@ -23,20 +23,29 @@ export default class SlackApiClient {
             channel: slackId,
             text: message
         });
-    };
+    }
 
     async getIdentity(slackId: string): Promise<ISlackUserIdentity> {
         const userIdentity: UsersProfileGetResponse = await this.web.users.profile.get({
             user: slackId
         });
 
-        const splitNames = userIdentity.profile?.real_name?.split(" ");
+        const splitNames = Array<string|undefined>(2);
+
+        try {
+            const nameAfterSplit = userIdentity.profile?.real_name?.split(" ");
+            nameAfterSplit?.map((string, i) => {
+                splitNames[i] = string;
+            });
+        }catch(err){
+            console.log(err);
+        }
 
         return {
             slackId: new SlackId(slackId),
             email: userIdentity.profile?.email,
-            firstName: splitNames![0],
-            lastName: splitNames![1]
+            firstName: splitNames[0],
+            lastName: splitNames[1]
         } as ISlackUserIdentity;
     }
 
@@ -49,7 +58,7 @@ export default class SlackApiClient {
         });
     }
 
-    async sendPreferencesForm(preferencesForm: PreferencesForm){
+    async sendPreferencesForm(preferencesForm: PreferencesForm): Promise<ChatPostMessageResponse> {
 
         return await this.web.chat.postMessage({
             channel: preferencesForm.user.slackId,
@@ -58,11 +67,11 @@ export default class SlackApiClient {
         });
     }
 
-    async getConversationList(){
+    async getConversationList(): Promise<ChatPostMessageResponse> {
         return await this.web.conversations.list();
     }
 
-    async getConversationMembers(channelId: string){
+    async getConversationMembers(channelId: string): Promise<ChatPostMessageResponse> {
         return await this.web.conversations.members({channel: channelId} as ConversationsMembersArguments);
     }
 }

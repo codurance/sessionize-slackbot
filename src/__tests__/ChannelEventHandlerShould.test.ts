@@ -1,15 +1,15 @@
-import { anything, deepEqual, instance, mock, verify, when } from "ts-mockito"
-import CoreApiClient from "../Repos/CoreApiClient"
-import MessageBuilder from "../MessageBuilder"
-import ChannelEventHandler from "../EventHandlers/ChannelEventHandler"
-import SlackApiClient from "../Repos/SlackApiClient"
-import { KnownBlock, MemberJoinedChannelEvent } from "@slack/bolt"
+import { anything, deepEqual, instance, mock, verify, when } from "ts-mockito";
+import CoreApiClient from "../Repos/CoreApiClient";
+import MessageBuilder from "../MessageBuilder";
+import ChannelEventHandler from "../EventHandlers/ChannelEventHandler";
+import SlackApiClient from "../Repos/SlackApiClient";
+import { KnownBlock, MemberJoinedChannelEvent } from "@slack/bolt";
 import SlackId from "../Models/SlackId";
-import Language from "../Models/Language"
-import PreferencesForm from "../Models/PreferencesForm"
-import LanguagesResponse from "../Models/LanguagesResponse"
+import Language from "../Models/Language";
+import PreferencesForm from "../Models/PreferencesForm";
+import LanguagesResponse from "../Models/LanguagesResponse";
 
-import type {ISlackUserIdentity} from "../Typings"
+import type {ISlackUserIdentity} from "../Typings";
 
 describe("ChannelEventHandler", () => {
     test("should make request to core to see if user joining channel is new", async () => {
@@ -38,17 +38,17 @@ describe("ChannelEventHandler", () => {
 
         const channelEventHandler = new ChannelEventHandler(instance(mockedCoreApiClient), instance(mockedSlackApiClient), new MessageBuilder());
 
-        const message = await channelEventHandler.onChannelJoin(event);
+        await channelEventHandler.onChannelJoin(event);
 
         verify(mockedCoreApiClient.isNewUser(userIdentity)).once();
     });
     test("should make a request to user for language preferences", async () => {
 
         const languagesResponseFromCore: Language[] = [
-                new Language("JAVA", "Java"),
-                new Language("CSHARP", "C#"),
-                new Language("PYTHON", "Python")
-            ];
+            new Language("JAVA", "Java"),
+            new Language("CSHARP", "C#"),
+            new Language("PYTHON", "Python")
+        ];
 
         const mockedSlackApiClient: SlackApiClient = mock(SlackApiClient);
         const slackApiClient: SlackApiClient = instance(mockedSlackApiClient);

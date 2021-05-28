@@ -1,4 +1,4 @@
-import type { ILanguage } from 'Typings';
+import type { ILanguage } from "Typings";
 
 export default class Language implements ILanguage {
 

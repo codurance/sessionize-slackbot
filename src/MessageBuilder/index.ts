@@ -1,9 +1,9 @@
-import { ActionsBlock, Button, InputBlock, KnownBlock, MultiStaticSelect, Option, SectionBlock } from '@slack/web-api';
-import Language from '../Models/Language';
-import MatchNotificationContent from '../Models/MatchNotificationContent';
-import * as templates from '../MessageTemplates/Templates';
-import SlackId from '../Models/SlackId';
-import { formatISODate } from '../Utils/Formatters';
+import { ActionsBlock, Button, InputBlock, KnownBlock, MultiStaticSelect, Option, SectionBlock } from "@slack/web-api";
+import Language from "../Models/Language";
+import MatchNotificationContent from "../Models/MatchNotificationContent";
+import * as templates from "../MessageTemplates/Templates";
+import SlackId from "../Models/SlackId";
+import {formatISODate} from "../Utils/Formatters";
 
 export default class MessageBuilder {
 
@@ -71,7 +71,7 @@ export default class MessageBuilder {
 
     buildPreferencesForm(languages: Language[]) : KnownBlock[] {
 
-        let optionsArray: Option[]  = [];
+        const optionsArray: Option[]  = [];
 
         languages.map(language => {
             optionsArray.push(
@@ -111,17 +111,17 @@ export default class MessageBuilder {
                 },
             ],
             max_selected_items: 3
-        }
+        };
 
         const languageSelectors : InputBlock = {
-			"type": "input",
-			"element": multiSelect,
-			"label": {
-				"type": "plain_text",
-				"text": "Languages",
-				"emoji": true
-			}
-		};
+            "type": "input",
+            "element": multiSelect,
+            "label": {
+                "type": "plain_text",
+                "text": "Languages",
+                "emoji": true
+            }
+        };
 
         const actions : ActionsBlock = {
             type: "actions",
@@ -150,7 +150,7 @@ export default class MessageBuilder {
 
     matchIdsAsString(matchNames : SlackId[]) : string {
 
-        let matchNameString : string = "";
+        let matchNameString  = "";
 
         matchNames.map(id => {
             matchNameString += `<@${id.slackId}> `;

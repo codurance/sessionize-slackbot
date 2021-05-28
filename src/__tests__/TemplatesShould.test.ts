@@ -1,4 +1,4 @@
-import * as templates from '../MessageTemplates/Templates'
+import * as templates from "../MessageTemplates/Templates";
 
 describe("Templates should", () => {
     test("personalize a greeting", () => {

@@ -1,7 +1,7 @@
 import DateTime from "./DateTime";
 import SlackId from "./SlackId";
 
-import type { ILanguage } from 'Typings';
+import type { ILanguage } from "Typings";
 import type {IMatchNotificationContent} from "Typings";
 
 export default class MatchNotificationContent implements IMatchNotificationContent {

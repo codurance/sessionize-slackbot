@@ -5,12 +5,12 @@ import {
     mock,
     verify,
     when,
-} from "ts-mockito"
+} from "ts-mockito";
 
-import CoreApiClient from '../Repos/CoreApiClient';
-import SlackApiClient from '../Repos/SlackApiClient';
-import MessageBuilder from '../MessageBuilder';
-import ChannelEventHandler from '../EventHandlers/ChannelEventHandler';
+import CoreApiClient from "../Repos/CoreApiClient";
+import SlackApiClient from "../Repos/SlackApiClient";
+import MessageBuilder from "../MessageBuilder";
+import ChannelEventHandler from "../EventHandlers/ChannelEventHandler";
 import type {ISlackUserIdentity} from "../Typings";
 import { MemberJoinedChannelEvent } from "@slack/bolt";
 import SlackId from "../Models/SlackId";
@@ -19,8 +19,8 @@ describe("Slack Service should", () => {
 
     it.each`
         isNewUser | expectedMessage
-        ${true}   | ${'Hi Joe Bloggs, welcome to Sessionize!'} 
-        ${false}  | ${'Hi Joe Bloggs, welcome back to Sessionize!'}
+        ${true}   | ${"Hi Joe Bloggs, welcome to Sessionize!"} 
+        ${false}  | ${"Hi Joe Bloggs, welcome back to Sessionize!"}
     `("send a personalised message when a user joins the channel", async ({ isNewUser, expectedMessage }) => {
         // GIVEN Sessionize is installed
         // WHEN a user joins the Sessionize slack channel

@@ -1,7 +1,7 @@
 export interface ILanguage {
     value: string;
     displayName: string;
-};
+}
 
 export interface IMatchNotificationRequest {
     language: ILanguage,
@@ -46,7 +46,7 @@ export interface IPreferencesPayload {
     primaryLanguage: string,
     secondaryLanguage: string,
     tertiaryLanguage: string
-};
+}
 
 export interface IPreferencesRequest {
     slackId : string,

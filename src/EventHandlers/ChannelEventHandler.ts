@@ -1,12 +1,12 @@
 import {BlockAction, MemberJoinedChannelEvent, MemberLeftChannelEvent} from "@slack/bolt";
-import {ChatPostMessageResponse, KnownBlock, WebClient} from "@slack/web-api";
-import CoreApiClient from "../Repos/CoreApiClient"
-import MessageBuilder from "../MessageBuilder"
-import SlackApiClient from "../Repos/SlackApiClient"
+import {ChatPostMessageResponse, KnownBlock} from "@slack/web-api";
+import CoreApiClient from "../Repos/CoreApiClient";
+import MessageBuilder from "../MessageBuilder";
+import SlackApiClient from "../Repos/SlackApiClient";
 import PreferencesForm from "../Models/PreferencesForm";
 import SlackId from "../Models/SlackId";
 import Language from "../Models/Language";
-import { Request, Response } from 'express';
+import { Request, Response } from "express";
 
 import type {ISlackUserIdentity} from "Typings";
 export default class ChannelEventHandler {
@@ -16,63 +16,69 @@ export default class ChannelEventHandler {
     messageBuilder: MessageBuilder
 
     constructor(coreApiClient: CoreApiClient, slackApiClient: SlackApiClient, messageBuilder: MessageBuilder) {
-        this.coreApiClient = coreApiClient
-        this.slackApiClient = slackApiClient
-        this.messageBuilder = messageBuilder
+        this.coreApiClient = coreApiClient;
+        this.slackApiClient = slackApiClient;
+        this.messageBuilder = messageBuilder;
     }
 
-    async onChannelJoin(event: MemberJoinedChannelEvent) {
+    async onChannelJoin(event: MemberJoinedChannelEvent): Promise<ChatPostMessageResponse> {
 
         try {
             const slackIdentity: ISlackUserIdentity =
                 await this.slackApiClient.getIdentity(event.user);
 
-            let message: string = await this.coreApiClient.isNewUser(slackIdentity)
+            const message: string = await this.coreApiClient.isNewUser(slackIdentity)
                 ? this.messageBuilder.buildGreeting(slackIdentity.firstName + " " + slackIdentity.lastName)
                 : this.messageBuilder.buildWelcomeBack(slackIdentity.firstName + " " + slackIdentity.lastName);
 
-            let slackResponse: ChatPostMessageResponse
+            const slackResponse: ChatPostMessageResponse
                 = await this.slackApiClient.sendDm(event.user, message);
+
+            return slackResponse;
 
         } catch (error) {
             // TODO: Handle user-friendly errors
+            throw new Error(error);
         }
     }
 
-    async onChannelLeave(event: MemberLeftChannelEvent) {
+    async onChannelLeave(event: MemberLeftChannelEvent): Promise<ChatPostMessageResponse> {
 
         try {
             const slackIdentity: ISlackUserIdentity =
                 await this.slackApiClient.getIdentity(event.user);
 
 
-            let message: string = await this.coreApiClient.deactivateUser(slackIdentity)
+            const message: string = await this.coreApiClient.deactivateUser(slackIdentity)
                 ? this.messageBuilder.buildFarewell(slackIdentity.firstName)
                 : this.messageBuilder.errorOccurred(slackIdentity.firstName);
 
 
-            let slackResponse: ChatPostMessageResponse
+            const slackResponse: ChatPostMessageResponse
                 = await this.slackApiClient.sendDm(event.user, message);
+
+            return slackResponse;
 
         } catch (error) {
             // TODO: Handle user-friendly errors
+            throw new Error(error);
         }
 
     }
 
-    async interactiveMessageResponse(req: Request, res: Response){
+    async interactiveMessageResponse(req: Request): Promise<any> {
         try {
             const payload: BlockAction = JSON.parse(req.body.payload);
             // Send to method depending on the kind of response
             switch(payload.actions[0].action_id){
-                case "approve_session":
-                    this.processApprovedSession(payload);
-                break;
+            case "approve_session":
+                return this.processApprovedSession(payload);
 
-                default:
-                    throw new Error("Unknown response");
+            default:
+                throw new Error("Unknown response");
             }
-        }catch(err){
+        }catch(error){
+            return error;
         }
     }
 
@@ -84,7 +90,7 @@ export default class ChannelEventHandler {
 
         try {
 
-            let latestLanguagesResponse: Language[] =
+            const latestLanguagesResponse: Language[] =
                 await this.coreApiClient.getLanguageList();
 
 
@@ -94,7 +100,7 @@ export default class ChannelEventHandler {
             const preferencesForm: PreferencesForm = new PreferencesForm(user, preferencesMessage);
 
 
-            let response: ChatPostMessageResponse = await this.slackApiClient.sendPreferencesForm(preferencesForm);
+            const response: ChatPostMessageResponse = await this.slackApiClient.sendPreferencesForm(preferencesForm);
 
             return response;
 

@@ -2,10 +2,10 @@ import DateTime from "../Models/DateTime";
 
 export function formatISODate(isoDate: DateTime) : string {
 
-    let formattedNumber = (number: number) : string => {
+    const formattedNumber = (number: number) : string => {
         if(number < 10) return "0" + number;
         return number.toString();
-    }
+    };
 
     const date = new Date(isoDate.value);
     const year = date.getUTCFullYear();

@@ -1,11 +1,11 @@
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 import axios from "axios";
 import PreferencesPayload from "Models/PreferencesPayload";
 import Language from "../Models/Language";
 
 import type {ISlackUserIdentity} from "Typings";
 
-dotenv.config()
+dotenv.config();
 
 export default class CoreApiClient {
 
@@ -31,7 +31,7 @@ export default class CoreApiClient {
 
     async sendPreferences(preferencesPayload : PreferencesPayload) : Promise<boolean> {
         
-        const response = await axios.post(process.env.CORE_API + '/slack/preferences', preferencesPayload);
+        const response = await axios.post(process.env.CORE_API + "/slack/preferences", preferencesPayload);
 
         return response.data;
 
@@ -40,7 +40,7 @@ export default class CoreApiClient {
     async getLanguageList() : Promise<Language[]> {
 
         try{
-            const response = await axios.get(process.env.CORE_API + '/slack/languages');
+            const response = await axios.get(process.env.CORE_API + "/slack/languages");
             return response.data;
         }catch(err){
             throw new Error("A connection could not be made to core");

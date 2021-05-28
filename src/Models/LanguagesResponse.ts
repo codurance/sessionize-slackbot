@@ -1,4 +1,4 @@
-import type {ILanguagesResponse} from "Typings"
+import type {ILanguagesResponse} from "Typings";
 import Language from "./Language";
 
 export default class LanguagesResponse implements ILanguagesResponse {
@@ -9,7 +9,7 @@ export default class LanguagesResponse implements ILanguagesResponse {
         this.languages = languages;
     }
 
-    static fromResponse(response: ILanguagesResponse){
+    static fromResponse(response: ILanguagesResponse): LanguagesResponse {
         return new LanguagesResponse(response.languages);
     }
 }
