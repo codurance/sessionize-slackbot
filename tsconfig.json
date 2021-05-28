@@ -9,7 +9,11 @@
         "types": ["node", "jest"],
         "esModuleInterop": true,                        
         "skipLibCheck": true,                           
-        "forceConsistentCasingInFileNames": true        
+        "forceConsistentCasingInFileNames": true,
+        "typeRoots": ["./src/typings", "./node_modules/@types"],
+        "paths": {
+            "*": ["./src/*"]
+        }
     },
     "exclude": [
         "node_modules",
