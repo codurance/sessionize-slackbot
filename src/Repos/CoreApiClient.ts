@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import axios from "axios";
 import PreferencesPayload from "Models/PreferencesPayload";
-import Language from "./Models/Language";
+import Language from "../Models/Language";
 
 import type {ISlackUserIdentity} from "Typings";
 

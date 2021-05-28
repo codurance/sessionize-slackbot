@@ -7,8 +7,8 @@ import {
     when,
 } from "ts-mockito"
 
-import CoreApiClient from '../CoreApiClient';
-import SlackApiClient from '../SlackApiClient';
+import CoreApiClient from '../Repos/CoreApiClient';
+import SlackApiClient from '../Repos/SlackApiClient';
 import MessageBuilder from '../MessageBuilder';
 import ChannelEventHandler from '../EventHandlers/ChannelEventHandler';
 import type {ISlackUserIdentity} from "../Typings";

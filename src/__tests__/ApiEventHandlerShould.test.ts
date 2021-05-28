@@ -1,8 +1,8 @@
 import {anyOfClass, deepEqual, instance, mock, verify} from "ts-mockito"
 import {Request, Response} from 'express';
-import SlackApiClient from "../SlackApiClient";
+import SlackApiClient from "../Repos/SlackApiClient";
 import MessageBuilder from "../MessageBuilder";
-import CoreApiClient from "../CoreApiClient";
+import CoreApiClient from "../Repos/CoreApiClient";
 import ApiEventHandler from "../EventHandlers/ApiEventHandler";
 import MatchNotification from "../Models/MatchNotification";
 import SlackId from "../Models/SlackId";

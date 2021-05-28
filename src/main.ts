@@ -2,8 +2,8 @@ import dotenv from 'dotenv';
 import { App, BlockAction, ExpressReceiver } from '@slack/bolt';
 import MessageBuilder from './MessageBuilder';
 import ChannelEventHandler from './EventHandlers/ChannelEventHandler';
-import CoreApiClient from './CoreApiClient';
-import SlackApiClient from './SlackApiClient';
+import CoreApiClient from './Repos/CoreApiClient';
+import SlackApiClient from './Repos/SlackApiClient';
 import ApiEventHandler from './EventHandlers/ApiEventHandler';
 import express from 'express';
 

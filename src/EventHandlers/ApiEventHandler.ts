@@ -1,6 +1,6 @@
-import CoreApiClient from "../CoreApiClient";
+import CoreApiClient from "../Repos/CoreApiClient";
 import MessageBuilder from "../MessageBuilder";
-import SlackApiClient from "../SlackApiClient";
+import SlackApiClient from "../Repos/SlackApiClient";
 import {Request, Response} from "express";
 import {KnownBlock} from "@slack/web-api";
 import MatchNotification from "../Models/MatchNotification";

@@ -1,8 +1,8 @@
 import {BlockAction, MemberJoinedChannelEvent, MemberLeftChannelEvent} from "@slack/bolt";
 import {ChatPostMessageResponse, KnownBlock, WebClient} from "@slack/web-api";
-import CoreApiClient from "../CoreApiClient"
+import CoreApiClient from "../Repos/CoreApiClient"
 import MessageBuilder from "../MessageBuilder"
-import SlackApiClient from "../SlackApiClient"
+import SlackApiClient from "../Repos/SlackApiClient"
 import PreferencesForm from "../Models/PreferencesForm";
 import SlackId from "../Models/SlackId";
 import Language from "../Models/Language";

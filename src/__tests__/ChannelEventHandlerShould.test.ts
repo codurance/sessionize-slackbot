@@ -1,8 +1,8 @@
 import { anything, deepEqual, instance, mock, verify, when } from "ts-mockito"
-import CoreApiClient from "../CoreApiClient"
+import CoreApiClient from "../Repos/CoreApiClient"
 import MessageBuilder from "../MessageBuilder"
 import ChannelEventHandler from "../EventHandlers/ChannelEventHandler"
-import SlackApiClient from "../SlackApiClient"
+import SlackApiClient from "../Repos/SlackApiClient"
 import { KnownBlock, MemberJoinedChannelEvent } from "@slack/bolt"
 import SlackId from "../Models/SlackId";
 import Language from "../Models/Language"

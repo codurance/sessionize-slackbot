@@ -6,9 +6,9 @@ import {
     WebClient
 } from '@slack/web-api';
 
-import SlackId from "./Models/SlackId";
-import MatchNotification from './Models/MatchNotification';
-import PreferencesForm from './Models/PreferencesForm';
+import SlackId from "../Models/SlackId";
+import MatchNotification from '../Models/MatchNotification';
+import PreferencesForm from '../Models/PreferencesForm';
 
 import type {ISlackUserIdentity} from "Typings";
 
