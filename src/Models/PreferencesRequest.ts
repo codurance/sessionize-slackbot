@@ -1,4 +1,4 @@
-import Language from "./Models/Language";
+import Language from "./Language";
 import SlackId from "./SlackId";
 
 export default class PreferencesRequest {
