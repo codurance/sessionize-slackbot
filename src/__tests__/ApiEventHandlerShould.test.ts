@@ -44,10 +44,7 @@ describe("ApiEventHandler", () => {
             }
         };
 
-        const testResponse: Partial<Response> = {
-            send: jest.fn()
-        };
-        await apiEventHandler.onDirectMessage(testRequest as Request, testResponse as Response);
+        await apiEventHandler.onDirectMessage(testRequest as Request);
         verify(mockedSlackApiClient.sendDm(expectedSlackId, expectedMessage));
     });
 
@@ -87,12 +84,11 @@ describe("ApiEventHandler", () => {
         };
 
         const mockRequest: Partial<Request> = {body: matchNotificationRequest};
-        const mockResponse: Partial<Response> = {send: jest.fn()};
 
         const cameronExpectedMatchNotification: MatchNotification = generateMatchNotificationFor(cameron, dave);
         const daveExpectedMatchNotification: MatchNotification = generateMatchNotificationFor(dave, cameron);
 
-        await apiEventHandler.onMatchNotification(mockRequest as Request, mockResponse as Response);
+        await apiEventHandler.onMatchNotification(mockRequest as Request);
 
         verify(mockedSlackApiClient.sendMatchNotification(anyOfClass(MatchNotification))).twice();
         verify(mockedSlackApiClient.sendMatchNotification(deepEqual(cameronExpectedMatchNotification))).once();
