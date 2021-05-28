@@ -6,7 +6,7 @@ import SlackApiClient from "../Repos/SlackApiClient";
 import PreferencesForm from "../Models/PreferencesForm";
 import SlackId from "../Models/SlackId";
 import Language from "../Models/Language";
-import { Request, Response } from "express";
+import { Request } from "express";
 
 import type {ISlackUserIdentity} from "Typings";
 export default class ChannelEventHandler {
@@ -31,11 +31,7 @@ export default class ChannelEventHandler {
                 ? this.messageBuilder.buildGreeting(slackIdentity.firstName + " " + slackIdentity.lastName)
                 : this.messageBuilder.buildWelcomeBack(slackIdentity.firstName + " " + slackIdentity.lastName);
 
-            const slackResponse: ChatPostMessageResponse
-                = await this.slackApiClient.sendDm(event.user, message);
-
-            return slackResponse;
-
+            return await this.slackApiClient.sendDm(event.user, message);
         } catch (error) {
             // TODO: Handle user-friendly errors
             throw new Error(error);
@@ -45,18 +41,13 @@ export default class ChannelEventHandler {
     async onChannelLeave(event: MemberLeftChannelEvent): Promise<ChatPostMessageResponse> {
 
         try {
-            const slackIdentity: ISlackUserIdentity =
-                await this.slackApiClient.getIdentity(event.user);
+            const slackIdentity: ISlackUserIdentity = await this.slackApiClient.getIdentity(event.user);
 
             const message: string = await this.coreApiClient.deactivateUser(slackIdentity)
                 ? this.messageBuilder.buildFarewell(slackIdentity.firstName)
                 : this.messageBuilder.errorOccurred(slackIdentity.firstName);
 
-            const slackResponse: ChatPostMessageResponse
-                = await this.slackApiClient.sendDm(event.user, message);
-
-            return slackResponse;
-
+                return await this.slackApiClient.sendDm(event.user, message);
         } catch (error) {
             // TODO: Handle user-friendly errors
             throw new Error(error);
@@ -92,9 +83,7 @@ export default class ChannelEventHandler {
 
             const preferencesForm: PreferencesForm = new PreferencesForm(user, preferencesMessage);
 
-            const response: ChatPostMessageResponse = await this.slackApiClient.sendPreferencesForm(preferencesForm);
-            return response;
-
+            return await this.slackApiClient.sendPreferencesForm(preferencesForm);
         } catch(err){
             throw new Error(err);
         }

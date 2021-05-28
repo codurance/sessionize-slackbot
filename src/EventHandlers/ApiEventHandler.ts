@@ -11,8 +11,7 @@ import SlackId from "../Models/SlackId";
 import PreferencesForm from "../Models/PreferencesForm";
 import Language from "../Models/Language";
 
-import type {IPreferencesRequest} from "Typings";
-import type {IMatchNotificationRequest} from "Typings";
+import type {IPreferencesRequest, IMatchNotificationRequest} from "Typings";
 export default class ApiEventHandler {
 
     coreApiClient: CoreApiClient;
@@ -29,9 +28,7 @@ export default class ApiEventHandler {
         try {
             const slackId: string = request.body.slackId;
             const message: string = request.body.message;
-            const response: ChatPostMessageResponse = await this.slackApiClient.sendDm(slackId, message);
-
-            return response;
+            return await this.slackApiClient.sendDm(slackId, message);
         } catch (err) {
             return err;
         }
@@ -70,14 +67,16 @@ export default class ApiEventHandler {
         try {
             const latestLanguages: Language[] = await this.coreApiClient.getLanguageList();
             console.log(latestLanguages);
+
             const preferencesRequest: IPreferencesRequest = request.body;
             const preferencesMessage : KnownBlock[] = this.messageBuilder.buildPreferencesForm(latestLanguages);
             console.log(JSON.stringify(preferencesMessage));
+
             const slackId = new SlackId(preferencesRequest.slackId);
             const preferencesForm : PreferencesForm = new PreferencesForm(slackId, preferencesMessage);
-            const response = this.slackApiClient.sendPreferencesForm(preferencesForm);
-            return response;
-        }catch(err){
+
+            return this.slackApiClient.sendPreferencesForm(preferencesForm);
+        } catch(err){
             return err;
         }
     }
