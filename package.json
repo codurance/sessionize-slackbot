@@ -5,6 +5,7 @@
   "main": "main.js",
   "scripts": {
     "test": "jest",
+    "test:watch": "jest --watch",
     "build": "tsc",
     "clean": "rm -rf ./build/*",
     "compile": "tsc && node ./build/main.js",
