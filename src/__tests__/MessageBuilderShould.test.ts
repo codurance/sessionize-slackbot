@@ -1,8 +1,8 @@
 import { KnownBlock } from "@slack/web-api";
 import MessageBuilder from "../MessageBuilder";
-import SlackId from "../SlackId";
-import Language from "../Language";
-import DateTime from "../DateTime";
+import SlackId from "../Models/SlackId";
+import Language from "../Models/Language";
+import DateTime from "../Models/DateTime";
 
 import type {IMatchNotificationContent} from "../Typings";
 

@@ -1,14 +1,15 @@
-import SlackUserIdentity from "./SlackUserIdentity";
 import dotenv from 'dotenv';
 import axios from "axios";
-import PreferencesPayload from "./PreferencesPayload";
-import Language from "./Language";
+import PreferencesPayload from "Models/PreferencesPayload";
+import Language from "./Models/Language";
+
+import type {ISlackUserIdentity} from "Typings";
 
 dotenv.config()
 
 export default class CoreApiClient {
 
-    async isNewUser(slackUserIdentity: SlackUserIdentity): Promise<boolean> {
+    async isNewUser(slackUserIdentity: ISlackUserIdentity): Promise<boolean> {
 
         if (process.env.MOCK_CORE == "true") return true;
 
@@ -18,7 +19,7 @@ export default class CoreApiClient {
         // 204 existing user
     }
 
-    async deactivateUser(slackUserIdentity: SlackUserIdentity): Promise<boolean> {
+    async deactivateUser(slackUserIdentity: ISlackUserIdentity): Promise<boolean> {
 
 
         if (process.env.MOCK_CORE == "true") return true;

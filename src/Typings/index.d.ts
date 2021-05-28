@@ -51,3 +51,10 @@ export interface IPreferencesPayload {
 export interface IPreferencesRequest {
     slackId : string,
 }
+
+export interface ISlackUserIdentity {
+    slackId: SlackId;
+    email: string;
+    firstName: string;
+    lastName: string;
+}

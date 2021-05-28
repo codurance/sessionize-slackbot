@@ -6,11 +6,11 @@ import {
     WebClient
 } from '@slack/web-api';
 
-import SlackId from "./SlackId";
-import SlackUserIdentity from "./SlackUserIdentity";
-import MatchNotification from './MatchNotification';
-import PreferencesForm from './PreferencesForm';
-import LanguagesResponse from './LanguagesResponse';
+import SlackId from "./Models/SlackId";
+import MatchNotification from './Models/MatchNotification';
+import PreferencesForm from './Models/PreferencesForm';
+
+import type {ISlackUserIdentity} from "Typings";
 
 dotenv.config();
 
@@ -25,7 +25,7 @@ export default class SlackApiClient {
         });
     };
 
-    async getIdentity(slackId: string): Promise<SlackUserIdentity> {
+    async getIdentity(slackId: string): Promise<ISlackUserIdentity> {
         const userIdentity: UsersProfileGetResponse = await this.web.users.profile.get({
             user: slackId
         });
@@ -37,7 +37,7 @@ export default class SlackApiClient {
             email: userIdentity.profile?.email,
             firstName: splitNames![0],
             lastName: splitNames![1]
-        } as SlackUserIdentity;
+        } as ISlackUserIdentity;
     }
 
     async sendMatchNotification(matchNotification: MatchNotification): Promise<ChatPostMessageResponse> {

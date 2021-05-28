@@ -3,12 +3,12 @@ import {ChatPostMessageResponse, KnownBlock, WebClient} from "@slack/web-api";
 import CoreApiClient from "../CoreApiClient"
 import MessageBuilder from "../MessageBuilder"
 import SlackApiClient from "../SlackApiClient"
-import SlackUserIdentity from "../SlackUserIdentity";
+import PreferencesForm from "../Models/PreferencesForm";
+import SlackId from "../Models/SlackId";
+import Language from "../Models/Language";
 import { Request, Response } from 'express';
-import PreferencesForm from "../PreferencesForm";
-import SlackId from "../SlackId";
-import Language from "../Language";
 
+import type {ISlackUserIdentity} from "Typings";
 export default class ChannelEventHandler {
 
     coreApiClient: CoreApiClient
@@ -24,7 +24,7 @@ export default class ChannelEventHandler {
     async onChannelJoin(event: MemberJoinedChannelEvent) {
 
         try {
-            const slackIdentity: SlackUserIdentity =
+            const slackIdentity: ISlackUserIdentity =
                 await this.slackApiClient.getIdentity(event.user);
 
             let message: string = await this.coreApiClient.isNewUser(slackIdentity)
@@ -42,7 +42,7 @@ export default class ChannelEventHandler {
     async onChannelLeave(event: MemberLeftChannelEvent) {
 
         try {
-            const slackIdentity: SlackUserIdentity =
+            const slackIdentity: ISlackUserIdentity =
                 await this.slackApiClient.getIdentity(event.user);
 
 

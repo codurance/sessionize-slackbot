@@ -3,12 +3,13 @@ import CoreApiClient from "../CoreApiClient"
 import MessageBuilder from "../MessageBuilder"
 import ChannelEventHandler from "../EventHandlers/ChannelEventHandler"
 import SlackApiClient from "../SlackApiClient"
-import SlackUserIdentity from "../SlackUserIdentity"
 import { KnownBlock, MemberJoinedChannelEvent } from "@slack/bolt"
-import SlackId from "../SlackId";
-import Language from "../Language"
-import PreferencesForm from "../PreferencesForm"
-import LanguagesResponse from "../LanguagesResponse"
+import SlackId from "../Models/SlackId";
+import Language from "../Models/Language"
+import PreferencesForm from "../Models/PreferencesForm"
+import LanguagesResponse from "../Models/LanguagesResponse"
+
+import type {ISlackUserIdentity} from "../Typings"
 
 describe("ChannelEventHandler", () => {
     test("should make request to core to see if user joining channel is new", async () => {
@@ -22,7 +23,7 @@ describe("ChannelEventHandler", () => {
             inviter: "U123456789"
         };
 
-        const userIdentity: SlackUserIdentity = {
+        const userIdentity: ISlackUserIdentity = {
             firstName: "Joe",
             lastName: "Bloggs",
             slackId: new SlackId("U0G9QF9C6"),

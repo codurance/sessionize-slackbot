@@ -1,4 +1,4 @@
-import DateTime from "../DateTime";
+import DateTime from "../Models/DateTime";
 
 export function formatISODate(isoDate: DateTime) : string {
 

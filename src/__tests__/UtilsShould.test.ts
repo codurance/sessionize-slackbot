@@ -1,6 +1,6 @@
-import DateTime from "../DateTime";
+import DateTime from "../Models/DateTime";
 import {formatISODate} from "../Utils/Formatters";
-import SlackId from "../SlackId";
+import SlackId from "../Models/SlackId";
 import {deepFilterFor} from "../Utils/ArraysUtils";
 
 describe("Utils", () => {

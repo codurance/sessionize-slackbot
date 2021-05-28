@@ -11,9 +11,9 @@ import CoreApiClient from '../CoreApiClient';
 import SlackApiClient from '../SlackApiClient';
 import MessageBuilder from '../MessageBuilder';
 import ChannelEventHandler from '../EventHandlers/ChannelEventHandler';
-import SlackUserIdentity from "../SlackUserIdentity";
+import type {ISlackUserIdentity} from "../Typings";
 import { MemberJoinedChannelEvent } from "@slack/bolt";
-import SlackId from "../SlackId";
+import SlackId from "../Models/SlackId";
 
 describe("Slack Service should", () => {
 
@@ -35,7 +35,7 @@ describe("Slack Service should", () => {
             inviter: "U123456789"
         };
 
-        const slackIdentity: SlackUserIdentity = {
+        const slackIdentity: ISlackUserIdentity = {
             firstName: "Joe",
             lastName: "Bloggs",
             slackId: new SlackId("U0G9QF9C6"),

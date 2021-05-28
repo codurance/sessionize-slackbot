@@ -1,8 +1,8 @@
 import { ActionsBlock, Button, InputBlock, KnownBlock, MultiStaticSelect, Option, SectionBlock } from '@slack/web-api';
-import Language from './Language';
-import MatchNotificationContent from './MatchNotificationContent';
+import Language from './Models/Language';
+import MatchNotificationContent from 'Models/MatchNotificationContent';
 import * as templates from './MessageTemplates/Templates';
-import SlackId from './SlackId';
+import SlackId from './Models/SlackId';
 import { formatISODate } from './Utils/Formatters';
 
 export default class MessageBuilder {

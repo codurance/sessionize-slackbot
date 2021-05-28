@@ -4,8 +4,8 @@ import SlackApiClient from "../SlackApiClient";
 import MessageBuilder from "../MessageBuilder";
 import CoreApiClient from "../CoreApiClient";
 import ApiEventHandler from "../EventHandlers/ApiEventHandler";
-import MatchNotification from "../MatchNotification";
-import SlackId from "../SlackId";
+import MatchNotification from "../Models/MatchNotification";
+import SlackId from "../Models/SlackId";
 import {Button, KnownBlock} from "@slack/web-api";
 
 import type {IMatchNotificationRequest} from "../Typings";

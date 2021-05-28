@@ -3,13 +3,13 @@ import MessageBuilder from "../MessageBuilder";
 import SlackApiClient from "../SlackApiClient";
 import {Request, Response} from "express";
 import {KnownBlock} from "@slack/web-api";
-import MatchNotification from "../MatchNotification";
-import MatchNotificationContent from "../MatchNotificationContent";
-import MatchDetails from "../MatchDetails";
+import MatchNotification from "../Models/MatchNotification";
+import MatchNotificationContent from "../Models/MatchNotificationContent";
+import MatchDetails from "../Models/MatchDetails";
 import {deepFilterFor} from "../Utils/ArraysUtils";
-import SlackId from "../SlackId";
-import PreferencesForm from "../PreferencesForm";
-import Language from "../Language";
+import SlackId from "../Models/SlackId";
+import PreferencesForm from "../Models/PreferencesForm";
+import Language from "../Models/Language";
 
 import type {IPreferencesRequest} from "Typings"
 import type {IMatchNotificationRequest} from "Typings";
