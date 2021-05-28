@@ -3,7 +3,7 @@ import Language from "./Language";
 
 export default class LanguagesResponse implements ILanguagesResponse {
 
-    languages: Language[]
+    readonly languages: Language[]
     
     constructor(languages: Language[]){
         this.languages = languages;

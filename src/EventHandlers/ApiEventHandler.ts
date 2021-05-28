@@ -81,5 +81,4 @@ export default class ApiEventHandler {
             return err;
         }
     }
-
 }

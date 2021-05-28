@@ -3,8 +3,8 @@ import {KnownBlock} from "@slack/web-api";
 
 export default class MatchNotification implements MatchNotification {
 
-    slackId: SlackId;
-    body: KnownBlock[];
+    readonly slackId: SlackId;
+    readonly body: KnownBlock[];
 
     constructor(slackId: SlackId, body: KnownBlock[]){
         this.slackId = slackId;

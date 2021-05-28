@@ -1,5 +1,5 @@
 export default class SlackId {
-    slackId : string;
+    readonly slackId : string;
     constructor(slackId : string){
         this.slackId = slackId;
     }

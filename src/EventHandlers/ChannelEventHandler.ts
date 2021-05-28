@@ -48,11 +48,9 @@ export default class ChannelEventHandler {
             const slackIdentity: ISlackUserIdentity =
                 await this.slackApiClient.getIdentity(event.user);
 
-
             const message: string = await this.coreApiClient.deactivateUser(slackIdentity)
                 ? this.messageBuilder.buildFarewell(slackIdentity.firstName)
                 : this.messageBuilder.errorOccurred(slackIdentity.firstName);
-
 
             const slackResponse: ChatPostMessageResponse
                 = await this.slackApiClient.sendDm(event.user, message);
@@ -63,7 +61,6 @@ export default class ChannelEventHandler {
             // TODO: Handle user-friendly errors
             throw new Error(error);
         }
-
     }
 
     async interactiveMessageResponse(req: Request): Promise<any> {
@@ -77,7 +74,7 @@ export default class ChannelEventHandler {
             default:
                 throw new Error("Unknown response");
             }
-        }catch(error){
+        } catch(error){
             return error;
         }
     }
@@ -89,24 +86,17 @@ export default class ChannelEventHandler {
     async sendLanguagePreferencesForm(user: SlackId): Promise<ChatPostMessageResponse> {
 
         try {
-
-            const latestLanguagesResponse: Language[] =
-                await this.coreApiClient.getLanguageList();
-
+            const latestLanguagesResponse: Language[] = await this.coreApiClient.getLanguageList();
 
             const preferencesMessage: KnownBlock[] = this.messageBuilder.buildPreferencesForm(latestLanguagesResponse);
 
-
             const preferencesForm: PreferencesForm = new PreferencesForm(user, preferencesMessage);
 
-
             const response: ChatPostMessageResponse = await this.slackApiClient.sendPreferencesForm(preferencesForm);
-
             return response;
 
-        }catch(err){
+        } catch(err){
             throw new Error(err);
         }
-
     }
 }
