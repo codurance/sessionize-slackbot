@@ -69,11 +69,11 @@ export default class ApiEventHandler {
             console.log(latestLanguages);
 
             const preferencesRequest: IPreferencesRequest = request.body;
-            const preferencesMessage : KnownBlock[] = this.messageBuilder.buildPreferencesForm(latestLanguages);
+            const preferencesMessage: KnownBlock[] = this.messageBuilder.buildPreferencesForm(latestLanguages);
             console.log(JSON.stringify(preferencesMessage));
 
             const slackId = new SlackId(preferencesRequest.slackId);
-            const preferencesForm : PreferencesForm = new PreferencesForm(slackId, preferencesMessage);
+            const preferencesForm: PreferencesForm = new PreferencesForm(slackId, preferencesMessage);
 
             return this.slackApiClient.sendPreferencesForm(preferencesForm);
         } catch(err){

@@ -7,12 +7,12 @@ import {formatISODate} from "../Utils/Formatters";
 
 export default class MessageBuilder {
 
-    buildMatchNotification(matchNotificationContent : MatchNotificationContent) : KnownBlock[] {
+    buildMatchNotification(matchNotificationContent: MatchNotificationContent): KnownBlock[] {
 
         const formattedDateTime = formatISODate(matchNotificationContent.dateTime);
         const matchNames = this.matchIdsAsString(matchNotificationContent.matchIds);
-        
-        const headerSection : SectionBlock = {
+
+        const headerSection: SectionBlock = {
             type: "section",
             text: {
                 type: "mrkdwn",
@@ -20,7 +20,7 @@ export default class MessageBuilder {
             }
         };
 
-        const matchDetailsSection : SectionBlock = {
+        const matchDetailsSection: SectionBlock = {
             type: "section",
             fields: [
                 {
@@ -34,12 +34,12 @@ export default class MessageBuilder {
             ]
         };
 
-        const actions : ActionsBlock = {
+        const actions: ActionsBlock = {
             type: "actions",
-            elements : [
+            elements: [
                 {
                     type: "button",
-                    text : {
+                    text: {
                         type: "plain_text",
                         text: "Approve",
                         emoji: true
@@ -50,7 +50,7 @@ export default class MessageBuilder {
                 } as Button,
                 {
                     type: "button",
-                    text : {
+                    text: {
                         type: "plain_text",
                         text: "Deny",
                         emoji: true
@@ -58,7 +58,7 @@ export default class MessageBuilder {
                     style: "danger",
                     value: "session_denied",
                     action_id: "deny_session"
-                }
+                } as Button
             ]
         };
 
@@ -69,24 +69,20 @@ export default class MessageBuilder {
         ];
     }
 
-    buildPreferencesForm(languages: Language[]) : KnownBlock[] {
+    buildPreferencesForm(languages: Language[]): KnownBlock[] {
 
-        const optionsArray: Option[]  = [];
-
-        languages.map(language => {
-            optionsArray.push(
-                {
-                    "text": {
-                        "type": "plain_text",
-                        "text": language.displayName,
-                        "emoji": true
-                    },
-                    "value": language.value
-                }
-            );
+        const optionsArray: Option[] = languages.map(language => {
+            return {
+                text: {
+                    type: "plain_text",
+                    text: language.displayName,
+                    emoji: true
+                },
+                value: language.value
+            };
         });
 
-        const headerSection : SectionBlock = {
+        const headerSection: SectionBlock = {
             type: "section",
             text: {
                 type: "mrkdwn",
@@ -113,30 +109,29 @@ export default class MessageBuilder {
             max_selected_items: 3
         };
 
-        const languageSelectors : InputBlock = {
-            "type": "input",
-            "element": multiSelect,
-            "label": {
-                "type": "plain_text",
-                "text": "Languages",
-                "emoji": true
+        const languageSelectors: InputBlock = {
+            type: "input",
+            element: multiSelect,
+            label: {
+                type: "plain_text",
+                text: "Languages",
+                emoji: true
             }
         };
 
-        const actions : ActionsBlock = {
+        const actions: ActionsBlock = {
             type: "actions",
-            elements : [
+            elements: [
                 {
                     type: "button",
-                    text : {
+                    text: {
                         type: "plain_text",
                         text: "Confirm",
                         emoji: true
                     },
                     action_id: "confirm_preferences",
                     style: "primary",
-                    value: "preferences_confirmed",
-                    
+                    value: "preferences_confirmed"
                 } as Button
             ]
         };
@@ -148,31 +143,25 @@ export default class MessageBuilder {
         ];
     }
 
-    matchIdsAsString(matchNames : SlackId[]) : string {
-
-        let matchNameString  = "";
-
-        matchNames.map(id => {
-            matchNameString += `<@${id.slackId}> `;
-        });
-
+    matchIdsAsString(matchNames: SlackId[]): string {
+        let matchNameString = "";
+        matchNames.forEach(id => matchNameString += `<@${id.slackId}> `);
         return matchNameString.trimEnd();
-
     }
 
-    buildGreeting(name: string) : string {
+    buildGreeting(name: string): string {
         return templates.greeting(name);
     }
 
-    buildWelcomeBack(name: string) : string {
+    buildWelcomeBack(name: string): string {
         return templates.welcomeBack(name);
     }
 
-    buildFarewell(name: string) : string {
+    buildFarewell(name: string): string {
         return templates.farewell(name);
     }
-    
-    errorOccurred(name: string) : string {
+
+    errorOccurred(name: string): string {
         return templates.error(name);
     }
 }
