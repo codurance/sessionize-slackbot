@@ -1,4 +1,3 @@
-import DateTime from "./DateTime";
 import SlackId from "./SlackId";
 
 import type { ILanguage } from "Typings";
@@ -8,11 +7,9 @@ export default class MatchNotificationContent implements IMatchNotificationConte
 
     readonly matchIds: SlackId[];
     readonly language: ILanguage;
-    readonly dateTime: DateTime;
 
-    constructor(matchIds: SlackId[], language: ILanguage, dateTime: DateTime){
+    constructor(matchIds: SlackId[], language: ILanguage){
         this.matchIds = matchIds;
         this.language = language;
-        this.dateTime = dateTime;
     }
 }

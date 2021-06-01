@@ -1,13 +1,14 @@
-import SlackId from "./SlackId";
 import {KnownBlock} from "@slack/web-api";
+import {IMatchNotification} from "Typings";
+import ChannelId from "./ChannelId";
 
-export default class MatchNotification implements MatchNotification {
+export default class MatchNotification implements IMatchNotification {
 
-    readonly slackId: SlackId;
+    readonly channelId: ChannelId;
     readonly body: KnownBlock[];
 
-    constructor(slackId: SlackId, body: KnownBlock[]){
-        this.slackId = slackId;
+    constructor(channelId: ChannelId, body: KnownBlock[]){
+        this.channelId = channelId;
         this.body = body;
     }
 }

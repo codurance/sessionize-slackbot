@@ -1,4 +1,4 @@
-import {BlockAction, MemberJoinedChannelEvent, MemberLeftChannelEvent} from "@slack/bolt";
+import {MemberJoinedChannelEvent, MemberLeftChannelEvent} from "@slack/bolt";
 import {ChatPostMessageResponse, KnownBlock} from "@slack/web-api";
 import CoreApiClient from "../Repos/CoreApiClient";
 import MessageBuilder from "../MessageBuilder";
@@ -8,7 +8,7 @@ import SlackId from "../Models/SlackId";
 import Language from "../Models/Language";
 import { Request } from "express";
 
-import type {ILanguageSubmission, InteractiveMessageResponse, IRawLanguageSubmission, ISlackUserIdentity} from "Typings";
+import type {InteractiveMessageResponse, IRawLanguageSubmission, ISlackUserIdentity} from "Typings";
 import LanguageSubmission from "../Models/LanguageSubmission";
 export default class ChannelEventHandler {
 
@@ -60,8 +60,6 @@ export default class ChannelEventHandler {
             const payload: InteractiveMessageResponse = JSON.parse(req.body.payload);
             // Send to method depending on the kind of response
             switch(payload.actions[0].action_id){
-            case "approve_session":
-                return this.processApprovedSession(payload);
 
             case "confirm_preferences":
                 console.log("Confirm preferences");
@@ -104,10 +102,6 @@ export default class ChannelEventHandler {
         } catch(error){
             return error;
         }
-    }
-
-    async processApprovedSession(payload: BlockAction){
-        // TODO: Prepare approve_session payload and send to core
     }
 
     async sendLanguagePreferencesForm(user: SlackId): Promise<ChatPostMessageResponse> {

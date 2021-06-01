@@ -3,7 +3,7 @@ import axios from "axios";
 import Language from "../Models/Language";
 
 import type {ISlackUserIdentity} from "Typings";
-import LanguageSubmission from "Models/LanguageSubmission";
+import LanguageSubmission from "../Models/LanguageSubmission";
 
 dotenv.config();
 
