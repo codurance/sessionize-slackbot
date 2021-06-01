@@ -34,50 +34,47 @@ export default class ApiEventHandler {
         }
     }
 
-    async onMatchNotification(request: Request): Promise<ChatPostMessageResponse[]> {
+    async onMatchNotification(request: Request): Promise<ChatPostMessageResponse> {
         try {
 
             const matchNotificationRequest: IMatchNotificationRequest = request.body;
             const matchDetails: MatchDetails = MatchDetails.fromRequest(matchNotificationRequest);
 
-            const matchNotifications: MatchNotification[] = [];
+            const matchNotificationContent: MatchNotificationContent = new MatchNotificationContent(
+                matchDetails.users,
+                matchDetails.language,
+                matchDetails.dateTime);
+            const matchNotificationBody: KnownBlock[] = this.messageBuilder.buildMatchNotification(matchNotificationContent);
 
-            matchDetails.users.forEach(user => {
-                const allOtherSlackIds = deepFilterFor<SlackId>(user, matchDetails.users);
-                const matchNotificationContent: MatchNotificationContent = new MatchNotificationContent(
-                    allOtherSlackIds,
-                    matchDetails.language,
-                    matchDetails.dateTime);
-                const matchNotificationBody: KnownBlock[] = this.messageBuilder.buildMatchNotification(matchNotificationContent);
-                const matchNotification: MatchNotification = new MatchNotification(user, matchNotificationBody);
+            // TODO: Create multiple DM message
+            // const matchNotification: MatchNotification = new MatchNotification(user, matchNotificationBody);
+            //
 
-                matchNotifications.push(matchNotification);
-            });
-
-            return await Promise.all(
-                matchNotifications.map(match => this.slackApiClient.sendMatchNotification(match))
-            );
+            const matchNotification: MatchNotification = new MatchNotification();
+            this.slackApiClient.sendMatchNotification(matchNotification);
 
         } catch (err) {
             return err;
         }
     }
 
-    async onLanguagePreferences(request: Request): Promise<ChatPostMessageResponse> {
+    onLanguagePreferences = async (request: Request): Promise<ChatPostMessageResponse> => {
+
+        console.log(this);
+
         try {
             const latestLanguages: Language[] = await this.coreApiClient.getLanguageList();
-            console.log(latestLanguages);
 
             const preferencesRequest: IPreferencesRequest = request.body;
             const preferencesMessage: KnownBlock[] = this.messageBuilder.buildPreferencesForm(latestLanguages);
-            console.log(JSON.stringify(preferencesMessage));
 
             const slackId = new SlackId(preferencesRequest.slackId);
             const preferencesForm: PreferencesForm = new PreferencesForm(slackId, preferencesMessage);
 
             return this.slackApiClient.sendPreferencesForm(preferencesForm);
         } catch(err){
-            return err;
+            console.error(err);
+            throw new Error(err);
         }
     }
 }

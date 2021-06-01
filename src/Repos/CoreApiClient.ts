@@ -1,9 +1,9 @@
 import dotenv from "dotenv";
 import axios from "axios";
-import PreferencesPayload from "Models/PreferencesPayload";
 import Language from "../Models/Language";
 
 import type {ISlackUserIdentity} from "Typings";
+import LanguageSubmission from "Models/LanguageSubmission";
 
 dotenv.config();
 
@@ -21,30 +21,41 @@ export default class CoreApiClient {
 
     async deactivateUser(slackUserIdentity: ISlackUserIdentity): Promise<boolean> {
 
-
         if (process.env.MOCK_CORE == "true") return true;
 
-        const response = await axios.put(process.env.CORE_API + `/slack/optout?email=${slackUserIdentity.email}`);
+        const response = await axios.put(process.env.CORE_API + `/slack/availability?email=${slackUserIdentity.email}`);
 
         return response.data;
     }
 
-    async sendPreferences(preferencesPayload : PreferencesPayload) : Promise<boolean> {
-        
-        const response = await axios.post(process.env.CORE_API + "/slack/preferences", preferencesPayload);
+    async sendPreferences(languageSubmission : LanguageSubmission) : Promise<string> {
 
-        return response.data;
+        const config = {
+            headers: {
+                "slack-user": languageSubmission.slackId.slackId
+            }
+        };
+
+        const data = languageSubmission.body;
+
+        try {
+            const response = await axios.put(process.env.CORE_API + "/slack/preferences/languages", data, config);
+            console.log(response);
+            return response.data;
+        }catch(error){
+            console.log(error);
+            throw new Error(error);
+        }
 
     }
 
     async getLanguageList() : Promise<Language[]> {
-
         try{
             const response = await axios.get(process.env.CORE_API + "/slack/languages");
             return response.data;
         }catch(err){
             throw new Error("A connection could not be made to core");
         }
-        
+
     }
 }

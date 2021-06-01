@@ -8,7 +8,8 @@ import SlackId from "../Models/SlackId";
 import Language from "../Models/Language";
 import { Request } from "express";
 
-import type {ISlackUserIdentity} from "Typings";
+import type {ILanguageSubmission, InteractiveMessageResponse, IRawLanguageSubmission, ISlackUserIdentity} from "Typings";
+import LanguageSubmission from "../Models/LanguageSubmission";
 export default class ChannelEventHandler {
 
     coreApiClient: CoreApiClient
@@ -47,20 +48,55 @@ export default class ChannelEventHandler {
                 ? this.messageBuilder.buildFarewell(slackIdentity.firstName)
                 : this.messageBuilder.errorOccurred(slackIdentity.firstName);
 
-                return await this.slackApiClient.sendDm(event.user, message);
+            return await this.slackApiClient.sendDm(event.user, message);
         } catch (error) {
             // TODO: Handle user-friendly errors
             throw new Error(error);
         }
     }
 
-    async interactiveMessageResponse(req: Request): Promise<any> {
+    interactiveMessageResponse = async (req: Request): Promise<any> => {
         try {
-            const payload: BlockAction = JSON.parse(req.body.payload);
+            const payload: InteractiveMessageResponse = JSON.parse(req.body.payload);
             // Send to method depending on the kind of response
             switch(payload.actions[0].action_id){
             case "approve_session":
                 return this.processApprovedSession(payload);
+
+            case "confirm_preferences":
+                console.log("Confirm preferences");
+                try {
+
+                    let rawLanguageSubmission: IRawLanguageSubmission;
+
+                    if(payload.state?.values.FWTV.Jqez &&
+                        payload.user.id){
+
+                        const slackId: SlackId = new SlackId(payload.user.id);
+
+                        rawLanguageSubmission =
+                            payload.state?.values.FWTV.Jqez;
+
+                        const languageSubmission: LanguageSubmission =
+                            LanguageSubmission.fromResponse(slackId, rawLanguageSubmission);
+
+                        console.log("Attempting to send submission");
+
+                        console.log(this);
+
+                        const response = await this.coreApiClient.sendPreferences(languageSubmission);
+
+                        console.log(response);
+
+                    }else{
+                        // TODO: Deal with invalid languageSubmission
+                    }
+
+                }catch(error){
+                    console.log(error);
+                    throw new Error(error);
+                }
+                break;
 
             default:
                 throw new Error("Unknown response");
@@ -77,6 +113,8 @@ export default class ChannelEventHandler {
     async sendLanguagePreferencesForm(user: SlackId): Promise<ChatPostMessageResponse> {
 
         try {
+
+            console.log("channelEventHandler.sendLanguagePreferencesForm");
             const latestLanguagesResponse: Language[] = await this.coreApiClient.getLanguageList();
 
             const preferencesMessage: KnownBlock[] = this.messageBuilder.buildPreferencesForm(latestLanguagesResponse);
