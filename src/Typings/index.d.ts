@@ -41,7 +41,7 @@ export interface IPreferencesRequest {
 }
 
 export interface ISlackUserIdentity {
-    slackId: SlackId;
+    slackId: string;
     email: string;
     firstName: string;
     lastName: string;
@@ -85,22 +85,16 @@ export interface InteractiveMessageResponse {
         name: string;
     };
     state?: {
-        values: {
-            FWTV: {
-                Jqez: {
-                    selected_options: []
-                }
-            }
-        }
+        values: any;
     }
 }
 
 export interface ILanguageSubmission {
     slackId: SlackId;
     body: {
-        primaryLanguage: string,
-        secondaryLanguage: string,
-        tertiaryLanguage: string
+        primaryLanguage: Language,
+        secondaryLanguage: Language,
+        tertiaryLanguage: Language
     }
 }
 
@@ -113,4 +107,11 @@ export interface IRawLanguageSubmission {
                 emoji: boolean
             }
     }[]
+}
+
+export interface ISlackUserSubmission {
+    slackUser: string,
+    email: string,
+    firstName: string,
+    lastName: string
 }

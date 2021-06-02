@@ -8,8 +8,9 @@ import SlackId from "../Models/SlackId";
 import Language from "../Models/Language";
 import { Request } from "express";
 
-import type {InteractiveMessageResponse, IRawLanguageSubmission, ISlackUserIdentity} from "Typings";
+import type {InteractiveMessageResponse, IRawLanguageSubmission, ISlackUserIdentity, ISlackUserSubmission} from "Typings";
 import LanguageSubmission from "../Models/LanguageSubmission";
+import SlackUserSubmission from "../Models/SlackUserSubmission";
 export default class ChannelEventHandler {
 
     coreApiClient: CoreApiClient
@@ -28,7 +29,9 @@ export default class ChannelEventHandler {
             const slackIdentity: ISlackUserIdentity =
                 await this.slackApiClient.getIdentity(event.user);
 
-            const message: string = await this.coreApiClient.isNewUser(slackIdentity)
+            const slackUserSubmission: ISlackUserSubmission = SlackUserSubmission.fromSlackResponse(slackIdentity);
+
+            const message: string = await this.coreApiClient.isNewUser(slackUserSubmission)
                 ? this.messageBuilder.buildGreeting(slackIdentity.firstName + " " + slackIdentity.lastName)
                 : this.messageBuilder.buildWelcomeBack(slackIdentity.firstName + " " + slackIdentity.lastName);
 
@@ -65,15 +68,22 @@ export default class ChannelEventHandler {
                 console.log("Confirm preferences");
                 try {
 
-                    let rawLanguageSubmission: IRawLanguageSubmission;
+                    let rawLanguageSubmission: Language[];
 
-                    if(payload.state?.values.FWTV.Jqez &&
+                    console.log(JSON.stringify((payload.state?.values)));
+
+                    const single = Object.keys(payload.state?.values)[0];
+                    const languageKey = Object.keys(payload.state?.values[single])[0];
+
+                    if(payload.state?.values[single][languageKey] &&
                         payload.user.id){
 
                         const slackId: SlackId = new SlackId(payload.user.id);
 
                         rawLanguageSubmission =
-                            payload.state?.values.FWTV.Jqez;
+                            payload.state?.values[single][languageKey]["selected_options"];
+
+                        console.log(rawLanguageSubmission);
 
                         const languageSubmission: LanguageSubmission =
                             LanguageSubmission.fromResponse(slackId, rawLanguageSubmission);

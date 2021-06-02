@@ -2,30 +2,44 @@ import dotenv from "dotenv";
 import axios from "axios";
 import Language from "../Models/Language";
 
-import type {ISlackUserIdentity} from "Typings";
+import type {ISlackUserIdentity, ISlackUserSubmission} from "Typings";
 import LanguageSubmission from "../Models/LanguageSubmission";
 
 dotenv.config();
 
 export default class CoreApiClient {
 
-    async isNewUser(slackUserIdentity: ISlackUserIdentity): Promise<boolean> {
+    async isNewUser(slackUserSubmission: ISlackUserSubmission): Promise<boolean> {
 
         if (process.env.MOCK_CORE == "true") return true;
 
-        const response = await axios.post(process.env.CORE_API + "/slack/auth", slackUserIdentity);
-        return response.data;
-        // 201 new user
-        // 204 existing user
+        try {
+            const response = await axios.post(process.env.CORE_API + "/slack/auth", slackUserSubmission);
+            return response.data;
+            // 201 new user
+            // 204 existing user
+        }catch(err){
+            console.log(err);
+            throw new Error(err);
+        }
     }
 
     async deactivateUser(slackUserIdentity: ISlackUserIdentity): Promise<boolean> {
 
         if (process.env.MOCK_CORE == "true") return true;
 
-        const response = await axios.put(process.env.CORE_API + `/slack/availability?email=${slackUserIdentity.email}`);
+        try{
+
+            const response = await axios.put(process.env.CORE_API + `/slack/availability?email=${slackUserIdentity.email}`);
 
         return response.data;
+        }catch(err){
+            console.log(err);
+            return new Promise((resolve) => {
+                resolve(false);
+            });
+        }
+
     }
 
     async sendPreferences(languageSubmission : LanguageSubmission) : Promise<string> {

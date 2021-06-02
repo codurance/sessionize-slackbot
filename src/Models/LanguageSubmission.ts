@@ -1,4 +1,4 @@
-import type {ILanguageSubmission, IRawLanguageSubmission} from "Typings";
+import type {ILanguage, ILanguageSubmission, IRawLanguageSubmission} from "Typings";
 import Language from "./Language";
 import SlackId from "./SlackId";
 
@@ -6,25 +6,25 @@ export default class LanguageSubmission implements ILanguageSubmission {
 
     slackId: SlackId;
     body: {
-        primaryLanguage: string,
-        secondaryLanguage: string,
-        tertiaryLanguage: string
+        primaryLanguage: Language,
+        secondaryLanguage: Language,
+        tertiaryLanguage: Language
     };
 
     constructor(slackId: SlackId, languages: Language[]){
         this.slackId = slackId;
         this.body = {
-            primaryLanguage : languages[0].value,
-            secondaryLanguage : languages[1].value,
-            tertiaryLanguage : languages[2].value
+            primaryLanguage : languages[0],
+            secondaryLanguage : languages[1],
+            tertiaryLanguage : languages[2]
         };
     }
 
-    static fromResponse(slackId: SlackId, rawLanguageSubmission: IRawLanguageSubmission): LanguageSubmission {
+    static fromResponse(slackId: SlackId, rawLanguageSubmission: ILanguage[]): LanguageSubmission {
         const languageList: Language[] = [];
 
-        rawLanguageSubmission.selected_options.map(option => {
-            const thisLanguage: Language = new Language(option.value, option.text.text);
+        rawLanguageSubmission.map(option => {
+            const thisLanguage: Language = new Language(option.value, option.displayName);
             languageList.push(thisLanguage);
         });
 

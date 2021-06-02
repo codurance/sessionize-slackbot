@@ -45,7 +45,7 @@ export default class SlackApiClient {
         }
 
         return {
-            slackId: new SlackId(slackId),
+            slackId: slackId,
             email: userIdentity.profile?.email,
             firstName: splitNames[0],
             lastName: splitNames[1]
