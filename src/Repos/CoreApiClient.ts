@@ -20,7 +20,9 @@ export default class CoreApiClient {
             // 204 existing user
         }catch(err){
             console.log(err);
-            throw new Error(err);
+            return new Promise((resolve) => {
+                resolve(false);
+            });
         }
     }
 
@@ -32,7 +34,8 @@ export default class CoreApiClient {
 
             const response = await axios.put(process.env.CORE_API + `/slack/availability?email=${slackUserIdentity.email}`);
 
-        return response.data;
+            return response.data;
+
         }catch(err){
             console.log(err);
             return new Promise((resolve) => {
@@ -58,7 +61,9 @@ export default class CoreApiClient {
             return response.data;
         }catch(error){
             console.log(error);
-            throw new Error(error);
+            return new Promise((resolve) => {
+                resolve("error");
+            });
         }
 
     }

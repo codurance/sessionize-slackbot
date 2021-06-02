@@ -3,45 +3,14 @@ import CoreApiClient from "../Repos/CoreApiClient";
 import MessageBuilder from "../MessageBuilder";
 import ChannelEventHandler from "../EventHandlers/ChannelEventHandler";
 import SlackApiClient from "../Repos/SlackApiClient";
-import { KnownBlock, MemberJoinedChannelEvent } from "@slack/bolt";
+import { KnownBlock } from "@slack/bolt";
 import SlackId from "../Models/SlackId";
 import Language from "../Models/Language";
 import PreferencesForm from "../Models/PreferencesForm";
 import LanguagesResponse from "../Models/LanguagesResponse";
 
-import type {ISlackUserIdentity} from "../Typings";
 
 describe("ChannelEventHandler", () => {
-    test("should make request to core to see if user joining channel is new", async () => {
-
-        const event: MemberJoinedChannelEvent = {
-            type: "member_joined_channel",
-            user: "U0G9QF9C6",
-            channel: "C0698JE0H",
-            channel_type: "C",
-            team: "T024BE7LD",
-            inviter: "U123456789"
-        };
-
-        const userIdentity: ISlackUserIdentity = {
-            firstName: "Joe",
-            lastName: "Bloggs",
-            slackId: new SlackId("U0G9QF9C6"),
-            email: "joe.bloggs@codurance.com"
-        };
-
-        const mockedCoreApiClient: CoreApiClient = mock(CoreApiClient);
-        when(mockedCoreApiClient.isNewUser(userIdentity)).thenResolve(true);
-
-        const mockedSlackApiClient: SlackApiClient = mock(SlackApiClient);
-        when(mockedSlackApiClient.getIdentity(event.user)).thenResolve(userIdentity);
-
-        const channelEventHandler = new ChannelEventHandler(instance(mockedCoreApiClient), instance(mockedSlackApiClient), new MessageBuilder());
-
-        await channelEventHandler.onChannelJoin(event);
-
-        verify(mockedCoreApiClient.isNewUser(userIdentity)).once();
-    });
     test("should make a request to user for language preferences", async () => {
 
         const languagesResponseFromCore: Language[] = [
