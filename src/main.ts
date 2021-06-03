@@ -37,17 +37,14 @@ import express from "express";
         channelEventHandler.onChannelLeave(event);
     });
 
-    app.action("approve_session", async ({ ack, say }) => {
-        console.log("A session was approved!");
-        await ack();
-        await say("Thanks! You have successfully accepted this match!");
-    });
-
     receiver.router.use(express.json());
     receiver.router.use(express.urlencoded({ extended: true }));
 
     receiver.router.post("/direct-message", apiEventHandler.onDirectMessage);
     receiver.router.post("/match-notification", apiEventHandler.onMatchNotification);
+    receiver.router.post("/match-list", (req, res) => {
+        res.status(200);
+    });
     receiver.router.post("/language-preferences", apiEventHandler.onLanguagePreferences);
     receiver.router.post("/slack/interactive-endpoint", channelEventHandler.interactiveMessageResponse);
 

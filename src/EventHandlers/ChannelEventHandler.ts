@@ -38,7 +38,8 @@ export default class ChannelEventHandler {
             return await this.slackApiClient.sendDm(event.user, message);
         } catch (error) {
             // TODO: Handle user-friendly errors
-            throw new Error(error);
+            return await this.slackApiClient.sendDm(event.user, "It looks likes there is something wrong at the moment. Please leave the channel and try again later.");
+
         }
     }
 
@@ -54,18 +55,18 @@ export default class ChannelEventHandler {
             return await this.slackApiClient.sendDm(event.user, message);
         } catch (error) {
             // TODO: Handle user-friendly errors
-            throw new Error(error);
+            return await this.slackApiClient.sendDm(event.user, "It looks like there was a problem detecting that you'd left the channel.");
         }
     }
 
     interactiveMessageResponse = async (req: Request): Promise<any> => {
+
         try {
             const payload: InteractiveMessageResponse = JSON.parse(req.body.payload);
             // Send to method depending on the kind of response
             switch(payload.actions[0].action_id){
 
             case "confirm_preferences":
-                console.log("Confirm preferences");
                 try {
 
                     let rawLanguageSubmission: Language[];
@@ -94,15 +95,17 @@ export default class ChannelEventHandler {
 
                         const response = await this.coreApiClient.sendPreferences(languageSubmission);
 
-                        console.log(response);
+                        await this.slackApiClient.sendDm(slackId.slackId, "Thanks for sending us your language preferences!");
+
+
 
                     }else{
-                        // TODO: Deal with invalid languageSubmission
+                        console.error("There was a problem sending the language preferences to the core API");
                     }
 
                 }catch(error){
                     console.log(error);
-                    throw new Error(error);
+
                 }
                 break;
 

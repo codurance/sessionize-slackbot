@@ -45,7 +45,6 @@ export default class ApiEventHandler {
                 matchDetails.language);
             const matchNotificationBody: KnownBlock[] = this.messageBuilder.buildMatchNotification(matchNotificationContent);
 
-            // TODO: Create multiple DM message
             // const matchNotification: MatchNotification = new MatchNotification(user, matchNotificationBody);
             //
 
