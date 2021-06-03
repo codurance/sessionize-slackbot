@@ -10,41 +10,36 @@ dotenv.config();
 export default class CoreApiClient {
 
     async isNewUser(slackUserIdentity: ISlackUserIdentity): Promise<boolean> {
-
         if (process.env.MOCK_CORE == "true") return true;
 
-        const response = await axios.post(process.env.CORE_API + "/slack/auth", slackUserIdentity);
+        const url = new URL(`/slack/auth`, `${process.env.CORE_API}`);
+        const response = await axios.post(url.toString(), slackUserIdentity);
         return response.data;
         // 201 new user
         // 204 existing user
     }
 
     async deactivateUser(slackUserIdentity: ISlackUserIdentity): Promise<boolean> {
-
-
         if (process.env.MOCK_CORE == "true") return true;
-
-        const response = await axios.put(process.env.CORE_API + `/slack/optout?email=${slackUserIdentity.email}`);
-
+        const url = new URL(`/slack/optout?email=${slackUserIdentity.email}`, `${process.env.CORE_API}`);
+        const response = await axios.put(url.toString());
         return response.data;
     }
 
     async sendPreferences(preferencesPayload : PreferencesPayload) : Promise<boolean> {
-        
-        const response = await axios.post(process.env.CORE_API + "/slack/preferences", preferencesPayload);
+        const url = new URL(`/slack/preferences`, `${process.env.CORE_API}`);
+        const response = await axios.post(url.toString());
 
         return response.data;
-
     }
 
     async getLanguageList() : Promise<Language[]> {
-
-        try{
-            const response = await axios.get(process.env.CORE_API + "/slack/languages");
+        try {
+            const url = new URL(`/slack/languages`, `${process.env.CORE_API}`);
+            const response = await axios.get(url.toString());
             return response.data;
-        }catch(err){
+        } catch (err) {
             throw new Error("A connection could not be made to core");
         }
-        
     }
 }
