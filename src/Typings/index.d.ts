@@ -115,3 +115,7 @@ export interface ISlackUserSubmission {
     firstName: string,
     lastName: string
 }
+
+export interface IGroupDm {
+    channelId: string
+}

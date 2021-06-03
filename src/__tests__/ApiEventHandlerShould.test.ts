@@ -1,4 +1,4 @@
-import {anyOfClass, deepEqual, instance, mock, verify} from "ts-mockito";
+import {anyOfClass, anything, deepEqual, instance, mock, verify, when} from "ts-mockito";
 import {Request, Response} from "express";
 import SlackApiClient from "../Repos/SlackApiClient";
 import MessageBuilder from "../MessageBuilder";
@@ -45,7 +45,15 @@ describe("ApiEventHandler", () => {
             }
         };
 
-        await apiEventHandler.onDirectMessage(testRequest as Request);
+        const testResponse: Partial<Response> = {
+            send: jest.fn(),
+            status: jest.fn()
+        };
+
+        when(mockedSlackApiClient.sendDm(anything(), anything())).thenResolve({
+            ok: true
+        });
+        await apiEventHandler.onDirectMessage(testRequest as Request, testResponse as Response);
         verify(mockedSlackApiClient.sendDm(expectedSlackId, expectedMessage));
     });
 

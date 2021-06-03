@@ -1,7 +1,7 @@
 import CoreApiClient from "../Repos/CoreApiClient";
 import MessageBuilder from "../MessageBuilder";
 import SlackApiClient from "../Repos/SlackApiClient";
-import {Request} from "express";
+import {Request, Response} from "express";
 import {ChatPostMessageResponse, ConversationsOpenResponse, KnownBlock} from "@slack/web-api";
 import MatchNotification from "../Models/MatchNotification";
 import MatchNotificationContent from "../Models/MatchNotificationContent";
@@ -10,7 +10,7 @@ import SlackId from "../Models/SlackId";
 import PreferencesForm from "../Models/PreferencesForm";
 import Language from "../Models/Language";
 
-import type {IPreferencesRequest, IMatchNotificationRequest} from "Typings";
+import type {IPreferencesRequest, IMatchNotificationRequest, IGroupDm} from "Typings";
 import ChannelId from "../Models/ChannelId";
 export default class ApiEventHandler {
 
@@ -24,51 +24,52 @@ export default class ApiEventHandler {
         this.messageBuilder = messageBuilder;
     }
 
-    async onDirectMessage(request: Request): Promise<ChatPostMessageResponse> {
+    onDirectMessage = async (request: Request, response: Response): Promise<void> => {
         try {
             const slackId: string = request.body.slackId;
             const message: string = request.body.message;
-            return await this.slackApiClient.sendDm(slackId, message);
-        } catch (err) {
-            return err;
-        }
-    }
-
-    onMatchNotification = async (request: Request): Promise<ChatPostMessageResponse> => {
-        try {
-
-            const matchNotificationRequest: IMatchNotificationRequest = request.body;
-            const matchDetails: MatchDetails = MatchDetails.fromRequest(matchNotificationRequest);
-
-            const matchNotificationContent: MatchNotificationContent = new MatchNotificationContent(
-                matchDetails.users,
-                matchDetails.language);
-            const matchNotificationBody: KnownBlock[] = this.messageBuilder.buildMatchNotification(matchNotificationContent);
-
-            // const matchNotification: MatchNotification = new MatchNotification(user, matchNotificationBody);
-            //
-
-            const createdGroupDm: ConversationsOpenResponse = await this.slackApiClient.createGroupDM(matchDetails.users);
-
-            // Add relevant users to the newly created group
-
-            if(createdGroupDm.ok && createdGroupDm.channel && createdGroupDm.channel.id){
-                const channelId: ChannelId = new ChannelId(createdGroupDm.channel.id);
-                const matchNotification: MatchNotification = new MatchNotification(channelId, matchNotificationBody);
-                return await this.slackApiClient.sendMatchNotification(matchNotification);
+            const slackResponse: ChatPostMessageResponse = await this.slackApiClient.sendDm(slackId, message);
+            console.log(slackResponse);
+            console.log(slackResponse.ok);
+            if(slackResponse.ok){
+                response.status(200).send();
+                return;
+            }else{
+                console.error("Slack API failed to send a valid direct message.")
+                console.log(response);
+                response.status(500).send();
             }
-
-            throw new Error("Something went wrong");
-
         } catch (err) {
-            throw new Error(err);
+            console.log("Error sending direct message.");
+            console.error(err);
         }
     }
 
-    onLanguagePreferences = async (request: Request): Promise<ChatPostMessageResponse> => {
+    onMatchNotification = async (request: Request, response: Response): Promise<void> => {
+        try {
+            const matchDetails: MatchDetails = MatchDetails.fromRequest(request.body as IMatchNotificationRequest);
+            await this.createNotificationFromMatchDetails(matchDetails);
+            response.status(201).send();
+        } catch (err) {
+            console.error(err);
+            response.status(500).send();
+        }
+    }
 
-        console.log(this);
+    onMatchList = async (request: Request): Promise<void> => {
+        try {
+            const matchListRequest: IMatchNotificationRequest[] = request.body.matchList;
+            matchListRequest.forEach(matchNotificationRequest => {
+                const matchDetails: MatchDetails = MatchDetails.fromRequest(matchNotificationRequest);
+                this.createNotificationFromMatchDetails(matchDetails);
+            });
+        }catch(err){
+            console.error("There was an issue processing the list of pairings.");
+            console.error(err);
+        }
+    }
 
+    onLanguagePreferences = async (request: Request, response: Response): Promise<void> => {
         try {
             const latestLanguages: Language[] = await this.coreApiClient.getLanguageList();
 
@@ -78,10 +79,66 @@ export default class ApiEventHandler {
             const slackId = new SlackId(preferencesRequest.slackId);
             const preferencesForm: PreferencesForm = new PreferencesForm(slackId, preferencesMessage);
 
-            return this.slackApiClient.sendPreferencesForm(preferencesForm);
+            const slackResponse: ChatPostMessageResponse = await this.slackApiClient.sendPreferencesForm(preferencesForm);
+
+            if(slackResponse.ok){
+                response.status(200).send();
+            }else{
+                response.status(500).send();
+            }
+
         } catch(err){
+
+            // TODO: Error messages back to users
+
             console.error(err);
-            throw new Error(err);
+            response.status(500).send();
         }
+    }
+
+    private async createNotificationFromMatchDetails(matchDetails: MatchDetails) {
+        try {
+            const matchNotificationBody: KnownBlock[] = this.matchDetailsToNotification(matchDetails);
+
+            const groupDm: IGroupDm = await this.createGroupDmFromMatchDetails(matchDetails);
+
+            await this.sendNotification(groupDm, matchNotificationBody);
+        }catch(err){
+            console.error("Error creating notification from match details for the below:");
+            console.table(matchDetails);
+        }
+    }
+
+    private async sendNotification(groupDm: IGroupDm, matchNotificationBody: KnownBlock[]) {
+        const channelId: ChannelId = new ChannelId(groupDm.channelId);
+        const matchNotification: MatchNotification = new MatchNotification(channelId, matchNotificationBody);
+        let response: ChatPostMessageResponse = await this.slackApiClient.sendMatchNotification(matchNotification);
+        if(!response.ok) throw new Error("Slack failed to create a valid match notification.");
+    }
+
+    private matchDetailsToNotification(matchDetails: MatchDetails): KnownBlock[] {
+        const matchNotificationContent: MatchNotificationContent = new MatchNotificationContent(
+            matchDetails.users,
+            matchDetails.language);
+        const matchNotificationBody: KnownBlock[] = this.messageBuilder.buildMatchNotification(matchNotificationContent);
+        return matchNotificationBody;
+    }
+
+    private createGroupDmFromMatchDetails = async (matchDetails: MatchDetails): Promise<IGroupDm> => {
+        try {
+            const createdGroupDm: ConversationsOpenResponse = await this.slackApiClient.createGroupDM(matchDetails.users);
+            return this.validateGroupDm(createdGroupDm);
+        }catch(err){
+            throw new Error("There was an error in contacting the Slack API.");
+        }
+    }
+
+    private validateGroupDm = (groupDmResponse: ConversationsOpenResponse): IGroupDm => {
+        if (groupDmResponse.ok && groupDmResponse.channel && groupDmResponse.channel.id) {
+            return {
+                channelId: groupDmResponse.channel.id
+            } as IGroupDm;
+        }
+        throw new Error("The Slack API failed to create a valid group DM for the pairing.");
     }
 }

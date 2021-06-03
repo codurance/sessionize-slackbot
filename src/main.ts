@@ -39,7 +39,7 @@ import express from "express";
 
     receiver.router.use(express.json());
     receiver.router.use(express.urlencoded({ extended: true }));
-    
+
     receiver.router.get("/health", (req, res) => res.status(200).send("Ok!"));
     receiver.router.post("/direct-message", apiEventHandler.onDirectMessage);
     receiver.router.post("/match-notification", apiEventHandler.onMatchNotification);

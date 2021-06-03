@@ -54,20 +54,32 @@ export default class SlackApiClient {
 
     async sendMatchNotification(matchNotification: MatchNotification): Promise<ChatPostMessageResponse> {
 
-        return await this.web.chat.postMessage({
-            channel: matchNotification.channelId.id,
-            text: "You have a new match!",
-            blocks: matchNotification.body
-        });
+        try {
+            return await this.web.chat.postMessage({
+                channel: matchNotification.channelId.id,
+                text: "You have a new match!",
+                blocks: matchNotification.body
+            });
+        }catch(err){
+            console.error(err);
+            throw new Error("Failed to contact Slack to send notification.");
+        }
+
     }
 
     async sendPreferencesForm(preferencesForm: PreferencesForm): Promise<ChatPostMessageResponse> {
 
-        return await this.web.chat.postMessage({
-            channel: preferencesForm.user.slackId,
-            text: "Please select your preferences",
-            blocks: preferencesForm.body
-        });
+        try {
+            return await this.web.chat.postMessage({
+                channel: preferencesForm.user.slackId,
+                text: "Please select your preferences",
+                blocks: preferencesForm.body
+            });
+        }catch(err){
+            console.error(err);
+            throw new Error("Failed to contact Slack to send language preferences.");
+        }
+
     }
 
     async getConversationList(): Promise<ChatPostMessageResponse> {

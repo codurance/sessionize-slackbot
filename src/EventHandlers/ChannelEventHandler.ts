@@ -6,9 +6,9 @@ import SlackApiClient from "../Repos/SlackApiClient";
 import PreferencesForm from "../Models/PreferencesForm";
 import SlackId from "../Models/SlackId";
 import Language from "../Models/Language";
-import { Request } from "express";
+import { Request, Response } from "express";
 
-import type {InteractiveMessageResponse, IRawLanguageSubmission, ISlackUserIdentity, ISlackUserSubmission} from "Typings";
+import type {InteractiveMessageResponse, ISlackUserIdentity, ISlackUserSubmission} from "Typings";
 import LanguageSubmission from "../Models/LanguageSubmission";
 import SlackUserSubmission from "../Models/SlackUserSubmission";
 export default class ChannelEventHandler {
@@ -59,7 +59,7 @@ export default class ChannelEventHandler {
         }
     }
 
-    interactiveMessageResponse = async (req: Request): Promise<any> => {
+    interactiveMessageResponse = async (req: Request, res: Response): Promise<any> => {
 
         try {
             const payload: InteractiveMessageResponse = JSON.parse(req.body.payload);
@@ -93,10 +93,16 @@ export default class ChannelEventHandler {
 
                         console.log(this);
 
-                        const response = await this.coreApiClient.sendPreferences(languageSubmission);
+                        await this.coreApiClient.sendPreferences(languageSubmission);
 
-                        await this.slackApiClient.sendDm(slackId.slackId, "Thanks for sending us your language preferences!");
+                        const slackResponse: ChatPostMessageResponse = await this.slackApiClient.sendDm(slackId.slackId, "Thanks for sending us your language preferences!");
 
+                        if(slackResponse.ok){
+                            res.status(200).send();
+                            return;
+                        }
+
+                        res.status(500).send();
 
 
                     }else{
