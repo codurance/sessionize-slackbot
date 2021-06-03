@@ -23,7 +23,7 @@ export default class ChannelEventHandler {
         this.messageBuilder = messageBuilder;
     }
 
-    async onChannelJoin(event: MemberJoinedChannelEvent): Promise<ChatPostMessageResponse> {
+    async onChannelJoin(event: MemberJoinedChannelEvent): Promise<void> {
 
         try {
             const slackIdentity: ISlackUserIdentity =
@@ -35,15 +35,18 @@ export default class ChannelEventHandler {
                 ? this.messageBuilder.buildGreeting(slackIdentity.firstName + " " + slackIdentity.lastName)
                 : this.messageBuilder.buildWelcomeBack(slackIdentity.firstName + " " + slackIdentity.lastName);
 
-            return await this.slackApiClient.sendDm(event.user, message);
-        } catch (error) {
+             await this.slackApiClient.sendDm(event.user, message);
+
+        } catch (err) {
             // TODO: Handle user-friendly errors
-            return await this.slackApiClient.sendDm(event.user, "It looks likes there is something wrong at the moment. Please leave the channel and try again later.");
+            console.error("There was an issue sending a direct message to a user.");
+            console.error(err);
+            await this.slackApiClient.sendDm(event.user, "It looks likes there is something wrong at the moment. Please leave the channel and try again later.");
 
         }
     }
 
-    async onChannelLeave(event: MemberLeftChannelEvent): Promise<ChatPostMessageResponse> {
+    async onChannelLeave(event: MemberLeftChannelEvent): Promise<void> {
 
         try {
             const slackIdentity: ISlackUserIdentity = await this.slackApiClient.getIdentity(event.user);
@@ -52,10 +55,11 @@ export default class ChannelEventHandler {
                 ? this.messageBuilder.buildFarewell(slackIdentity.firstName)
                 : this.messageBuilder.errorOccurred(slackIdentity.firstName);
 
-            return await this.slackApiClient.sendDm(event.user, message);
-        } catch (error) {
-            // TODO: Handle user-friendly errors
-            return await this.slackApiClient.sendDm(event.user, "It looks like there was a problem detecting that you'd left the channel.");
+             await this.slackApiClient.sendDm(event.user, message);
+        } catch (err) {
+            // TODO: Handle user-friendly errs
+             console.error(err);
+             await this.slackApiClient.sendDm(event.user, "It looks like there was a problem detecting that you'd left the channel.");
         }
     }
 
@@ -95,9 +99,9 @@ export default class ChannelEventHandler {
 
                         await this.coreApiClient.sendPreferences(languageSubmission);
 
-                        const slackResponse: ChatPostMessageResponse = await this.slackApiClient.sendDm(slackId.slackId, "Thanks for sending us your language preferences!");
+                        const slackResponse: boolean = await this.slackApiClient.sendDm(slackId.slackId, "Thanks for sending us your language preferences!");
 
-                        if(slackResponse.ok){
+                        if(slackResponse){
                             res.status(200).send();
                             return;
                         }

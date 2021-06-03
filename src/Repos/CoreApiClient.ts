@@ -30,7 +30,7 @@ export default class CoreApiClient {
         if (process.env.MOCK_CORE == "true") return true;
 
         try{
-            const url = new URL(`/slack/optout?email=${slackUserIdentity.email}`, `${process.env.CORE_API}`);
+            const url = new URL(`/slack/availability?email=${slackUserIdentity.email}`, `${process.env.CORE_API}`);
             const response = await axios.put(url.toString());
 
             return response.data;

@@ -21,35 +21,43 @@ export default class SlackApiClient {
 
     private web: WebClient = new WebClient(process.env.SLACK_BOT_TOKEN);
 
-    async sendDm(slackId: string, message: string): Promise<ChatPostMessageResponse> {
-        return await this.web.chat.postMessage({
-            channel: slackId,
-            text: message
-        });
+    async sendDm(slackId: string, message: string): Promise<boolean> {
+        try {
+            const slackResponse: ChatPostMessageResponse = await this.web.chat.postMessage({
+                channel: slackId,
+                text: message
+            });
+            if(!slackResponse.ok){
+                return false;
+            }
+            return true;
+        }catch(err){
+            console.error("Failed to send a direct message to user.");
+            console.error(err);
+            return false;
+        }
     }
 
     async getIdentity(slackId: string): Promise<ISlackUserIdentity> {
-        const userIdentity: UsersProfileGetResponse = await this.web.users.profile.get({
-            user: slackId
-        });
 
-        const splitNames = Array<string|undefined>(2);
-
-        try {
-            const nameAfterSplit = userIdentity.profile?.real_name?.split(" ");
-            nameAfterSplit?.map((string, i) => {
-                splitNames[i] = string;
+        try{
+            const userIdentity: UsersProfileGetResponse = await this.web.users.profile.get({
+                user: slackId
             });
-        }catch(err){
-            console.log(err);
-        }
 
-        return {
-            slackId: slackId,
-            email: userIdentity.profile?.email,
-            firstName: splitNames[0],
-            lastName: splitNames[1]
-        } as ISlackUserIdentity;
+            const nameArray: string[] = this.parseFirstLastNames(userIdentity);
+
+            return {
+                slackId: slackId,
+                email: userIdentity.profile?.email,
+                firstName: nameArray[0] || "",
+                lastName: nameArray[1] || ""
+            } as ISlackUserIdentity;
+
+        }catch(err){
+            console.error(err);
+            throw new Error("Could not contact Slack to request user profile information.");
+        }
     }
 
     async sendMatchNotification(matchNotification: MatchNotification): Promise<ChatPostMessageResponse> {
@@ -83,11 +91,21 @@ export default class SlackApiClient {
     }
 
     async getConversationList(): Promise<ChatPostMessageResponse> {
-        return await this.web.conversations.list();
+        try {
+            return await this.web.conversations.list();
+        }catch(err){
+            console.error(err);
+            throw new Error("Failed to contact Slack to request conversation list.");
+        }
     }
 
     async getConversationMembers(channelId: string): Promise<ChatPostMessageResponse> {
-        return await this.web.conversations.members({channel: channelId} as ConversationsMembersArguments);
+        try {
+            return await this.web.conversations.members({channel: channelId} as ConversationsMembersArguments);
+        }catch(err){
+            console.error(err);
+            throw new Error("Failed to contact Slack to request members within conversations.");
+        }
     }
 
     async createGroupDM(users: SlackId[]): Promise<ConversationsOpenResponse> {
@@ -96,6 +114,27 @@ export default class SlackApiClient {
             users: slackIdsToString(users)
         };
 
-        return await this.web.conversations.open(conversationArgs);
+        try {
+            return await this.web.conversations.open(conversationArgs);
+        }catch(err){
+            console.error(err);
+            throw new Error("Failed to contact Slack to create group DM.");
+        }
+
+    }
+
+    private parseFirstLastNames(usersProfileGetResponse: UsersProfileGetResponse): string[] {
+        let name: () => string = () => {
+            if(usersProfileGetResponse.profile && usersProfileGetResponse.profile.real_name) return usersProfileGetResponse.profile.real_name;
+            return "";
+        };
+        try {
+            const nameArray = name().split(" ");
+            nameArray.forEach(name => { if(!name) name = ""; })
+            return nameArray;
+        }catch(err){
+            console.error(err);
+            return ["Unknown", "User"];
+        }
     }
 }

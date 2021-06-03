@@ -1,14 +1,11 @@
-import {anyOfClass, anything, deepEqual, instance, mock, verify, when} from "ts-mockito";
+import {anything, instance, mock, verify, when} from "ts-mockito";
 import {Request, Response} from "express";
 import SlackApiClient from "../Repos/SlackApiClient";
 import MessageBuilder from "../MessageBuilder";
 import CoreApiClient from "../Repos/CoreApiClient";
 import ApiEventHandler from "../EventHandlers/ApiEventHandler";
-import MatchNotification from "../Models/MatchNotification";
 import SlackId from "../Models/SlackId";
-import {Button, KnownBlock} from "@slack/web-api";
 
-import type {IMatchNotificationRequest} from "../Typings";
 import {slackIdsToLinkedNames} from "../Utils/ArraysUtils";
 
 describe("ApiEventHandler", () => {
@@ -50,9 +47,7 @@ describe("ApiEventHandler", () => {
             status: jest.fn()
         };
 
-        when(mockedSlackApiClient.sendDm(anything(), anything())).thenResolve({
-            ok: true
-        });
+        when(mockedSlackApiClient.sendDm(anything(), anything())).thenResolve(true);
         await apiEventHandler.onDirectMessage(testRequest as Request, testResponse as Response);
         verify(mockedSlackApiClient.sendDm(expectedSlackId, expectedMessage));
     });

@@ -28,10 +28,8 @@ export default class ApiEventHandler {
         try {
             const slackId: string = request.body.slackId;
             const message: string = request.body.message;
-            const slackResponse: ChatPostMessageResponse = await this.slackApiClient.sendDm(slackId, message);
-            console.log(slackResponse);
-            console.log(slackResponse.ok);
-            if(slackResponse.ok){
+            const slackResponse: boolean = await this.slackApiClient.sendDm(slackId, message);
+            if(slackResponse){
                 response.status(200).send();
                 return;
             }else{
@@ -56,16 +54,19 @@ export default class ApiEventHandler {
         }
     }
 
-    onMatchList = async (request: Request): Promise<void> => {
+    onMatchList = async (request: Request, response: Response): Promise<void> => {
         try {
-            const matchListRequest: IMatchNotificationRequest[] = request.body.matchList;
-            matchListRequest.forEach(matchNotificationRequest => {
+            const matchListRequest: IMatchNotificationRequest[] = request.body;
+            matchListRequest.forEach(async matchNotificationRequest => {
                 const matchDetails: MatchDetails = MatchDetails.fromRequest(matchNotificationRequest);
-                this.createNotificationFromMatchDetails(matchDetails);
+                await this.createNotificationFromMatchDetails(matchDetails);
             });
+            response.status(204).send();
+
         }catch(err){
             console.error("There was an issue processing the list of pairings.");
             console.error(err);
+            response.status(500).send();
         }
     }
 
@@ -110,9 +111,12 @@ export default class ApiEventHandler {
     }
 
     private async sendNotification(groupDm: IGroupDm, matchNotificationBody: KnownBlock[]) {
+        console.log("Send notification");
         const channelId: ChannelId = new ChannelId(groupDm.channelId);
         const matchNotification: MatchNotification = new MatchNotification(channelId, matchNotificationBody);
+        console.log(JSON.stringify(matchNotification));
         let response: ChatPostMessageResponse = await this.slackApiClient.sendMatchNotification(matchNotification);
+        console.log(response);
         if(!response.ok) throw new Error("Slack failed to create a valid match notification.");
     }
 

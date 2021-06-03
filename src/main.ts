@@ -43,9 +43,7 @@ import express from "express";
     receiver.router.get("/health", (req, res) => res.status(200).send("Ok!"));
     receiver.router.post("/direct-message", apiEventHandler.onDirectMessage);
     receiver.router.post("/match-notification", apiEventHandler.onMatchNotification);
-    receiver.router.post("/match-list", (req, res) => {
-        res.status(200);
-    });
+    receiver.router.post("/match-list", apiEventHandler.onMatchList);
     receiver.router.post("/language-preferences", apiEventHandler.onLanguagePreferences);
     receiver.router.post("/slack/interactive-endpoint", channelEventHandler.interactiveMessageResponse);
 
