@@ -14,15 +14,14 @@ export default class CoreApiClient {
         if (process.env.MOCK_CORE == "true") return true;
 
         try {
-            const response = await axios.post(process.env.CORE_API + "/slack/auth", slackUserSubmission);
+            const url = new URL(`/slack/auth`, `${process.env.CORE_API}`);
+            const response = await axios.post(url.toString(), slackUserSubmission);
             return response.data;
             // 201 new user
             // 204 existing user
-        }catch(err){
-            console.log(err);
-            return new Promise((resolve) => {
-                resolve(false);
-            });
+        } catch (err) {
+            console.error(err);
+            return Promise.resolve(false);
         }
     }
 
@@ -31,21 +30,19 @@ export default class CoreApiClient {
         if (process.env.MOCK_CORE == "true") return true;
 
         try{
-
-            const response = await axios.put(process.env.CORE_API + `/slack/availability?email=${slackUserIdentity.email}`);
+            const url = new URL(`/slack/optout?email=${slackUserIdentity.email}`, `${process.env.CORE_API}`);
+            const response = await axios.put(url.toString());
 
             return response.data;
-
-        }catch(err){
-            console.log(err);
+        } catch (err) {
+            console.error(err);
             return new Promise((resolve) => {
                 resolve(false);
             });
         }
-
     }
 
-    async sendPreferences(languageSubmission : LanguageSubmission) : Promise<string> {
+    async sendPreferences(languageSubmission: LanguageSubmission): Promise<string> {
 
         const config = {
             headers: {
@@ -56,25 +53,25 @@ export default class CoreApiClient {
         const data = languageSubmission.body;
 
         try {
-            const response = await axios.put(process.env.CORE_API + "/slack/preferences/languages", data, config);
+            const url = new URL(`/slack/preferences`, `${process.env.CORE_API}`);
+            const response = await axios.post(url.toString());
             console.log(response);
             return response.data;
-        }catch(error){
-            console.log(error);
+        } catch (error) {
+            console.error(error);
             return new Promise((resolve) => {
                 resolve("error");
             });
         }
-
     }
 
-    async getLanguageList() : Promise<Language[]> {
+    async getLanguageList(): Promise<Language[]> {
         try{
-            const response = await axios.get(process.env.CORE_API + "/slack/languages");
+            const url = new URL(`/slack/languages`, `${process.env.CORE_API}`);
+            const response = await axios.get(url.toString());
             return response.data;
-        }catch(err){
+        } catch (err) {
             throw new Error("A connection could not be made to core");
         }
-
     }
 }
