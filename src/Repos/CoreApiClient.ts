@@ -36,9 +36,7 @@ export default class CoreApiClient {
             return response.data;
         } catch (err) {
             console.error(err);
-            return new Promise((resolve) => {
-                resolve(false);
-            });
+            return Promise.resolve(false);
         }
     }
 
@@ -59,9 +57,7 @@ export default class CoreApiClient {
             return response.data;
         } catch (error) {
             console.error(error);
-            return new Promise((resolve) => {
-                resolve("error");
-            });
+            return Promise.resolve("error");
         }
     }
 
