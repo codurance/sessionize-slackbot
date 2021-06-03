@@ -19,7 +19,7 @@ describe("Slack Service should", () => {
 
     it.each`
         isNewUser | expectedMessage
-        ${true}   | ${"Hi Joe Bloggs, welcome to Sessionize!"} 
+        ${true}   | ${"Hi Joe Bloggs, welcome to Sessionize!"}
         ${false}  | ${"Hi Joe Bloggs, welcome back to Sessionize!"}
     `("send a personalised message when a user joins the channel", async ({ isNewUser, expectedMessage }) => {
         // GIVEN Sessionize is installed
@@ -38,7 +38,7 @@ describe("Slack Service should", () => {
         const slackIdentity: ISlackUserIdentity = {
             firstName: "Joe",
             lastName: "Bloggs",
-            slackId: new SlackId("U0G9QF9C6"),
+            slackId: "U0G9QF9C6",
             email: "joe.bloggs@codurance.com"
         };
 

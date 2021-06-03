@@ -2,6 +2,8 @@ import dotenv from "dotenv";
 import {
     ChatPostMessageResponse,
     ConversationsMembersArguments,
+    ConversationsOpenArguments,
+    ConversationsOpenResponse,
     UsersProfileGetResponse,
     WebClient
 } from "@slack/web-api";
@@ -11,6 +13,7 @@ import MatchNotification from "../Models/MatchNotification";
 import PreferencesForm from "../Models/PreferencesForm";
 
 import type {ISlackUserIdentity} from "Typings";
+import {slackIdsToString} from "../Utils/ArraysUtils";
 
 dotenv.config();
 
@@ -42,7 +45,7 @@ export default class SlackApiClient {
         }
 
         return {
-            slackId: new SlackId(slackId),
+            slackId: slackId,
             email: userIdentity.profile?.email,
             firstName: splitNames[0],
             lastName: splitNames[1]
@@ -52,7 +55,7 @@ export default class SlackApiClient {
     async sendMatchNotification(matchNotification: MatchNotification): Promise<ChatPostMessageResponse> {
 
         return await this.web.chat.postMessage({
-            channel: matchNotification.slackId.slackId,
+            channel: matchNotification.channelId.id,
             text: "You have a new match!",
             blocks: matchNotification.body
         });
@@ -73,5 +76,14 @@ export default class SlackApiClient {
 
     async getConversationMembers(channelId: string): Promise<ChatPostMessageResponse> {
         return await this.web.conversations.members({channel: channelId} as ConversationsMembersArguments);
+    }
+
+    async createGroupDM(users: SlackId[]): Promise<ConversationsOpenResponse> {
+
+        const conversationArgs: ConversationsOpenArguments = {
+            users: slackIdsToString(users)
+        };
+
+        return await this.web.conversations.open(conversationArgs);
     }
 }

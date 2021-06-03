@@ -2,15 +2,13 @@ import { ActionsBlock, Button, InputBlock, KnownBlock, MultiStaticSelect, Option
 import Language from "../Models/Language";
 import MatchNotificationContent from "../Models/MatchNotificationContent";
 import * as templates from "../MessageTemplates/Templates";
-import SlackId from "../Models/SlackId";
-import {formatISODate} from "../Utils/Formatters";
+import {slackIdsToLinkedNames} from "../Utils/ArraysUtils";
 
 export default class MessageBuilder {
 
     buildMatchNotification(matchNotificationContent: MatchNotificationContent): KnownBlock[] {
 
-        const formattedDateTime = formatISODate(matchNotificationContent.dateTime);
-        const matchNames = this.matchIdsAsString(matchNotificationContent.matchIds);
+        const matchNames = slackIdsToLinkedNames(matchNotificationContent.matchIds);
 
         const headerSection: SectionBlock = {
             type: "section",
@@ -26,46 +24,13 @@ export default class MessageBuilder {
                 {
                     type: "mrkdwn",
                     text: `*Language:*\n${matchNotificationContent.language.displayName}`
-                },
-                {
-                    type: "mrkdwn",
-                    text: `*When:*\n${formattedDateTime}`
                 }
-            ]
-        };
-
-        const actions: ActionsBlock = {
-            type: "actions",
-            elements: [
-                {
-                    type: "button",
-                    text: {
-                        type: "plain_text",
-                        text: "Approve",
-                        emoji: true
-                    },
-                    action_id: "approve_session",
-                    style: "primary",
-                    value: "session_confirmed"
-                } as Button,
-                {
-                    type: "button",
-                    text: {
-                        type: "plain_text",
-                        text: "Deny",
-                        emoji: true
-                    },
-                    style: "danger",
-                    value: "session_denied",
-                    action_id: "deny_session"
-                } as Button
             ]
         };
 
         return [
             headerSection,
             matchDetailsSection,
-            actions
         ];
     }
 
@@ -141,12 +106,6 @@ export default class MessageBuilder {
             languageSelectors,
             actions
         ];
-    }
-
-    matchIdsAsString(matchNames: SlackId[]): string {
-        let matchNameString = "";
-        matchNames.forEach(id => matchNameString += `<@${id.slackId}> `);
-        return matchNameString.trimEnd();
     }
 
     buildGreeting(name: string): string {

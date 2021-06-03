@@ -1,4 +1,4 @@
-import {BlockAction, MemberJoinedChannelEvent, MemberLeftChannelEvent} from "@slack/bolt";
+import {MemberJoinedChannelEvent, MemberLeftChannelEvent} from "@slack/bolt";
 import {ChatPostMessageResponse, KnownBlock} from "@slack/web-api";
 import CoreApiClient from "../Repos/CoreApiClient";
 import MessageBuilder from "../MessageBuilder";
@@ -8,7 +8,9 @@ import SlackId from "../Models/SlackId";
 import Language from "../Models/Language";
 import { Request } from "express";
 
-import type {ISlackUserIdentity} from "Typings";
+import type {InteractiveMessageResponse, IRawLanguageSubmission, ISlackUserIdentity, ISlackUserSubmission} from "Typings";
+import LanguageSubmission from "../Models/LanguageSubmission";
+import SlackUserSubmission from "../Models/SlackUserSubmission";
 export default class ChannelEventHandler {
 
     coreApiClient: CoreApiClient
@@ -27,7 +29,9 @@ export default class ChannelEventHandler {
             const slackIdentity: ISlackUserIdentity =
                 await this.slackApiClient.getIdentity(event.user);
 
-            const message: string = await this.coreApiClient.isNewUser(slackIdentity)
+            const slackUserSubmission: ISlackUserSubmission = SlackUserSubmission.fromSlackResponse(slackIdentity);
+
+            const message: string = await this.coreApiClient.isNewUser(slackUserSubmission)
                 ? this.messageBuilder.buildGreeting(slackIdentity.firstName + " " + slackIdentity.lastName)
                 : this.messageBuilder.buildWelcomeBack(slackIdentity.firstName + " " + slackIdentity.lastName);
 
@@ -47,20 +51,60 @@ export default class ChannelEventHandler {
                 ? this.messageBuilder.buildFarewell(slackIdentity.firstName)
                 : this.messageBuilder.errorOccurred(slackIdentity.firstName);
 
-                return await this.slackApiClient.sendDm(event.user, message);
+            return await this.slackApiClient.sendDm(event.user, message);
         } catch (error) {
             // TODO: Handle user-friendly errors
             throw new Error(error);
         }
     }
 
-    async interactiveMessageResponse(req: Request): Promise<any> {
+    interactiveMessageResponse = async (req: Request): Promise<any> => {
         try {
-            const payload: BlockAction = JSON.parse(req.body.payload);
+            const payload: InteractiveMessageResponse = JSON.parse(req.body.payload);
             // Send to method depending on the kind of response
             switch(payload.actions[0].action_id){
-            case "approve_session":
-                return this.processApprovedSession(payload);
+
+            case "confirm_preferences":
+                console.log("Confirm preferences");
+                try {
+
+                    let rawLanguageSubmission: Language[];
+
+                    console.log(JSON.stringify((payload.state?.values)));
+
+                    const single = Object.keys(payload.state?.values)[0];
+                    const languageKey = Object.keys(payload.state?.values[single])[0];
+
+                    if(payload.state?.values[single][languageKey] &&
+                        payload.user.id){
+
+                        const slackId: SlackId = new SlackId(payload.user.id);
+
+                        rawLanguageSubmission =
+                            payload.state?.values[single][languageKey]["selected_options"];
+
+                        console.log(rawLanguageSubmission);
+
+                        const languageSubmission: LanguageSubmission =
+                            LanguageSubmission.fromResponse(slackId, rawLanguageSubmission);
+
+                        console.log("Attempting to send submission");
+
+                        console.log(this);
+
+                        const response = await this.coreApiClient.sendPreferences(languageSubmission);
+
+                        console.log(response);
+
+                    }else{
+                        // TODO: Deal with invalid languageSubmission
+                    }
+
+                }catch(error){
+                    console.log(error);
+                    throw new Error(error);
+                }
+                break;
 
             default:
                 throw new Error("Unknown response");
@@ -70,13 +114,11 @@ export default class ChannelEventHandler {
         }
     }
 
-    async processApprovedSession(payload: BlockAction){
-        // TODO: Prepare approve_session payload and send to core
-    }
-
     async sendLanguagePreferencesForm(user: SlackId): Promise<ChatPostMessageResponse> {
 
         try {
+
+            console.log("channelEventHandler.sendLanguagePreferencesForm");
             const latestLanguagesResponse: Language[] = await this.coreApiClient.getLanguageList();
 
             const preferencesMessage: KnownBlock[] = this.messageBuilder.buildPreferencesForm(latestLanguagesResponse);
