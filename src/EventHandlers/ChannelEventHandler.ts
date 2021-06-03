@@ -6,11 +6,12 @@ import SlackApiClient from "../Repos/SlackApiClient";
 import PreferencesForm from "../Models/PreferencesForm";
 import SlackId from "../Models/SlackId";
 import Language from "../Models/Language";
-import { Request } from "express";
+import {Request} from "express";
 
-import type {InteractiveMessageResponse, IRawLanguageSubmission, ISlackUserIdentity, ISlackUserSubmission} from "Typings";
+import type {InteractiveMessageResponse, ISlackUserIdentity, ISlackUserSubmission} from "Typings";
 import LanguageSubmission from "../Models/LanguageSubmission";
 import SlackUserSubmission from "../Models/SlackUserSubmission";
+
 export default class ChannelEventHandler {
 
     coreApiClient: CoreApiClient
@@ -70,7 +71,7 @@ export default class ChannelEventHandler {
 
                     let rawLanguageSubmission: Language[];
 
-                    console.log(JSON.stringify((payload.state?.values)));
+                    console.log(JSON.stringify(payload.state?.values));
 
                     const single = Object.keys(payload.state?.values)[0];
                     const languageKey = Object.keys(payload.state?.values[single])[0];

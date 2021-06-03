@@ -1,4 +1,4 @@
-import type {ILanguage, ILanguageSubmission, IRawLanguageSubmission} from "Typings";
+import type {ILanguage, ILanguageSubmission} from "Typings";
 import Language from "./Language";
 import SlackId from "./SlackId";
 
@@ -21,13 +21,7 @@ export default class LanguageSubmission implements ILanguageSubmission {
     }
 
     static fromResponse(slackId: SlackId, rawLanguageSubmission: ILanguage[]): LanguageSubmission {
-        const languageList: Language[] = [];
-
-        rawLanguageSubmission.map(option => {
-            const thisLanguage: Language = new Language(option.value, option.displayName);
-            languageList.push(thisLanguage);
-        });
-
+        const languageList: Language[] = rawLanguageSubmission.map(option => new Language(option.value, option.displayName));
         return new LanguageSubmission(slackId, languageList);
     }
 }
