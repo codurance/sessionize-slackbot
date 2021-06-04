@@ -53,6 +53,11 @@ export default class ApiEventHandler {
             response.status(201).send();
         } catch (err) {
             console.error(err);
+            if(request.body.users){
+                request.body.users.forEach(async (user: string) => {
+                    await this.slackApiClient.sendDm(user, "A match notification was generated for you, but the delivery failed.");
+                });
+            }
             response.status(500).send();
         }
     }
@@ -178,7 +183,12 @@ export default class ApiEventHandler {
             const createdGroupDm: ConversationsOpenResponse = await this.slackApiClient.createGroupDM(matchDetails.users);
             return this.validateGroupDm(createdGroupDm);
         }catch(err){
-            throw new Error("There was an error in contacting the Slack API.");
+            if(matchDetails.users){
+                matchDetails.users.forEach(async user => {
+                    await this.slackApiClient.sendDm(user.slackId, "There was an issue sending out your pairing notification for Sessionize. Sorry!");
+                });
+            }
+            throw new Error("The was an issue contacting the Slack API.");
         }
     }
 

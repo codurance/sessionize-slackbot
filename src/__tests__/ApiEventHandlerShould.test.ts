@@ -59,6 +59,28 @@ describe("ApiEventHandler", () => {
         verify(mockedSlackApiClient.sendDm(expectedSlackId, expectedMessage));
     });
 
+    test("should send a user friendly error message if an error was thrown whilst a match notification was getting created", async () => {
+        const testRequest: Partial<Request> = {
+            body: {
+                language: {
+                    value: "JAVA",
+                    displayName: "Java"
+                },
+                users: [
+                    "SlackId1",
+                    "SlackId2"
+                ]
+            }
+        };
+
+        when(mockedSlackApiClient.createGroupDM(anything())).thenThrow(Error("Here is an error."));
+
+        await apiEventHandler.onMatchNotification(testRequest as Request, testResponse as Response);
+
+        verify(mockedSlackApiClient.sendDm("SlackId1",  "A match notification was generated for you, but the delivery failed.")).once();
+        verify(mockedSlackApiClient.sendDm("SlackId2",  "A match notification was generated for you, but the delivery failed.")).once();
+    });
+
     test("should turn an array of UserNames into a string", () => {
 
         const userNameArray: SlackId[] = [

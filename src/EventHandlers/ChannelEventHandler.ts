@@ -59,18 +59,4 @@ export default class ChannelEventHandler {
         }
     }
 
-    async sendLanguagePreferencesForm(user: SlackId): Promise<ChatPostMessageResponse> {
-
-        try {
-
-            const latestLanguagesResponse: Language[] = await this.coreApiClient.getLanguageList();
-            const preferencesMessage: KnownBlock[] = this.messageBuilder.buildPreferencesForm(latestLanguagesResponse);
-
-            const preferencesForm: PreferencesForm = new PreferencesForm(user, preferencesMessage);
-
-            return await this.slackApiClient.sendPreferencesForm(preferencesForm);
-        } catch(err){
-            throw new Error(err);
-        }
-    }
 }
