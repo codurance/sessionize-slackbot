@@ -12,22 +12,26 @@ import CoreApiClient from "../Repos/CoreApiClient";
 import SlackApiClient from "../Repos/SlackApiClient";
 import MessageBuilder from "../MessageBuilder";
 import ChannelEventHandler from "../EventHandlers/ChannelEventHandler";
-import type {IGroupDm, IMatchNotificationRequest, ISlackUserIdentity} from "../Typings";
+import type {IGroupDm, IMatchNotificationRequest, InteractiveMessageResponse, IPreferencesRequest, ISlackUserIdentity} from "../Typings";
 import { KnownBlock, MemberJoinedChannelEvent } from "@slack/bolt";
 import {Channel} from "@slack/web-api/dist/response/AdminUsergroupsListChannelsResponse";
-import {ChatPostMessageResponse, ConversationsOpenResponse} from "@slack/web-api";
+import {Button, ChatPostMessageResponse, ConversationsOpenResponse} from "@slack/web-api";
 import ChannelId from "../Models/ChannelId";
 import MatchNotification from "../Models/MatchNotification";
 import ApiEventHandler from "../EventHandlers/ApiEventHandler";
 import { Request, Response } from "express";
+import PreferencesForm from "../Models/PreferencesForm";
+import SlackId from "../Models/SlackId";
+import LanguageSubmission from "../Models/LanguageSubmission";
+import Language from "../Models/Language";
 
-describe("Slack Service should", () => {
+describe("Slack Service", () => {
 
     it.each`
-        isNewUser | expectedMessage
-        ${true}   | ${"Hi Joe Bloggs, welcome to Sessionize!"}
-        ${false}  | ${"Hi Joe Bloggs, welcome back to Sessionize!"}
-    `("send a personalised message when a user joins the channel", async ({ isNewUser, expectedMessage }) => {
+        isNewUser | expectedMessage | userAction
+        ${true}   | ${"Hi Joe Bloggs, welcome to Sessionize!"} | ${"joins"}
+        ${false}  | ${"Hi Joe Bloggs, welcome back to Sessionize!"} | ${"rejoins"}
+    `("should send a personalised message when a user $userAction the channel", async ({ isNewUser, expectedMessage }) => {
         // GIVEN Sessionize is installed
         // WHEN a user joins the Sessionize slack channel
         // THEN they receive a personalized welcome message
@@ -94,10 +98,6 @@ describe("Slack Service should", () => {
             status: function(code){ this.statusCode = code; return this as Response }
         }
 
-        const groupDm: IGroupDm = {
-            channelId: "testChannel"
-        };
-
         const matchNotificationBody: KnownBlock[] = [
             {
                 type: "section",
@@ -134,8 +134,210 @@ describe("Slack Service should", () => {
 
         await apiEventHandler.onMatchNotification(testRequest as Request, testResponse as Response);
 
-
         verify(mockedSlackApiClient.sendMatchNotification(anything())).once();
         verify(mockedSlackApiClient.sendMatchNotification(deepEqual(matchNotification))).once();
+    });
+
+    test("should send a preferences form with a choice of languages stored on our database", async () => {
+
+        const mockedSlackApiClient: SlackApiClient = mock(SlackApiClient);
+        const slackApiClient: SlackApiClient = instance(mockedSlackApiClient);
+
+        const mockedCoreApiClient: CoreApiClient = mock(CoreApiClient);
+        const coreApiClient: CoreApiClient = instance(mockedCoreApiClient);
+
+        const messageBuilder: MessageBuilder = new MessageBuilder();
+
+        const apiEventHandler: ApiEventHandler = new ApiEventHandler(coreApiClient, slackApiClient, messageBuilder);
+
+        const testRequest: Partial<Request> = {
+            body: {
+                slackId: "SlackId1"
+            }
+        };
+
+        const testResponse: Partial<Response> = {
+            send: jest.fn(),
+            status: function(code){ this.statusCode = code; return this as Response }
+        };
+
+        when(mockedCoreApiClient.getLanguageList()).thenResolve([
+            {
+                value: "JAVA",
+                displayName: "Java"
+            },
+            {
+                value: "PYTHON",
+                displayName: "Python"
+            },
+            {
+                value: "TYPESCRIPT",
+                displayName: "TypeScript"
+            }
+        ]);
+
+        when(mockedSlackApiClient.sendPreferencesForm(anything())).thenResolve({
+            ok: true
+        });
+
+        const formBody: KnownBlock[] = [
+            {
+                type: "section",
+                text: {
+                    type: "mrkdwn",
+                    text: "Please select your preferences."
+                }
+            },
+            {
+                type: "input",
+                element: {
+                    type: "multi_static_select",
+                    placeholder: {
+                        type: "plain_text",
+                        text: "Select a language",
+                        emoji: true
+                    },
+                    option_groups: [
+                        {
+                            label: {
+                                type: "plain_text",
+                                text: "Languages",
+                            },
+                            options: [
+                                {
+                                    text: {
+                                        type: "plain_text",
+                                        text: "Java",
+                                        emoji: true
+                                    },
+                                    value: "JAVA"
+                                },
+                                {
+                                    text: {
+                                        type: "plain_text",
+                                        text: "Python",
+                                        emoji: true
+                                    },
+                                    value: "PYTHON"
+                                },
+                                {
+                                    text: {
+                                        type: "plain_text",
+                                        text: "TypeScript",
+                                        emoji: true
+                                    },
+                                    value: "TYPESCRIPT"
+                                }
+                            ]
+                        },
+                    ],
+                    max_selected_items: 3
+                },
+                label: {
+                    type: "plain_text",
+                    text: "Languages",
+                    emoji: true
+                }
+            },
+            {
+                type: "actions",
+                elements: [
+                    {
+                        type: "button",
+                        text: {
+                            type: "plain_text",
+                            text: "Confirm",
+                            emoji: true
+                        },
+                        action_id: "confirm_preferences",
+                        style: "primary",
+                        value: "preferences_confirmed"
+                    } as Button
+                ]
+            }
+        ];
+
+        const expectedPreferencesForm: PreferencesForm = new PreferencesForm(new SlackId("SlackId1"), formBody);
+
+        await apiEventHandler.onLanguagePreferences(testRequest as Request, testResponse as Response);
+
+        verify(mockedSlackApiClient.sendPreferencesForm(anything())).once();
+        verify(mockedSlackApiClient.sendPreferencesForm(deepEqual(expectedPreferencesForm))).once();
+    });
+
+    test("should update the core / database with user language preferences", async () => {
+
+        const mockedCoreApiClient: CoreApiClient = mock(CoreApiClient);
+        const coreApiClient: CoreApiClient = instance(mockedCoreApiClient);
+
+        const mockedSlackApiClient: SlackApiClient = mock(SlackApiClient);
+        const slackApiClient: SlackApiClient = instance(mockedSlackApiClient);
+
+        const messageBuilder: MessageBuilder = new MessageBuilder();
+
+        const apiEventHandler: ApiEventHandler = new ApiEventHandler(coreApiClient, slackApiClient, messageBuilder);
+
+        const slackId: SlackId = new SlackId("SlackId1");
+
+        const languages: Language[] = [
+            new Language("JAVA", "Java"),
+            new Language("TYPESCRIPT", "TypeScript"),
+            new Language("PYTHON", "Python"),
+        ];
+
+        const expectedLanguageSubmission: LanguageSubmission = new LanguageSubmission(slackId, languages);
+
+        const interactiveMessageResponse: Partial<InteractiveMessageResponse> = {
+            user: {
+                id: "SlackId1",
+                name: anyString(),
+                team_id: anyString()
+            },
+            state: {
+                values: {
+                    random1: {
+                        random2: {
+                            selected_options : [
+                                {
+                                    value: "JAVA",
+                                    displayName: "Java"
+                                },
+                                {
+                                    value: "TYPESCRIPT",
+                                    displayName: "TypeScript"
+                                },
+                                {
+                                    value: "PYTHON",
+                                    displayName: "Python"
+                                },
+                            ]
+                        }
+                    }
+                }
+            },
+            actions: [
+                {
+                    action_id: "confirm_preferences"
+                }
+            ]
+        };
+
+        const payload: string = JSON.stringify(interactiveMessageResponse as InteractiveMessageResponse);
+
+        const testRequest: Partial<Request> = {
+            body: {
+                payload: payload
+            }
+        };
+
+        const testResponse: Partial<Response> = {
+            send: jest.fn(),
+            status: function(code){ this.statusCode = code; return this as Response }
+        }
+
+        await apiEventHandler.interactiveMessageResponse(testRequest as Request, testResponse as Response);
+
+        verify(mockedCoreApiClient.sendPreferences(anything())).once();
+        verify(mockedCoreApiClient.sendPreferences(deepEqual(expectedLanguageSubmission))).once();
     });
 });
