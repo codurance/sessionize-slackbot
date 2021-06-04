@@ -7,6 +7,11 @@ import ApiEventHandler from "../EventHandlers/ApiEventHandler";
 import SlackId from "../Models/SlackId";
 
 import {slackIdsToLinkedNames} from "../Utils/ArraysUtils";
+import {KnownBlock} from "@slack/web-api";
+import MatchNotification from "../Models/MatchNotification";
+import {Channel} from "@slack/web-api/dist/response/AdminUsergroupsListChannelsResponse";
+import ChannelId from "../Models/ChannelId";
+import {IMatchNotificationRequest} from "../Typings";
 
 describe("ApiEventHandler", () => {
 
@@ -54,8 +59,6 @@ describe("ApiEventHandler", () => {
 
     test("should turn an array of UserNames into a string", () => {
 
-        const messageBuilder: MessageBuilder = new MessageBuilder();
-
         const userNameArray: SlackId[] = [
             new SlackId("12345"),
             new SlackId("54321"),
@@ -69,33 +72,6 @@ describe("ApiEventHandler", () => {
         const expectedString = "<@12345> <@54321> <@9878> <@510101> <@19389>";
 
         expect(returnedString).toBe(expectedString);
-    });
-
-    test("should create a match notification for slack given a match request from the core API", async () => {
-
-        //        const cameron = new SlackId("ABC123");
-        //        const dave = new SlackId("321CBA");
-        //        const matchNotificationRequest: IMatchNotificationRequest = {
-        //            language: {
-        //                value: "java",
-        //                displayName: "Java"
-        //            },
-        //            users: [
-        //                cameron.slackId,
-        //                dave.slackId
-        //            ]
-        //        };
-        //
-        //        const mockRequest: Partial<Request> = {body: matchNotificationRequest};
-        //
-        //        const cameronExpectedMatchNotification: MatchNotification = generateMatchNotificationFor(cameron, dave);
-        //        const daveExpectedMatchNotification: MatchNotification = generateMatchNotificationFor(dave, cameron);
-        //
-        //        await apiEventHandler.onMatchNotification(mockRequest as Request);
-        //
-        //        verify(mockedSlackApiClient.sendMatchNotification(anyOfClass(MatchNotification))).twice();
-        //        verify(mockedSlackApiClient.sendMatchNotification(deepEqual(cameronExpectedMatchNotification))).once();
-        //        verify(mockedSlackApiClient.sendMatchNotification(deepEqual(daveExpectedMatchNotification))).once();
     });
 
 });
