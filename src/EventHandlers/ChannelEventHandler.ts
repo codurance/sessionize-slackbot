@@ -6,9 +6,7 @@ import SlackApiClient from "../Repos/SlackApiClient";
 import PreferencesForm from "../Models/PreferencesForm";
 import SlackId from "../Models/SlackId";
 import Language from "../Models/Language";
-import { Request, Response } from "express";
-import type {InteractiveMessageResponse, ISlackUserIdentity, ISlackUserSubmission} from "Typings";
-import LanguageSubmission from "../Models/LanguageSubmission";
+import type {ISlackUserIdentity, ISlackUserSubmission} from "Typings";
 import SlackUserSubmission from "../Models/SlackUserSubmission";
 
 export default class ChannelEventHandler {
@@ -38,11 +36,10 @@ export default class ChannelEventHandler {
              await this.slackApiClient.sendDm(event.user, message);
 
         } catch (err) {
-            // TODO: Handle user-friendly errors
             console.error("There was an issue sending a direct message to a user.");
             console.error(err);
-            await this.slackApiClient.sendDm(event.user, "It looks likes there is something wrong at the moment. Please leave the channel and try again later.");
-
+            console.log(event.user);
+            await this.slackApiClient.sendDm(event.user, "It looks like there is something wrong at the moment. Please leave the channel and try again later.");
         }
     }
 
@@ -57,13 +54,10 @@ export default class ChannelEventHandler {
 
              await this.slackApiClient.sendDm(event.user, message);
         } catch (err) {
-            // TODO: Handle user-friendly errs
              console.error(err);
              await this.slackApiClient.sendDm(event.user, "It looks like there was a problem detecting that you'd left the channel.");
         }
     }
-
-
 
     async sendLanguagePreferencesForm(user: SlackId): Promise<ChatPostMessageResponse> {
 

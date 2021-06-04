@@ -1,48 +1,35 @@
-import { anything, deepEqual, instance, mock, verify, when } from "ts-mockito";
-import CoreApiClient from "../Repos/CoreApiClient";
-import MessageBuilder from "../MessageBuilder";
+import {MemberJoinedChannelEvent} from "@slack/bolt";
+import {anyString, anything, instance, mock, verify, when} from "ts-mockito";
 import ChannelEventHandler from "../EventHandlers/ChannelEventHandler";
+import MessageBuilder from "../MessageBuilder";
+import CoreApiClient from "../Repos/CoreApiClient";
 import SlackApiClient from "../Repos/SlackApiClient";
-import { KnownBlock } from "@slack/bolt";
-import SlackId from "../Models/SlackId";
-import Language from "../Models/Language";
-import PreferencesForm from "../Models/PreferencesForm";
-import LanguagesResponse from "../Models/LanguagesResponse";
-
 
 describe("ChannelEventHandler", () => {
-    test("should make a request to user for language preferences", async () => {
+    test("should send a message to the user when an error was thrown when they joined the channel", () => {
 
-        const languagesResponseFromCore: Language[] = [
-            new Language("JAVA", "Java"),
-            new Language("CSHARP", "C#"),
-            new Language("PYTHON", "Python")
-        ];
-
-        const mockedSlackApiClient: SlackApiClient = mock(SlackApiClient);
-        const slackApiClient: SlackApiClient = instance(mockedSlackApiClient);
+        const mockSlackEvent: Partial<MemberJoinedChannelEvent> = {
+            user: "SlackId1"
+        };
 
         const mockedCoreApiClient: CoreApiClient = mock(CoreApiClient);
         const coreApiClient: CoreApiClient = instance(mockedCoreApiClient);
 
-        when(mockedCoreApiClient.getLanguageList()).thenResolve(languagesResponseFromCore);
-
-        const user: SlackId = new SlackId("ABC123");
+        const mockedSlackApiClient: SlackApiClient = mock(SlackApiClient);
+        const slackApiClient: SlackApiClient = instance(mockedSlackApiClient);
 
         const messageBuilder: MessageBuilder = new MessageBuilder();
 
         const channelEventHandler: ChannelEventHandler = new ChannelEventHandler(coreApiClient, slackApiClient, messageBuilder);
 
-        const languagesResponse: LanguagesResponse = new LanguagesResponse(languagesResponseFromCore);
+        when(mockedSlackApiClient.getIdentity(anything())).thenThrow(Error("This is an error."));
 
-        const preferencesBody: KnownBlock[] = messageBuilder.buildPreferencesForm(languagesResponse.languages);
+        const expectedSlackId: string = "SlackId1";
+        const expectedMessage: string = "It looks like there is something wrong at the moment. Please leave the channel and try again later.";
 
-        const preferencesForm: PreferencesForm = new PreferencesForm(user, preferencesBody);
+        channelEventHandler.onChannelJoin(mockSlackEvent as MemberJoinedChannelEvent);
 
-        await channelEventHandler.sendLanguagePreferencesForm(user);
-
-        verify(mockedSlackApiClient.sendPreferencesForm(anything())).once();
-        verify(mockedSlackApiClient.sendPreferencesForm(deepEqual(preferencesForm))).once();
-
+        verify(mockedSlackApiClient.sendDm(anyString(), anyString())).once();
+        verify(mockedSlackApiClient.sendDm(expectedSlackId, expectedMessage)).once();
     });
 });
