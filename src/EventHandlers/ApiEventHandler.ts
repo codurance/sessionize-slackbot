@@ -10,8 +10,9 @@ import SlackId from "../Models/SlackId";
 import PreferencesForm from "../Models/PreferencesForm";
 import Language from "../Models/Language";
 
-import type {IPreferencesRequest, IMatchNotificationRequest, IGroupDm} from "Typings";
+import type {IPreferencesRequest, IMatchNotificationRequest, IGroupDm, InteractiveMessageResponse} from "Typings";
 import ChannelId from "../Models/ChannelId";
+import LanguageSubmission from "../Models/LanguageSubmission";
 export default class ApiEventHandler {
 
     coreApiClient: CoreApiClient;
@@ -34,11 +35,11 @@ export default class ApiEventHandler {
                 return;
             }else{
                 console.error("Slack API failed to send a valid direct message.")
-                console.log(response);
+                console.error(response);
                 response.status(500).send();
             }
         } catch (err) {
-            console.log("Error sending direct message.");
+            console.error("Error sending direct message.");
             console.error(err);
         }
     }
@@ -97,6 +98,62 @@ export default class ApiEventHandler {
         }
     }
 
+    interactiveMessageResponse = async (req: Request, res: Response): Promise<any> => {
+
+        try {
+            const payload: InteractiveMessageResponse = JSON.parse(req.body.payload);
+            // Send to method depending on the kind of response
+            switch(payload.actions[0].action_id){
+
+                case "confirm_preferences":
+                    try {
+
+                        let rawLanguageSubmission: Language[];
+
+                        const single = Object.keys(payload.state?.values)[0];
+                        const languageKey = Object.keys(payload.state?.values[single])[0];
+
+                        if(payload.state?.values[single][languageKey] &&
+                            payload.user.id){
+
+                            const slackId: SlackId = new SlackId(payload.user.id);
+
+                            rawLanguageSubmission =
+                                payload.state?.values[single][languageKey]["selected_options"];
+
+                            const languageSubmission: LanguageSubmission =
+                                LanguageSubmission.fromResponse(slackId, rawLanguageSubmission);
+
+                            await this.coreApiClient.sendPreferences(languageSubmission);
+
+                            const slackResponse: boolean = await this.slackApiClient.sendDm(slackId.slackId, "Thanks for sending us your language preferences!");
+
+                            if(slackResponse){
+                                res.status(200).send();
+                                return;
+                            }
+
+                            res.status(500).send();
+
+
+                        }else{
+                            console.error("There was a problem sending the language preferences to the core API");
+                        }
+
+                    }catch(error){
+                        console.error(error);
+
+                    }
+                    break;
+
+                default:
+                    throw new Error("Unknown response");
+            }
+        } catch(error){
+            return error;
+        }
+    }
+
     private async createNotificationFromMatchDetails(matchDetails: MatchDetails) {
         try {
             const matchNotificationBody: KnownBlock[] = this.matchDetailsToNotification(matchDetails);
@@ -111,12 +168,9 @@ export default class ApiEventHandler {
     }
 
     private async sendNotification(groupDm: IGroupDm, matchNotificationBody: KnownBlock[]) {
-        console.log("Send notification");
         const channelId: ChannelId = new ChannelId(groupDm.channelId);
         const matchNotification: MatchNotification = new MatchNotification(channelId, matchNotificationBody);
-        console.log(JSON.stringify(matchNotification));
         let response: ChatPostMessageResponse = await this.slackApiClient.sendMatchNotification(matchNotification);
-        console.log(response);
         if(!response.ok) throw new Error("Slack failed to create a valid match notification.");
     }
 

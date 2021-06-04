@@ -53,7 +53,6 @@ export default class CoreApiClient {
         try {
             const url = new URL(`/slack/preferences`, `${process.env.CORE_API}`);
             const response = await axios.post(url.toString());
-            console.log(response);
             return response.data;
         } catch (error) {
             console.error(error);

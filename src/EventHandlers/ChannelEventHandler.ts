@@ -63,77 +63,13 @@ export default class ChannelEventHandler {
         }
     }
 
-    interactiveMessageResponse = async (req: Request, res: Response): Promise<any> => {
 
-        try {
-            const payload: InteractiveMessageResponse = JSON.parse(req.body.payload);
-            // Send to method depending on the kind of response
-            switch(payload.actions[0].action_id){
-
-            case "confirm_preferences":
-                try {
-
-                    let rawLanguageSubmission: Language[];
-
-                    console.log(JSON.stringify(payload.state?.values));
-
-                    const single = Object.keys(payload.state?.values)[0];
-                    const languageKey = Object.keys(payload.state?.values[single])[0];
-
-                    if(payload.state?.values[single][languageKey] &&
-                        payload.user.id){
-
-                        const slackId: SlackId = new SlackId(payload.user.id);
-
-                        rawLanguageSubmission =
-                            payload.state?.values[single][languageKey]["selected_options"];
-
-                        console.log(rawLanguageSubmission);
-
-                        const languageSubmission: LanguageSubmission =
-                            LanguageSubmission.fromResponse(slackId, rawLanguageSubmission);
-
-                        console.log("Attempting to send submission");
-
-                        console.log(this);
-
-                        await this.coreApiClient.sendPreferences(languageSubmission);
-
-                        const slackResponse: boolean = await this.slackApiClient.sendDm(slackId.slackId, "Thanks for sending us your language preferences!");
-
-                        if(slackResponse){
-                            res.status(200).send();
-                            return;
-                        }
-
-                        res.status(500).send();
-
-
-                    }else{
-                        console.error("There was a problem sending the language preferences to the core API");
-                    }
-
-                }catch(error){
-                    console.log(error);
-
-                }
-                break;
-
-            default:
-                throw new Error("Unknown response");
-            }
-        } catch(error){
-            return error;
-        }
-    }
 
     async sendLanguagePreferencesForm(user: SlackId): Promise<ChatPostMessageResponse> {
 
         try {
 
-            console.log("channelEventHandler.sendLanguagePreferencesForm");
             const latestLanguagesResponse: Language[] = await this.coreApiClient.getLanguageList();
-
             const preferencesMessage: KnownBlock[] = this.messageBuilder.buildPreferencesForm(latestLanguagesResponse);
 
             const preferencesForm: PreferencesForm = new PreferencesForm(user, preferencesMessage);
