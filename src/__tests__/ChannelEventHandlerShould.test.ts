@@ -1,4 +1,4 @@
-import {MemberJoinedChannelEvent} from "@slack/bolt";
+import {MemberJoinedChannelEvent, MemberLeftChannelEvent, SlackEvent} from "@slack/bolt";
 import {anyString, anything, instance, mock, verify, when} from "ts-mockito";
 import ChannelEventHandler from "../EventHandlers/ChannelEventHandler";
 import MessageBuilder from "../MessageBuilder";
@@ -6,9 +6,14 @@ import CoreApiClient from "../Repos/CoreApiClient";
 import SlackApiClient from "../Repos/SlackApiClient";
 
 describe("ChannelEventHandler", () => {
-    test("should send a message to the user when an error was thrown when they joined the channel", () => {
 
-        const mockSlackEvent: Partial<MemberJoinedChannelEvent> = {
+    it.each`
+        expectedMessage                                                                                             | userAction
+        ${"It looks like there is something wrong at the moment. Please leave the channel and try again later."}    | ${"joins"}
+        ${"It looks like there was a problem detecting that you'd left the channel."}                               | ${"leaves"}
+    `("should send a user friendly message when an error is thrown as a user $userAction the channel", async ({ expectedMessage, userAction }) => {
+
+        const mockSlackEvent: Partial<SlackEvent> = {
             user: "SlackId1"
         };
 
@@ -25,9 +30,12 @@ describe("ChannelEventHandler", () => {
         when(mockedSlackApiClient.getIdentity(anything())).thenThrow(Error("This is an error."));
 
         const expectedSlackId: string = "SlackId1";
-        const expectedMessage: string = "It looks like there is something wrong at the moment. Please leave the channel and try again later.";
 
-        channelEventHandler.onChannelJoin(mockSlackEvent as MemberJoinedChannelEvent);
+        if(userAction == "joins"){
+            channelEventHandler.onChannelJoin(mockSlackEvent as MemberJoinedChannelEvent);
+        }else if(userAction == "leaves"){
+            channelEventHandler.onChannelLeave(mockSlackEvent as MemberLeftChannelEvent);
+        }
 
         verify(mockedSlackApiClient.sendDm(anyString(), anyString())).once();
         verify(mockedSlackApiClient.sendDm(expectedSlackId, expectedMessage)).once();
