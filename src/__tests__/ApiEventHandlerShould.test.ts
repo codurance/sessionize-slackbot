@@ -1,4 +1,4 @@
-import {anything, instance, mock, verify, when} from "ts-mockito";
+import {anything, deepEqual, instance, mock, verify, when} from "ts-mockito";
 import {Request, Response} from "express";
 import SlackApiClient from "../Repos/SlackApiClient";
 import MessageBuilder from "../MessageBuilder";
@@ -7,11 +7,11 @@ import ApiEventHandler from "../EventHandlers/ApiEventHandler";
 import SlackId from "../Models/SlackId";
 
 import {slackIdsToLinkedNames} from "../Utils/ArraysUtils";
-import {KnownBlock} from "@slack/web-api";
+import {ChatPostMessageResponse, ConversationsOpenResponse, KnownBlock} from "@slack/web-api";
 import MatchNotification from "../Models/MatchNotification";
 import {Channel} from "@slack/web-api/dist/response/AdminUsergroupsListChannelsResponse";
 import ChannelId from "../Models/ChannelId";
-import {IMatchNotificationRequest} from "../Typings";
+import {IGroupDm, IMatchNotificationRequest} from "../Typings";
 
 describe("ApiEventHandler", () => {
 
@@ -20,7 +20,8 @@ describe("ApiEventHandler", () => {
         mockedSlackApiClient: SlackApiClient,
         slackApiClient: SlackApiClient,
         messageBuilder: MessageBuilder,
-        apiEventHandler: ApiEventHandler;
+        apiEventHandler: ApiEventHandler,
+        testResponse: Partial<Response>
 
     const expectedSlackId = "ABC123";
 
@@ -34,6 +35,12 @@ describe("ApiEventHandler", () => {
         messageBuilder = new MessageBuilder();
 
         apiEventHandler = new ApiEventHandler(coreApiClient, slackApiClient, messageBuilder);
+
+        testResponse = {
+            send: jest.fn(),
+            status: function(code) {this.statusCode = code; return this as Response }
+        };
+
     });
 
     test("should send a simple direct message as requested in a call's request", async () => {
@@ -45,11 +52,6 @@ describe("ApiEventHandler", () => {
                 slackId: expectedSlackId,
                 message: expectedMessage
             }
-        };
-
-        const testResponse: Partial<Response> = {
-            send: jest.fn(),
-            status: jest.fn()
         };
 
         when(mockedSlackApiClient.sendDm(anything(), anything())).thenResolve(true);
@@ -73,5 +75,6 @@ describe("ApiEventHandler", () => {
 
         expect(returnedString).toBe(expectedString);
     });
+
 
 });

@@ -1,6 +1,7 @@
 import {
     anyString,
     anything,
+    deepEqual,
     instance,
     mock,
     verify,
@@ -11,9 +12,14 @@ import CoreApiClient from "../Repos/CoreApiClient";
 import SlackApiClient from "../Repos/SlackApiClient";
 import MessageBuilder from "../MessageBuilder";
 import ChannelEventHandler from "../EventHandlers/ChannelEventHandler";
-import type {ISlackUserIdentity} from "../Typings";
-import { MemberJoinedChannelEvent } from "@slack/bolt";
-import SlackId from "../Models/SlackId";
+import type {IGroupDm, IMatchNotificationRequest, ISlackUserIdentity} from "../Typings";
+import { KnownBlock, MemberJoinedChannelEvent } from "@slack/bolt";
+import {Channel} from "@slack/web-api/dist/response/AdminUsergroupsListChannelsResponse";
+import {ChatPostMessageResponse, ConversationsOpenResponse} from "@slack/web-api";
+import ChannelId from "../Models/ChannelId";
+import MatchNotification from "../Models/MatchNotification";
+import ApiEventHandler from "../EventHandlers/ApiEventHandler";
+import { Request, Response } from "express";
 
 describe("Slack Service should", () => {
 
@@ -56,5 +62,80 @@ describe("Slack Service should", () => {
         await channelEventHandler.onChannelJoin(event);
 
         verify(mockedSlackApiClient.sendDm(event.user, expectedMessage)).called();
+    });
+
+    test("should trigger a match notification upon receiving a request", async () => {
+
+        const mockedCoreApiClient: CoreApiClient = mock(CoreApiClient);
+        const coreApiClient: CoreApiClient = instance(mockedCoreApiClient);
+
+        const mockedSlackApiClient: SlackApiClient = mock(SlackApiClient);
+        const slackApiClient: SlackApiClient = instance(mockedSlackApiClient);
+
+        const messageBuilder: MessageBuilder = new MessageBuilder();
+
+        const apiEventHandler: ApiEventHandler = new ApiEventHandler(coreApiClient, slackApiClient, messageBuilder);
+
+        const testRequest: Partial<Request> = {
+            body: {
+                users: [
+                    "SlackId1",
+                    "SlackId2"
+                ],
+                language: {
+                    value: "JAVA",
+                    displayName: "Java"
+                }
+            } as IMatchNotificationRequest
+        };
+
+        const testResponse: Partial<Response> = {
+            send: jest.fn(),
+            status: function(code){ this.statusCode = code; return this as Response }
+        }
+
+        const groupDm: IGroupDm = {
+            channelId: "testChannel"
+        };
+
+        const matchNotificationBody: KnownBlock[] = [
+            {
+                type: "section",
+                text: {
+                    type: "mrkdwn",
+                    text: "You have a new match:\n <@SlackId1> <@SlackId2>"
+                }
+            },
+            {
+                type: "section",
+                fields: [
+                    {
+                        type: "mrkdwn",
+                        text: "*Language:*\nJava"
+                    }
+                ]
+            }
+        ];
+
+        when(mockedSlackApiClient.createGroupDM(anything())).thenResolve({
+            ok: true,
+            channel: {
+                id: "testChannel"
+            } as Channel
+        } as ConversationsOpenResponse);
+
+        when(mockedSlackApiClient.sendMatchNotification(anything())).thenResolve({
+            ok: true
+        } as ChatPostMessageResponse);
+
+        const channelId: ChannelId = new ChannelId("testChannel");
+
+        const matchNotification: MatchNotification = new MatchNotification(channelId, matchNotificationBody);
+
+        await apiEventHandler.onMatchNotification(testRequest as Request, testResponse as Response);
+
+
+        verify(mockedSlackApiClient.sendMatchNotification(anything())).once();
+        verify(mockedSlackApiClient.sendMatchNotification(deepEqual(matchNotification))).once();
     });
 });

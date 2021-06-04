@@ -47,7 +47,9 @@ export default class ApiEventHandler {
     onMatchNotification = async (request: Request, response: Response): Promise<void> => {
         try {
             const matchDetails: MatchDetails = MatchDetails.fromRequest(request.body as IMatchNotificationRequest);
-            await this.createNotificationFromMatchDetails(matchDetails);
+            const matchNotificationBody: KnownBlock[] = this.matchDetailsToNotification(matchDetails);
+            const groupDm: IGroupDm = await this.createGroupDmFromMatchDetails(matchDetails);
+            await this.sendNotification(groupDm, matchNotificationBody);
             response.status(201).send();
         } catch (err) {
             console.error(err);
@@ -60,7 +62,9 @@ export default class ApiEventHandler {
             const matchListRequest: IMatchNotificationRequest[] = request.body;
             matchListRequest.forEach(async matchNotificationRequest => {
                 const matchDetails: MatchDetails = MatchDetails.fromRequest(matchNotificationRequest);
-                await this.createNotificationFromMatchDetails(matchDetails);
+                const matchNotificationBody: KnownBlock[] = this.matchDetailsToNotification(matchDetails);
+                const groupDm: IGroupDm = await this.createGroupDmFromMatchDetails(matchDetails);
+                await this.sendNotification(groupDm, matchNotificationBody);
             });
             response.status(204).send();
 
@@ -154,27 +158,14 @@ export default class ApiEventHandler {
         }
     }
 
-    private async createNotificationFromMatchDetails(matchDetails: MatchDetails) {
-        try {
-            const matchNotificationBody: KnownBlock[] = this.matchDetailsToNotification(matchDetails);
-
-            const groupDm: IGroupDm = await this.createGroupDmFromMatchDetails(matchDetails);
-
-            await this.sendNotification(groupDm, matchNotificationBody);
-        }catch(err){
-            console.error("Error creating notification from match details for the below:");
-            console.table(matchDetails);
-        }
-    }
-
-    private async sendNotification(groupDm: IGroupDm, matchNotificationBody: KnownBlock[]) {
+    async sendNotification(groupDm: IGroupDm, matchNotificationBody: KnownBlock[]) {
         const channelId: ChannelId = new ChannelId(groupDm.channelId);
         const matchNotification: MatchNotification = new MatchNotification(channelId, matchNotificationBody);
         let response: ChatPostMessageResponse = await this.slackApiClient.sendMatchNotification(matchNotification);
         if(!response.ok) throw new Error("Slack failed to create a valid match notification.");
     }
 
-    private matchDetailsToNotification(matchDetails: MatchDetails): KnownBlock[] {
+    matchDetailsToNotification(matchDetails: MatchDetails): KnownBlock[] {
         const matchNotificationContent: MatchNotificationContent = new MatchNotificationContent(
             matchDetails.users,
             matchDetails.language);
@@ -182,7 +173,7 @@ export default class ApiEventHandler {
         return matchNotificationBody;
     }
 
-    private createGroupDmFromMatchDetails = async (matchDetails: MatchDetails): Promise<IGroupDm> => {
+    createGroupDmFromMatchDetails = async (matchDetails: MatchDetails): Promise<IGroupDm> => {
         try {
             const createdGroupDm: ConversationsOpenResponse = await this.slackApiClient.createGroupDM(matchDetails.users);
             return this.validateGroupDm(createdGroupDm);
@@ -191,7 +182,7 @@ export default class ApiEventHandler {
         }
     }
 
-    private validateGroupDm = (groupDmResponse: ConversationsOpenResponse): IGroupDm => {
+    validateGroupDm = (groupDmResponse: ConversationsOpenResponse): IGroupDm => {
         if (groupDmResponse.ok && groupDmResponse.channel && groupDmResponse.channel.id) {
             return {
                 channelId: groupDmResponse.channel.id
