@@ -28,8 +28,8 @@ import Language from "../Models/Language";
 describe("Slack Service", () => {
 
     it.each`
-        isNewUser | expectedMessage | userAction
-        ${true}   | ${"Hi Joe Bloggs, welcome to Sessionize!"} | ${"joins"}
+        isNewUser | expectedMessage                                 | userAction
+        ${true}   | ${"Hi Joe Bloggs, welcome to Sessionize!"}      | ${"joins"}
         ${false}  | ${"Hi Joe Bloggs, welcome back to Sessionize!"} | ${"rejoins"}
     `("should send a personalised message when a user $userAction the channel", async ({ isNewUser, expectedMessage }) => {
         // GIVEN Sessionize is installed
