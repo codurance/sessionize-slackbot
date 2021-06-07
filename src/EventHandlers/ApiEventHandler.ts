@@ -100,8 +100,6 @@ export default class ApiEventHandler {
 
         } catch(err){
 
-            // TODO: Error messages back to users
-
             console.error(err);
             response.status(500).send();
         }

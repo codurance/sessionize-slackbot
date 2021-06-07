@@ -16,7 +16,11 @@ export default class CoreApiClient {
         try {
             const url = new URL(`/slack/auth`, `${process.env.CORE_API}`);
             const response = await axios.post(url.toString(), slackUserSubmission);
-            return response.data;
+
+            if(response.status === 201) return true;
+            if(response.status === 204) return false;
+
+            throw new Error("There was an issue looking up the user.");
             // 201 new user
             // 204 existing user
         } catch (err) {
@@ -44,15 +48,16 @@ export default class CoreApiClient {
 
         const config = {
             headers: {
-                "slack-user": languageSubmission.slackId.slackId
+                "slack-user": languageSubmission.slackId.slackId,
+                "Content-Type": "application/json"
             }
         };
 
         const data = languageSubmission.body;
 
         try {
-            const url = new URL(`/slack/preferences`, `${process.env.CORE_API}`);
-            const response = await axios.post(url.toString());
+            const url = new URL(`/slack/preferences/languages`, `${process.env.CORE_API}`);
+            const response = await axios.put(url.toString(), data, config);
             return response.data;
         } catch (error) {
             console.error(error);
