@@ -17,8 +17,7 @@ export default class SlackUserSubmission {
         return {
             slackUser: response.slackId,
             email: response.email,
-            firstName: response.firstName,
-            lastName: "lastname"
+            name: response.name
         } as ISlackUserSubmission;
     }
 }

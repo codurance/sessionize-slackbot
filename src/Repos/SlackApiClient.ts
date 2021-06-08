@@ -45,18 +45,41 @@ export default class SlackApiClient {
                 user: slackId
             });
 
-            const nameArray: string[] = this.parseFirstLastNames(userIdentity);
+            const name: string = this.getName(userIdentity);
 
             return {
                 slackId: slackId,
                 email: userIdentity.profile?.email,
-                firstName: nameArray[0] || "",
-                lastName: nameArray[1] || ""
+                name: name
             } as ISlackUserIdentity;
 
         }catch(err){
             console.error(err);
             throw new Error("Could not contact Slack to request user profile information.");
+        }
+    }
+
+    getName(userIdentity: UsersProfileGetResponse): string {
+        try {
+
+            if(!userIdentity.profile){
+                throw new Error("User profile is invalid.");
+            }
+
+            if(userIdentity.profile.first_name &&
+                userIdentity.profile.last_name){
+                return userIdentity.profile.first_name + " " + userIdentity.profile.last_name;
+            }
+
+            if(userIdentity.profile.real_name) return userIdentity.profile.real_name;
+
+            if(userIdentity.profile.display_name) return userIdentity.profile.display_name;
+
+            throw new Error("User profile has no name applied.");
+
+        }catch(err){
+            console.error("There was an issue processing the user's name.");
+            throw new Error(err);
         }
     }
 

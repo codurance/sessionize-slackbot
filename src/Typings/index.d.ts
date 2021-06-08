@@ -44,8 +44,7 @@ export interface IPreferencesRequest {
 export interface ISlackUserIdentity {
     slackId: string;
     email: string;
-    firstName: string;
-    lastName: string;
+    name: string;
 }
 
 export interface InteractiveMessageResponse {
@@ -113,8 +112,7 @@ export interface IRawLanguageSubmission {
 export interface ISlackUserSubmission {
     slackUser: string,
     email: string,
-    firstName: string,
-    lastName: string
+    name: string
 }
 
 export interface IGroupDm {
