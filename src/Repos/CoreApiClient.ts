@@ -69,7 +69,10 @@ export default class CoreApiClient {
         try{
             const url = new URL(`/slack/languages`, `${process.env.CORE_API}`);
             const response = await axios.get(url.toString());
-            return response.data;
+            const sortedResponse: Language[] =
+                response.data.sort((a: Language, b: Language) =>
+                    a.displayName.localeCompare(b.displayName));
+            return sortedResponse;
         } catch (err) {
             throw new Error("A connection could not be made to core");
         }
