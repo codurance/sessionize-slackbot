@@ -114,6 +114,13 @@ describe("Slack Service", () => {
                         text: "*Language:*\nJava"
                     }
                 ]
+            },
+            {
+                type: "section",
+                text: {
+                    type: "mrkdwn",
+                    text:  "Take a moment in here to discuss the best time for you to get programming together!"
+                }
             }
         ];
 
@@ -194,7 +201,7 @@ describe("Slack Service", () => {
                     type: "multi_static_select",
                     placeholder: {
                         type: "plain_text",
-                        text: "Select a language",
+                        text: "Select three languages, from most preferred to least preferred.",
                         emoji: true
                     },
                     option_groups: [

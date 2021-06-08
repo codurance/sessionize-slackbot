@@ -66,10 +66,17 @@ export default class ApiEventHandler {
         try {
             const matchListRequest: IMatchNotificationRequest[] = request.body;
             matchListRequest.forEach(async matchNotificationRequest => {
-                const matchDetails: MatchDetails = MatchDetails.fromRequest(matchNotificationRequest);
-                const matchNotificationBody: KnownBlock[] = this.matchDetailsToNotification(matchDetails);
-                const groupDm: IGroupDm = await this.createGroupDmFromMatchDetails(matchDetails);
-                await this.sendNotification(groupDm, matchNotificationBody);
+
+                if(matchNotificationRequest.status !== "UNSUCCESSFUL"){
+                    const matchDetails: MatchDetails = MatchDetails.fromRequest(matchNotificationRequest);
+                    const matchNotificationBody: KnownBlock[] = this.matchDetailsToNotification(matchDetails);
+                    const groupDm: IGroupDm = await this.createGroupDmFromMatchDetails(matchDetails);
+                    await this.sendNotification(groupDm, matchNotificationBody);
+                }else{
+                    const noMatchMessage: string = "We were unable to find a match for you with your current preferences. Please consider adding Assembly to your preferences";
+                    this.slackApiClient.sendDm(matchNotificationRequest.users[0], noMatchMessage);
+                }
+
             });
             response.status(204).send();
 
@@ -82,9 +89,10 @@ export default class ApiEventHandler {
 
     onLanguagePreferences = async (request: Request, response: Response): Promise<void> => {
         try {
-            const latestLanguages: Language[] = await this.coreApiClient.getLanguageList();
 
-            const preferencesRequest: IPreferencesRequest = request.body;
+            const latestLanguages: Language[] = await this.coreApiClient.getLanguageList();
+            const preferencesRequest: IPreferencesRequest = this.mapRequestToLanguagePreferencesRequest(request);
+
             const preferencesMessage: KnownBlock[] = this.messageBuilder.buildPreferencesForm(latestLanguages);
 
             const slackId = new SlackId(preferencesRequest.slackId);
@@ -188,6 +196,15 @@ export default class ApiEventHandler {
             }
             throw new Error("The was an issue contacting the Slack API.");
         }
+    }
+
+    mapRequestToLanguagePreferencesRequest(request: Request): IPreferencesRequest {
+        if(request.body.slackId || request.body.user_id){
+            return {
+                slackId: request.body.slackId || request.body.user_id
+            } as IPreferencesRequest;
+        }
+        throw new Error("Request not applicable to a Language Preferences Request");
     }
 
     validateGroupDm = (groupDmResponse: ConversationsOpenResponse): IGroupDm => {

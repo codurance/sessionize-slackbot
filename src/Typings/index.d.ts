@@ -7,6 +7,7 @@ export interface ILanguage {
 }
 
 export interface IMatchNotificationRequest {
+    status: string,
     language: ILanguage,
     users: string[],
 }

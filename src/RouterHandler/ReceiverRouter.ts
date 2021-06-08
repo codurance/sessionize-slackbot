@@ -1,6 +1,6 @@
 import {ExpressReceiver} from "@slack/bolt";
 import ApiEventHandler from "EventHandlers/ApiEventHandler";
-import express from "express";
+import express, { Response } from "express";
 
 export default class ReceiverRouter {
     receiver: ExpressReceiver;
@@ -15,11 +15,12 @@ export default class ReceiverRouter {
     }
 
     initializeRoutes(){
-        this.receiver.router.get("/health", (req, res) => res.status(200).send("Ok!"));
+        this.receiver.router.get("/health", (res: Response) => res.status(200).send("Ok!"));
         this.receiver.router.post("/direct-message", this.apiEventHandler.onDirectMessage);
         this.receiver.router.post("/match-notification", this.apiEventHandler.onMatchNotification);
         this.receiver.router.post("/match-list", this.apiEventHandler.onMatchList);
         this.receiver.router.post("/language-preferences", this.apiEventHandler.onLanguagePreferences);
         this.receiver.router.post("/slack/interactive-endpoint", this.apiEventHandler.interactiveMessageResponse);
+        this.receiver.router.post("/slack/languages", this.apiEventHandler.onLanguagePreferences);
     }
 }
