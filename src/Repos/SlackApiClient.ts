@@ -146,18 +146,4 @@ export default class SlackApiClient {
 
     }
 
-    private parseFirstLastNames(usersProfileGetResponse: UsersProfileGetResponse): string[] {
-        let name: () => string = () => {
-            if(usersProfileGetResponse.profile && usersProfileGetResponse.profile.real_name) return usersProfileGetResponse.profile.real_name;
-            return "";
-        };
-        try {
-            const nameArray = name().split(" ");
-            nameArray.forEach(name => { if(!name) name = ""; })
-            return nameArray;
-        }catch(err){
-            console.error(err);
-            return ["Unknown", "User"];
-        }
-    }
 }

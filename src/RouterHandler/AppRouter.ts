@@ -1,5 +1,7 @@
 import {App} from "@slack/bolt";
 import ChannelEventHandler from "EventHandlers/ChannelEventHandler";
+import dotenv from "dotenv";
+dotenv.config();
 
 export default class AppRouter {
 
@@ -22,7 +24,7 @@ export default class AppRouter {
     }
 
     startServer(){
-        this.app.start(80);
+        this.app.start(parseInt(process.env.PORT!));
         console.log("Sessionize SlackBot running...");
     }
 }

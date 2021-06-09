@@ -12,7 +12,7 @@ import CoreApiClient from "../Repos/CoreApiClient";
 import SlackApiClient from "../Repos/SlackApiClient";
 import MessageBuilder from "../MessageBuilder";
 import ChannelEventHandler from "../EventHandlers/ChannelEventHandler";
-import type {IGroupDm, IMatchNotificationRequest, InteractiveMessageResponse, IPreferencesRequest, ISlackUserIdentity} from "../Typings";
+import type {IMatchNotificationRequest, InteractiveMessageResponse, ISlackUserIdentity} from "../Typings";
 import { KnownBlock, MemberJoinedChannelEvent } from "@slack/bolt";
 import {Channel} from "@slack/web-api/dist/response/AdminUsergroupsListChannelsResponse";
 import {Button, ChatPostMessageResponse, ConversationsOpenResponse} from "@slack/web-api";
