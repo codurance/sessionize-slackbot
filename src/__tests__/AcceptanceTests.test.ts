@@ -46,8 +46,7 @@ describe("Slack Service", () => {
         };
 
         const slackIdentity: ISlackUserIdentity = {
-            firstName: "Joe",
-            lastName: "Bloggs",
+            name: "Joe Bloggs",
             slackId: "U0G9QF9C6",
             email: "joe.bloggs@codurance.com"
         };

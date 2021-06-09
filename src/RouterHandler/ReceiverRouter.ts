@@ -1,6 +1,6 @@
 import {ExpressReceiver} from "@slack/bolt";
 import ApiEventHandler from "EventHandlers/ApiEventHandler";
-import express, { Response } from "express";
+import express, {Request, Response} from "express";
 
 export default class ReceiverRouter {
     receiver: ExpressReceiver;
@@ -15,7 +15,7 @@ export default class ReceiverRouter {
     }
 
     initializeRoutes(){
-        this.receiver.router.get("/health", (res: Response) => res.status(200).send("Ok!"));
+        this.receiver.router.get("/health", (_req: Request, res: Response) => res.status(200).send("Ok!"));
         this.receiver.router.post("/direct-message", this.apiEventHandler.onDirectMessage);
         this.receiver.router.post("/match-notification", this.apiEventHandler.onMatchNotification);
         this.receiver.router.post("/match-list", this.apiEventHandler.onMatchList);
