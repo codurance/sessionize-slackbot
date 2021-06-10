@@ -123,7 +123,7 @@ export default class ApiEventHandler {
                 case "confirm_preferences":
                     try {
 
-                        let rawLanguageSubmission: Language[];
+                        let rawLanguageSubmission;
 
                         const single = Object.keys(payload.state?.values)[0];
                         const languageKey = Object.keys(payload.state?.values[single])[0];
@@ -141,7 +141,9 @@ export default class ApiEventHandler {
 
                             await this.coreApiClient.sendPreferences(languageSubmission);
 
-                            const slackResponse: boolean = await this.slackApiClient.sendDm(slackId.slackId, "Thanks for sending us your language preferences!");
+                            const slackResponse: boolean = await this.slackApiClient.sendDm(slackId.slackId,
+                                `Your language preferences have been successfully updated! They are now: ${rawLanguageSubmission[0]["text"]["text"]}, ${rawLanguageSubmission[1]["text"]["text"]}
+                                and ${rawLanguageSubmission[2]["text"]["text"]} `);
 
                             if(slackResponse){
                                 res.status(200).send();
