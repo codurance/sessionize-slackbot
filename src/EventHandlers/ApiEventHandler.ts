@@ -73,7 +73,7 @@ export default class ApiEventHandler {
                     const groupDm: IGroupDm = await this.createGroupDmFromMatchDetails(matchDetails);
                     await this.sendNotification(groupDm, matchNotificationBody);
                 }else{
-                    const noMatchMessage: string = "We were unable to find a match for you with your current preferences. Please consider adding Assembly to your preferences";
+                    const noMatchMessage: string = "We were unable to find a match for you with your current preferences.";
                     this.slackApiClient.sendDm(matchNotificationRequest.users[0], noMatchMessage);
                 }
 

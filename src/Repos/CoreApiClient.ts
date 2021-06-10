@@ -15,6 +15,7 @@ export default class CoreApiClient {
 
         try {
             const url = new URL(`/slack/auth`, `${process.env.CORE_API}`);
+            console.log(slackUserSubmission);
             const response = await axios.post(url.toString(), slackUserSubmission);
 
             if(response.status === 201) return true;
